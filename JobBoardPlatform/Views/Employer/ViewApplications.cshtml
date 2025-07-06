@@ -1,0 +1,70 @@
+@model List<JobBoardPlatform.Models.Application>
+
+@{
+    ViewBag.Title = "Applications for Job";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Applications</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Candidate</th>
+            <th>Job Title</th>
+            <th>Applied Date</th>
+            <th>Status</th>
+            <th>Resume</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var app in Model)
+        {
+            string candidate = app.CandidateName ?? "Unknown";
+            string job = app.JobTitle ?? "Unknown";
+
+            <tr>
+                <td>@candidate</td>
+                <td>@job</td>
+                <td>@app.AppliedDate.ToShortDateString()</td>
+                <td>
+                    <span class="badge @(app.Status == "Approved" ? "bg-success" : app.Status == "Rejected" ? "bg-danger" : "bg-secondary")">
+                        @app.Status
+                    </span>
+                </td>
+                <td>
+                    @if (!string.IsNullOrEmpty(app.ResumePath))
+                    {
+                        <a href="@Url.Content(app.ResumePath)" download class="btn btn-sm btn-success">Download</a>
+                    }
+                    else
+                    {
+                        <span class="text-danger">No Resume</span>
+                    }
+                </td>
+                <td>
+                    @if (app.Status == "Applied")
+                    {
+                        using (Html.BeginForm("UpdateApplicationStatus", "Employer", FormMethod.Post))
+                        {
+                            @Html.Hidden("applicationId", app.Id)
+                            @Html.Hidden("status", "Approved")
+                            <button type="submit" class="btn btn-sm btn-primary me-1">Approve</button><br><br>
+                        }
+                        using (Html.BeginForm("UpdateApplicationStatus", "Employer", FormMethod.Post))
+                        {
+                            @Html.Hidden("applicationId", app.Id)
+                            @Html.Hidden("status", "Rejected")
+                            <button type="submit" class="btn btn-sm btn-danger">Reject</button>
+                        }
+                    }
+                    else
+                    {
+                        <span class="text-muted">No Action</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

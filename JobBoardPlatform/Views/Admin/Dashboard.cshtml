@@ -1,0 +1,30 @@
+@model List<JobBoardPlatform.Models.Job>
+@{
+    ViewBag.Title = "Admin - Pending Jobs";
+}
+<h2>Pending Jobs</h2>
+
+<table class="table table-bordered">
+    <tr>
+        <th>Title</th>
+        <th>Employer</th>
+        <th>Category</th>
+        <th>Location</th>
+        <th>Posted Date</th>
+        <th>Action</th>
+    </tr>
+    @foreach (var job in Model)
+    {
+        <tr>
+            <td>@job.Title</td>
+            <td>@job.PostedByName</td>
+            <td>@job.Category</td>
+            <td>@job.Location</td>
+            <td>@job.PostedDate.ToShortDateString()</td>
+            <td>
+                <a href="/Admin/Approve/@job.Id" class="btn btn-success btn-sm">Approve</a>
+                <a href="/Admin/Reject/@job.Id" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Reject</a>
+            </td>
+        </tr>
+    }
+</table>

@@ -1,0 +1,18 @@
+@model JobBoardPlatform.Models.ApplyViewModel
+@{
+    ViewBag.Title = "Upload Resume";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2>Apply for Job</h2>
+
+@using (Html.BeginForm("Apply", "JobSeeker", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.HiddenFor(m => m.JobId)
+
+    <div class="form-group">
+        <label>Select Resume (PDF or DOCX):</label>
+        <input type="file" name="resume" accept=".pdf,.docx" class="form-control" required />
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">Apply</button>
+}

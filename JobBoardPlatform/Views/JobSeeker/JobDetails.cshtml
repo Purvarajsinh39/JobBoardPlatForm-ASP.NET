@@ -1,0 +1,23 @@
+@model JobBoardPlatform.Models.Job
+
+@{
+    ViewBag.Title = "Job Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@Model.Title</h2>
+
+<div class="mb-3">
+    <strong>Location:</strong> @Model.Location <br />
+    <strong>Category:</strong> @Model.Category <br />
+    <strong>Posted By:</strong> @Model.PostedByName <br />
+    <strong>Posted On:</strong> @Model.PostedDate.ToShortDateString()
+</div>
+
+<div class="mb-4">
+    <h4>Description</h4>
+    <p>@Model.Description</p>
+</div>
+
+<a href="@Url.Action("Apply", "JobSeeker", new { id = Model.Id })" class="btn btn-success">Apply Now</a>
+<a href="@Url.Action("Dashboard", "JobSeeker")" class="btn btn-secondary">Back</a>

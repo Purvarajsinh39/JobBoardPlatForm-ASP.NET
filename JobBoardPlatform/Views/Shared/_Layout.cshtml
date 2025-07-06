@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Job Board Platform</title>
+
+    <!-- ✅ BOOTSTRAP & JQUERY CDN -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+</head>
+<body>
+    <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+        <div class="container">
+            @Html.ActionLink("JobBoard", "Index", "Home", null, new { @class = "navbar-brand" })
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav mr-auto">
+                    <li>@Html.ActionLink("Home", "Index", "Home", null, new { @class = "nav-link" })</li>
+                    @if (Session["UserRole"] != null)
+                    {
+                        if (Session["UserRole"].ToString() == "Employer")
+                        {
+                            <li>@Html.ActionLink("Dashboard", "Dashboard", "Employer", null, new { @class = "nav-link" })</li>
+                            <li>@Html.ActionLink("Post Job", "CreateJob", "Employer", null, new { @class = "nav-link" })</li>
+                        }
+                        else if (Session["UserRole"].ToString() == "JobSeeker")
+                        {
+                            <li>@Html.ActionLink("Browse Jobs", "Dashboard", "JobSeeker", null, new { @class = "nav-link" })</li>
+                            <li>@Html.ActionLink("My Applications", "MyApplications", "JobSeeker", null, new { @class = "nav-link" })</li>
+                            <li>@Html.ActionLink("My Profile", "EditProfile", "JobSeeker", null, new { @class = "nav-link" })</li>
+
+                        }
+                        else if (Session["UserRole"].ToString() == "Admin")
+                        {
+                            <li>@Html.ActionLink("Admin Panel", "Dashboard", "Admin", null, new { @class = "nav-link" })</li>
+                            <li>@Html.ActionLink("Applications", "Applications", "Admin", null, new { @class = "nav-link" })</li>
+                            <li>@Html.ActionLink("All Applications", "ViewApplications", "Admin", null, new { @class = "nav-link" })</li>
+                        }
+
+                        <li>@Html.ActionLink("Logout", "Logout", "Account", null, new { @class = "nav-link text-danger" })</li>
+                    }
+                    else
+                    {
+                        <li>@Html.ActionLink("Login", "Login", "Account", null, new { @class = "nav-link" })</li>
+                        <li>@Html.ActionLink("Register", "Register", "Account", null, new { @class = "nav-link" })</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container body-content">
+        @RenderBody()
+        @if (Session["UserName"] != null)
+        {
+            <div style="margin-top:10px;">
+                <p>Welcome, <strong>@Session["UserName"]</strong>!</p>
+            </div>
+        }
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - Job Board Platform</p>
+        </footer>
+    </div>
+
+    <!-- ✅ SCRIPTS AT BOTTOM -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

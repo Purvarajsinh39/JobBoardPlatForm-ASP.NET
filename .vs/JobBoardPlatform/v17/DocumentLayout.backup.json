@@ -1,0 +1,154 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\Purvarajsinh\\OneDrive\\Desktop\\JobBoardPlatForm-main\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{B633AB90-E26A-42E2-AAB3-9A43357A18DF}|JobBoardPlatform\\JobBoardPlatform.csproj|C:\\Users\\Purvarajsinh\\OneDrive\\Desktop\\JobBoardPlatForm-main\\jobboardplatform\\views\\account\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B633AB90-E26A-42E2-AAB3-9A43357A18DF}|JobBoardPlatform\\JobBoardPlatform.csproj|solutionrelative:jobboardplatform\\views\\account\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B633AB90-E26A-42E2-AAB3-9A43357A18DF}|JobBoardPlatform\\JobBoardPlatform.csproj|c:\\users\\purvarajsinh\\onedrive\\desktop\\jobboardplatform-main\\jobboardplatform\\views\\jobseeker\\dashboard.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B633AB90-E26A-42E2-AAB3-9A43357A18DF}|JobBoardPlatform\\JobBoardPlatform.csproj|solutionrelative:jobboardplatform\\views\\jobseeker\\dashboard.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B633AB90-E26A-42E2-AAB3-9A43357A18DF}|JobBoardPlatform\\JobBoardPlatform.csproj|c:\\users\\purvarajsinh\\onedrive\\desktop\\jobboardplatform-main\\jobboardplatform\\controllers\\jobseekercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B633AB90-E26A-42E2-AAB3-9A43357A18DF}|JobBoardPlatform\\JobBoardPlatform.csproj|solutionrelative:jobboardplatform\\controllers\\jobseekercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B633AB90-E26A-42E2-AAB3-9A43357A18DF}|JobBoardPlatform\\JobBoardPlatform.csproj|c:\\users\\purvarajsinh\\onedrive\\desktop\\jobboardplatform-main\\jobboardplatform\\views\\jobseeker\\jobdetails.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B633AB90-E26A-42E2-AAB3-9A43357A18DF}|JobBoardPlatform\\JobBoardPlatform.csproj|solutionrelative:jobboardplatform\\views\\jobseeker\\jobdetails.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B633AB90-E26A-42E2-AAB3-9A43357A18DF}|JobBoardPlatform\\JobBoardPlatform.csproj|c:\\users\\purvarajsinh\\onedrive\\desktop\\jobboardplatform-main\\jobboardplatform\\views\\admin\\viewapplications.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B633AB90-E26A-42E2-AAB3-9A43357A18DF}|JobBoardPlatform\\JobBoardPlatform.csproj|solutionrelative:jobboardplatform\\views\\admin\\viewapplications.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B633AB90-E26A-42E2-AAB3-9A43357A18DF}|JobBoardPlatform\\JobBoardPlatform.csproj|C:\\Users\\Purvarajsinh\\OneDrive\\Desktop\\JobBoardPlatForm-main\\jobboardplatform\\views\\admin\\applications.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B633AB90-E26A-42E2-AAB3-9A43357A18DF}|JobBoardPlatform\\JobBoardPlatform.csproj|solutionrelative:jobboardplatform\\views\\admin\\applications.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B633AB90-E26A-42E2-AAB3-9A43357A18DF}|JobBoardPlatform\\JobBoardPlatform.csproj|C:\\Users\\Purvarajsinh\\OneDrive\\Desktop\\JobBoardPlatForm-main\\jobboardplatform\\controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B633AB90-E26A-42E2-AAB3-9A43357A18DF}|JobBoardPlatform\\JobBoardPlatform.csproj|solutionrelative:jobboardplatform\\controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B633AB90-E26A-42E2-AAB3-9A43357A18DF}|JobBoardPlatform\\JobBoardPlatform.csproj|C:\\Users\\Purvarajsinh\\OneDrive\\Desktop\\JobBoardPlatForm-main\\jobboardplatform\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B633AB90-E26A-42E2-AAB3-9A43357A18DF}|JobBoardPlatform\\JobBoardPlatform.csproj|solutionrelative:jobboardplatform\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Login.cshtml",
+              "DocumentMoniker": "C:\\Users\\Purvarajsinh\\OneDrive\\Desktop\\JobBoardPlatForm-main\\JobBoardPlatform\\Views\\Account\\Login.cshtml",
+              "RelativeDocumentMoniker": "JobBoardPlatform\\Views\\Account\\Login.cshtml",
+              "ToolTip": "C:\\Users\\Purvarajsinh\\OneDrive\\Desktop\\JobBoardPlatForm-main\\JobBoardPlatform\\Views\\Account\\Login.cshtml",
+              "RelativeToolTip": "JobBoardPlatform\\Views\\Account\\Login.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-06-30T08:50:30.799Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "JobSeekerController.cs",
+              "DocumentMoniker": "C:\\Users\\Purvarajsinh\\OneDrive\\Desktop\\JobBoardPlatForm-main\\JobBoardPlatform\\Controllers\\JobSeekerController.cs",
+              "RelativeDocumentMoniker": "JobBoardPlatform\\Controllers\\JobSeekerController.cs",
+              "ToolTip": "C:\\Users\\Purvarajsinh\\OneDrive\\Desktop\\JobBoardPlatForm-main\\JobBoardPlatform\\Controllers\\JobSeekerController.cs",
+              "RelativeToolTip": "JobBoardPlatform\\Controllers\\JobSeekerController.cs",
+              "ViewState": "AgIAAA0AAAAAAAAAAAA4wDIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-06T11:35:11.043Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "JobDetails.cshtml",
+              "DocumentMoniker": "C:\\Users\\Purvarajsinh\\OneDrive\\Desktop\\JobBoardPlatForm-main\\JobBoardPlatform\\Views\\JobSeeker\\JobDetails.cshtml",
+              "RelativeDocumentMoniker": "JobBoardPlatform\\Views\\JobSeeker\\JobDetails.cshtml",
+              "ToolTip": "C:\\Users\\Purvarajsinh\\OneDrive\\Desktop\\JobBoardPlatForm-main\\JobBoardPlatform\\Views\\JobSeeker\\JobDetails.cshtml",
+              "RelativeToolTip": "JobBoardPlatform\\Views\\JobSeeker\\JobDetails.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-07-06T11:35:04.173Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Dashboard.cshtml",
+              "DocumentMoniker": "C:\\Users\\Purvarajsinh\\OneDrive\\Desktop\\JobBoardPlatForm-main\\JobBoardPlatform\\Views\\JobSeeker\\Dashboard.cshtml",
+              "RelativeDocumentMoniker": "JobBoardPlatform\\Views\\JobSeeker\\Dashboard.cshtml",
+              "ToolTip": "C:\\Users\\Purvarajsinh\\OneDrive\\Desktop\\JobBoardPlatForm-main\\JobBoardPlatform\\Views\\JobSeeker\\Dashboard.cshtml",
+              "RelativeToolTip": "JobBoardPlatform\\Views\\JobSeeker\\Dashboard.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABkAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-07-06T11:34:04.147Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Applications.cshtml",
+              "DocumentMoniker": "C:\\Users\\Purvarajsinh\\OneDrive\\Desktop\\JobBoardPlatForm-main\\JobBoardPlatform\\Views\\Admin\\Applications.cshtml",
+              "RelativeDocumentMoniker": "JobBoardPlatform\\Views\\Admin\\Applications.cshtml",
+              "ToolTip": "C:\\Users\\Purvarajsinh\\OneDrive\\Desktop\\JobBoardPlatForm-main\\JobBoardPlatform\\Views\\Admin\\Applications.cshtml",
+              "RelativeToolTip": "JobBoardPlatform\\Views\\Admin\\Applications.cshtml",
+              "ViewState": "AgIAAA0AAAAAAAAAAAAgwC0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-07-02T09:15:32.335Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "_Layout.cshtml",
+              "DocumentMoniker": "C:\\Users\\Purvarajsinh\\OneDrive\\Desktop\\JobBoardPlatForm-main\\JobBoardPlatform\\Views\\Shared\\_Layout.cshtml",
+              "RelativeDocumentMoniker": "JobBoardPlatform\\Views\\Shared\\_Layout.cshtml",
+              "ToolTip": "C:\\Users\\Purvarajsinh\\OneDrive\\Desktop\\JobBoardPlatForm-main\\JobBoardPlatform\\Views\\Shared\\_Layout.cshtml",
+              "RelativeToolTip": "JobBoardPlatform\\Views\\Shared\\_Layout.cshtml",
+              "ViewState": "AgIAAAgAAAAAAAAAAAAgwCMAAACJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-07-02T09:09:42.736Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "ViewApplications.cshtml",
+              "DocumentMoniker": "C:\\Users\\Purvarajsinh\\OneDrive\\Desktop\\JobBoardPlatForm-main\\JobBoardPlatform\\Views\\Admin\\ViewApplications.cshtml",
+              "RelativeDocumentMoniker": "JobBoardPlatform\\Views\\Admin\\ViewApplications.cshtml",
+              "ToolTip": "C:\\Users\\Purvarajsinh\\OneDrive\\Desktop\\JobBoardPlatForm-main\\JobBoardPlatform\\Views\\Admin\\ViewApplications.cshtml",
+              "RelativeToolTip": "JobBoardPlatform\\Views\\Admin\\ViewApplications.cshtml",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAiwCcAAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-07-02T09:09:16.325Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "AdminController.cs",
+              "DocumentMoniker": "C:\\Users\\Purvarajsinh\\OneDrive\\Desktop\\JobBoardPlatForm-main\\JobBoardPlatform\\Controllers\\AdminController.cs",
+              "RelativeDocumentMoniker": "JobBoardPlatform\\Controllers\\AdminController.cs",
+              "ToolTip": "C:\\Users\\Purvarajsinh\\OneDrive\\Desktop\\JobBoardPlatForm-main\\JobBoardPlatform\\Controllers\\AdminController.cs",
+              "RelativeToolTip": "JobBoardPlatform\\Controllers\\AdminController.cs",
+              "ViewState": "AgIAAGsAAAAAAAAAAAAqwIoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-02T09:08:30.021Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

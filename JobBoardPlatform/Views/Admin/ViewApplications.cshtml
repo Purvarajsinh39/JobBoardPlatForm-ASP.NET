@@ -1,0 +1,47 @@
+@model List<JobBoardPlatform.Models.Application>
+
+@{
+    ViewBag.Title = "All Applications";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>All Applications</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Candidate</th>
+            <th>Job Title</th>
+            <th>Employer</th>
+            <th>Applied Date</th>
+            <th>Status</th>
+            <th>Resume</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var app in Model)
+        {
+            <tr>
+                <td>@app.CandidateName</td>
+                <td>@app.JobTitle</td>
+                <td>@app.EmployerName</td>
+                <td>@app.AppliedDate.ToShortDateString()</td>
+                <td>
+                    <span class="badge @(app.Status == "Approved" ? "bg-success" : app.Status == "Rejected" ? "bg-danger" : "bg-secondary")">
+                        @app.Status
+                    </span>
+                </td>
+                <td>
+                    @if (!string.IsNullOrEmpty(app.ResumePath))
+                    {
+                        <a href="@Url.Content(app.ResumePath)" class="btn btn-sm btn-primary" download>Download</a>
+                    }
+                    else
+                    {
+                        <span class="text-muted">No Resume</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,14 @@
+@model JobBoardPlatform.Models.Job
+@{
+    ViewBag.Title = "Post a Job";
+}
+<h2>Post New Job</h2>
+
+@using (Html.BeginForm())
+{
+    <p>@Html.LabelFor(m => m.Title) @Html.TextBoxFor(m => m.Title)</p>
+    <p>@Html.LabelFor(m => m.Description) @Html.TextAreaFor(m => m.Description)</p>
+    <p>@Html.LabelFor(m => m.Category) @Html.TextBoxFor(m => m.Category)</p>
+    <p>@Html.LabelFor(m => m.Location) @Html.TextBoxFor(m => m.Location)</p>
+    <button type="submit">Post Job</button>
+}

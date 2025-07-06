@@ -1,0 +1,29 @@
+@model List<JobBoardPlatform.Models.Job>
+@{
+    ViewBag.Title = "Employer Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>My Posted Jobs</h2>
+
+<table class="table table-bordered">
+    <tr>
+        <th>Title</th>
+        <th>Location</th>
+        <th>Posted Date</th>
+        <th>Approval Status</th>
+        <th>Actions</th>
+    </tr>
+    @foreach (var job in Model)
+    {
+        <tr>
+            <td>@job.Title</td>
+            <td>@job.Location</td>
+            <td>@job.PostedDate.ToShortDateString()</td>
+            <td>@(job.IsApproved ? "Approved" : "Pending")</td>
+            <td>
+                <a href="/Employer/ViewApplications/@job.Id" class="btn btn-info btn-sm">View Applications</a>
+            </td>
+        </tr>
+    }
+</table>

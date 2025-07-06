@@ -1,0 +1,53 @@
+@model List<JobBoardPlatform.Models.Job>
+
+@{
+    ViewBag.Title = "Browse Jobs";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Available Jobs</h2>
+
+@using (Html.BeginForm("Dashboard", "JobSeeker", FormMethod.Get))
+{
+    <div class="form-row mb-3">
+        <div class="col-md-3">
+            <input type="text" name="search" class="form-control" placeholder="Search by title" />
+        </div>
+        <div class="col-md-3">
+            <input type="text" name="category" class="form-control" placeholder="Filter by category" />
+        </div>
+        <div class="col-md-3">
+            <input type="text" name="location" class="form-control" placeholder="Filter by location" />
+        </div>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-primary btn-block">Search</button>
+        </div>
+    </div>
+}
+<br />
+
+@if (TempData["Msg"] != null)
+{
+    <p class="text-success">@TempData["Msg"]</p>
+}
+
+<table class="table table-bordered">
+    <tr>
+        <th>Title</th>
+        <th> Category</th>
+        <th>Location</th>
+        <th>Description</th>
+        @*<th>Apply</th>*@
+    </tr>
+    @foreach (var job in Model)
+    {
+        <tr>
+            <td>@job.Title</td>
+            <td>@job.Category</td>
+            <td>@job.Location</td>
+            <td>
+                <a href="@Url.Action("JobDetails", "JobSeeker", new { id = job.Id })" class="btn btn-sm btn-info">View</a>
+            </td>
+        </tr>
+    }
+</table>
