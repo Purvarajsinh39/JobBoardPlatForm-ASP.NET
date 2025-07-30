@@ -1,0 +1,159 @@
+@model JobBoardPlatform.Models.Job
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>@Model.Title - Job PDF</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .pdf-wrapper {
+            padding: 40px 60px;
+            position: relative;
+            min-height: 1000px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            max-height: 50px;
+            margin-bottom: 10px; /* Reduced margin-bottom as it was pushing things down */
+            margin-top: -95px; /* This will move the logo up by 50 pixels */
+            float: right;
+            margin-left: 20px;
+        }
+
+
+        .company-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .job-title {
+            font-size: 26px;
+            color: #2980b9;
+            margin-top: 40px;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .job-image {
+            max-height: 250px;
+            display: block;
+            margin: 20px auto;
+            border-radius: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+            font-size: 16px;
+        }
+
+        td, th {
+            border: 1px solid #ccc;
+            padding: 12px 15px;
+        }
+
+        th {
+            background-color: #f7f7f7;
+            text-align: left;
+        }
+
+        .signature-section {
+            margin-top: 100px;
+            font-size: 16px;
+        }
+
+        .signature-line {
+            margin-top: 60px;
+            border-top: 1px solid #999;
+            width: 250px;
+        }
+
+        .signature-label {
+            margin-top: 5px;
+            color: #555;
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 25px;
+            left: 0;
+            right: 0;
+            font-size: 13px;
+            color: #777;
+            text-align: center;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="pdf-wrapper">
+        <!-- Header -->
+        <div class="header">
+            <img src="~/Content/Images/company_logo.png" class="logo" alt="Company Logo" />
+            <div class="company-name">JobBoard Platform Pvt. Ltd.</div>
+        </div>
+
+        <!-- Title -->
+        <div class="job-title">@Model.Title</div>
+
+        <!-- Image -->
+        @{
+            string jobImagePath = !string.IsNullOrEmpty(Model.ImagePath)
+                ? Server.MapPath(Model.ImagePath)
+                : Server.MapPath("~/Content/Images/default-job.png");
+
+            if (System.IO.File.Exists(jobImagePath))
+            {
+                <img src="@jobImagePath" class="job-image" alt="Job Image" />
+            }
+        }
+
+        <!-- Job Details -->
+        <table>
+            <tr>
+                <th>Category</th>
+                <td>@Model.Category</td>
+            </tr>
+            <tr>
+                <th>Location</th>
+                <td>@Model.Location</td>
+            </tr>
+            <tr>
+                <th>Posted Date</th>
+                <td>@Model.PostedDate.ToString("dd MMMM yyyy")</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>@Model.Description</td>
+            </tr>
+        </table>
+
+        <!-- Signature Section -->
+        <div class="signature-section">
+            <div class="signature-line"></div>
+            <div class="signature-label">Authorized Signature</div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        Employer: <strong>@Model.PostedByName</strong> &nbsp; | &nbsp;
+        PDF Generated: @DateTime.Now.ToString("dd MMMM yyyy hh:mm tt")
+    </div>
+</body>
+</html>

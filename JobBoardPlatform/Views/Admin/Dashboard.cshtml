@@ -1,30 +1,116 @@
-@model List<JobBoardPlatform.Models.Job>
-@{
-    ViewBag.Title = "Admin - Pending Jobs";
-}
-<h2>Pending Jobs</h2>
+﻿@model JobBoardPlatform.Models.AdminDashboardViewModel
 
-<table class="table table-bordered">
-    <tr>
-        <th>Title</th>
-        <th>Employer</th>
-        <th>Category</th>
-        <th>Location</th>
-        <th>Posted Date</th>
-        <th>Action</th>
-    </tr>
-    @foreach (var job in Model)
-    {
-        <tr>
-            <td>@job.Title</td>
-            <td>@job.PostedByName</td>
-            <td>@job.Category</td>
-            <td>@job.Location</td>
-            <td>@job.PostedDate.ToShortDateString()</td>
-            <td>
-                <a href="/Admin/Approve/@job.Id" class="btn btn-success btn-sm">Approve</a>
-                <a href="/Admin/Reject/@job.Id" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Reject</a>
-            </td>
-        </tr>
+@{
+    ViewBag.Title = "Admin Dashboard";
+}
+
+
+<style>
+    @@keyframes scale-up-center-normal {
+        0% {
+            transform: scale(0.5);
+        }
+
+        100% {
+            transform: scale(1);
+        }
     }
-</table>
+
+    .card-body-animated {
+        animation: scale-up-center-normal 1s cubic-bezier(0.445, 0.050, 0.550, 0.950) 0s 1 normal none;
+    }
+</style>
+<h2>Admin Dashboard</h2>
+
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-4 card-body-animated" >
+            <div class="card bg-primary text-white shadow">
+                <div class="card-body">
+                    Total Jobs
+                    <div class="display-4">@Model.TotalJobs</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 card-body-animated">
+            <div class="card bg-success text-white shadow">
+                <div class="card-body">
+                    Approved Applications
+                    <div class="display-4">@Model.ApprovedApplications</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 card-body-animated">
+            <div class="card bg-danger text-white shadow">
+                <div class="card-body">
+                    Rejected Applications
+                    <div class="display-4">@Model.RejectedApplications</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 card-body-animated">
+            <div class="card bg-warning text-white shadow">
+                <div class="card-body">
+                    Pending Jobs
+                    <div class="display-4">@Model.PendingJobs.Count</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 card-body-animated">
+            <div class="card bg-info text-white shadow">
+                <div class="card-body">
+                    Total Applications
+                    <div class="display-4">@Model.TotalApplications</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 card-body-animated">
+            <div class="card bg-secondary text-white shadow">
+                <div class="card-body">
+                    Total Employers
+                    <div class="display-4">@Model.TotalEmployers</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br>
+@*<h4>Pending Job Approvals</h4><br>
+<a href="@Url.Action("DownloadJobsExcel", "Admin")" class="btn btn-success">
+    📥 Download All Jobs (Excel)
+</a>
+<br><br>
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Category</th>
+            <th>Location</th>
+            <th>Posted Date</th>
+            <th>Posted By</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var job in Model.PendingJobs)
+        {
+            <tr>
+                <td>@job.Title</td>
+                <td>@job.Description</td>
+                <td>@job.Category</td>
+                <td>@job.Location</td>
+                <td>@job.PostedDate.ToString("dd-MM-yyyy")</td>
+                <td>@job.PostedByName</td>
+                <td>
+                    <a href="@Url.Action("Approve", "Admin", new { id = job.Id })" class="btn btn-success btn-sm">Approve</a>
+                    <a href="@Url.Action("Reject", "Admin", new { id = job.Id })" class="btn btn-danger btn-sm">Reject</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>*@

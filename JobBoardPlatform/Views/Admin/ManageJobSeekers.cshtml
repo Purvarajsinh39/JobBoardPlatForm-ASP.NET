@@ -1,0 +1,46 @@
+@model List<JobBoardPlatform.Models.User>
+@{
+    ViewBag.Title = "Manage Job Seekers";
+}
+
+<h2>Manage Job Seekers</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Blocked</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var seeker in Model)
+        {
+            <tr>
+                <td>@seeker.Name</td>
+                <td>@seeker.Email</td>
+                <td>
+                    @if (seeker.IsBlocked)
+                    {
+                        <span class="badge bg-danger">Blocked</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-success">Active</span>
+                    }
+                </td>
+                <td>
+                    @if (seeker.IsBlocked)
+                    {
+                        <a href="@Url.Action("UnblockUser", "Admin", new { id = seeker.Id })" class="btn btn-sm btn-success">Unblock</a>
+                    }
+                    else
+                    {
+                        <a href="@Url.Action("BlockUser", "Admin", new { id = seeker.Id })" class="btn btn-sm btn-danger">Block</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

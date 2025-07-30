@@ -24,6 +24,15 @@ public class AccountController : Controller
             SqlDataReader dr = cmd.ExecuteReader();
             if (dr.Read())
             {
+                // ✅ Check if the user is blocked
+                bool isBlocked = Convert.ToBoolean(dr["IsBlocked"]);
+                if (isBlocked)
+                {
+                    ViewBag.Error = "Your account has been blocked by the admin.";
+                    return View(); // Show error on login page
+                }
+
+                // ✅ Normal login session setup
                 Session["UserId"] = dr["Id"].ToString();
                 Session["UserName"] = dr["Name"].ToString();
                 Session["UserRole"] = dr["Role"].ToString();
@@ -32,9 +41,11 @@ public class AccountController : Controller
                 return RedirectToAction("Dashboard", role);
             }
         }
+
         ViewBag.Error = "Invalid credentials!";
         return View();
     }
+
 
 
     public ActionResult Register() => View();

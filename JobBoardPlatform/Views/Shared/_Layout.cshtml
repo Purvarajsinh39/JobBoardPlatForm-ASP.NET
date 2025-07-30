@@ -7,21 +7,72 @@
 
     <!-- ✅ BOOTSTRAP & JQUERY CDN -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+
 </head>
+<style>
+
+    .container-btn-download {
+        display: flex;
+        position: relative;
+        justify-content: center;
+        align-items: center;
+        background-color: #307750;
+        color: #fff;
+        border-style: none;
+        padding: 1em 2em;
+        border-radius: 0.5em;
+        overflow: hidden;
+        z-index: 1;
+        box-shadow: 4px 8px 10px -3px rgba(0, 0, 0, 0.356);
+        transition: all 250ms;
+        text-decoration: none; /* Remove underline from the link */
+        width: 20%;
+    }
+
+        .container-btn-download:hover {
+            color: #fff; /* Ensures white text on hover */
+            text-decoration: none; /* Prevents underline on hover */
+        }
+
+        .container-btn-download > svg {
+            margin-right: 1em;
+        }
+
+        .container-btn-download::before {
+            content: "";
+            position: absolute;
+            height: 100%;
+            width: 0;
+            border-radius: 0.5em;
+            background-color: #469b61;
+            z-index: -1;
+            transition: all 350ms;
+        }
+
+        .container-btn-download:hover::before {
+            width: 100%;
+        }
+</style>
 <body>
     <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
         <div class="container">
             @Html.ActionLink("JobBoard", "Index", "Home", null, new { @class = "navbar-brand" })
-            <div class="collapse navbar-collapse">
+            <div class="collapse navbar-collapse" id="navbarCollapse">
                 <ul class="navbar-nav mr-auto">
-                    <li>@Html.ActionLink("Home", "Index", "Home", null, new { @class = "nav-link" })</li>
+                    @*<li>@Html.ActionLink("Home", "Index", "Home", null, new { @class = "nav-link" })</li>*@
                     @if (Session["UserRole"] != null)
                     {
                         if (Session["UserRole"].ToString() == "Employer")
                         {
                             <li>@Html.ActionLink("Dashboard", "Dashboard", "Employer", null, new { @class = "nav-link" })</li>
+                            <li>@Html.ActionLink("ManageJobs", "ManageJobs", "Employer", null, new { @class = "nav-link" })</li>
                             <li>@Html.ActionLink("Post Job", "CreateJob", "Employer", null, new { @class = "nav-link" })</li>
+                            <li>@Html.ActionLink("Shortlisted", "ShortlistedCandidates", "Employer", null, new { @class = "nav-link" })</li>
+                            <li>@Html.ActionLink("My Profile", "ViewProfile", "Employer", null, new { @class = "nav-link" })</li>
+                            <li>@Html.ActionLink("All Applications", "ViewAllApplications", "Employer", null, new { @class = "nav-link" })</li>
                         }
+
                         else if (Session["UserRole"].ToString() == "JobSeeker")
                         {
                             <li>@Html.ActionLink("Browse Jobs", "Dashboard", "JobSeeker", null, new { @class = "nav-link" })</li>
@@ -34,6 +85,17 @@
                             <li>@Html.ActionLink("Admin Panel", "Dashboard", "Admin", null, new { @class = "nav-link" })</li>
                             <li>@Html.ActionLink("Applications", "Applications", "Admin", null, new { @class = "nav-link" })</li>
                             <li>@Html.ActionLink("All Applications", "ViewApplications", "Admin", null, new { @class = "nav-link" })</li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("ManageJobs", "Admin")">Manage Jobs</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("ViewEmployers", "Admin")">Manage Employers</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("ManageJobSeekers", "Admin")">Manage Job Seekers</a>
+                            </li>
+
                         }
 
                         <li>@Html.ActionLink("Logout", "Logout", "Account", null, new { @class = "nav-link text-danger" })</li>
@@ -65,6 +127,17 @@
     <!-- ✅ SCRIPTS AT BOTTOM -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+
+
     @RenderSection("scripts", required: false)
+    @section scripts {
+        <script>
+            $(function () {
+                $('[data-toggle="tooltip"]').tooltip()
+            });
+        </script>
+    }
+
 </body>
 </html>

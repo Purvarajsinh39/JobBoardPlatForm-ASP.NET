@@ -1,53 +1,81 @@
-@model List<JobBoardPlatform.Models.Job>
+@model IEnumerable<JobBoardPlatform.Models.Job>
 
 @{
-    ViewBag.Title = "Browse Jobs";
+    ViewBag.Title = "Available Jobs";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Available Jobs</h2>
-
+<h2 class="mb-4">Available Jobs</h2>
 @using (Html.BeginForm("Dashboard", "JobSeeker", FormMethod.Get))
 {
     <div class="form-row mb-3">
-        <div class="col-md-3">
+        <div class="col-md-2">
             <input type="text" name="search" class="form-control" placeholder="Search by title" />
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
             <input type="text" name="category" class="form-control" placeholder="Filter by category" />
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
             <input type="text" name="location" class="form-control" placeholder="Filter by location" />
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
+            <select name="sort" class="form-control">
+                <option value="">Sort By</option>
+                <option value="latest">Posted Date (Latest)</option>
+                <option value="title_asc">Title A-Z</option>
+                <option value="title_desc">Title Z-A</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select name="date" class="form-control">
+                <option value="">All Dates</option>
+                <option value="today">Today</option>
+                <option value="week">This Week</option>
+                <option value="month">This Month</option>
+            </select>
+        </div>
+        <div class="col-md-2">
             <button type="submit" class="btn btn-primary btn-block">Search</button>
         </div>
     </div>
 }
+
 <br />
 
-@if (TempData["Msg"] != null)
-{
-    <p class="text-success">@TempData["Msg"]</p>
-}
-
-<table class="table table-bordered">
-    <tr>
-        <th>Title</th>
-        <th> Category</th>
-        <th>Location</th>
-        <th>Description</th>
-        @*<th>Apply</th>*@
-    </tr>
+<div class="row">
     @foreach (var job in Model)
     {
-        <tr>
-            <td>@job.Title</td>
-            <td>@job.Category</td>
-            <td>@job.Location</td>
-            <td>
-                <a href="@Url.Action("JobDetails", "JobSeeker", new { id = job.Id })" class="btn btn-sm btn-info">View</a>
-            </td>
-        </tr>
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100 rounded-4">
+                @if (!string.IsNullOrEmpty(job.ImagePath))
+                {
+                    <img src="@Url.Content(job.ImagePath)" class="card-img-top rounded-top-4" alt="Job Image" style="height: 200px; object-fit: cover;" />
+                }
+                else
+                {
+                    <img src="~/Content/Images/default-job.png" class="card-img-top rounded-top-4" alt="No Image" style="height: 200px; object-fit: cover;" />
+                }
+
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">
+                        @job.Title
+                        <span class="badge bg-info">@job.Category</span>
+                    </h5>
+                    <p class="card-text text-muted mb-2">
+                    <p class="card-text mb-1"><strong>Employer:</strong> @job.PostedByName</p>
+                    <p class="card-text mb-1"><strong>Category:</strong> @job.Category</p>
+                    <p class="card-text mb-1"><strong>Location:</strong> @job.Location</p>
+                    <p class="card-text mb-2">
+                        <strong>Description:</strong> @job.Description.Substring(0, Math.Min(job.Description.Length, 60))...
+                    </p>
+                    <p class="text-muted" style="font-size: 0.85rem;">
+                        Posted on @job.PostedDate.ToShortDateString()
+                    </p>
+                    </p>
+
+                    <a href="@Url.Action("JobDetails", "JobSeeker", new { id = job.Id })" class="btn btn-primary mt-auto">View Details</a>
+                </div>
+            </div>
+        </div>
     }
-</table>
+</div>

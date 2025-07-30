@@ -1,14 +1,38 @@
 @model JobBoardPlatform.Models.Job
+
 @{
     ViewBag.Title = "Post a Job";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<h2>Post New Job</h2>
 
-@using (Html.BeginForm())
+<h2>Post a Job</h2>
+
+@using (Html.BeginForm("PostJob", "Employer", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
-    <p>@Html.LabelFor(m => m.Title) @Html.TextBoxFor(m => m.Title)</p>
-    <p>@Html.LabelFor(m => m.Description) @Html.TextAreaFor(m => m.Description)</p>
-    <p>@Html.LabelFor(m => m.Category) @Html.TextBoxFor(m => m.Category)</p>
-    <p>@Html.LabelFor(m => m.Location) @Html.TextBoxFor(m => m.Location)</p>
-    <button type="submit">Post Job</button>
+    <div class="form-group">
+        <label>Title</label>
+        @Html.TextBoxFor(model => model.Title, new { @class = "form-control" })
+    </div>
+
+    <div class="form-group">
+        <label>Description</label>
+        @Html.TextAreaFor(model => model.Description, new { @class = "form-control", rows = 4 })
+    </div>
+
+    <div class="form-group">
+        <label>Category</label>
+        @Html.TextBoxFor(model => model.Category, new { @class = "form-control" })
+    </div>
+
+    <div class="form-group">
+        <label>Location</label>
+        @Html.TextBoxFor(model => model.Location, new { @class = "form-control" })
+    </div>
+
+    <div class="form-group">
+        <label>Upload Company Image (Optional)</label>
+        <input type="file" name="ImageFile" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit Job</button>
 }

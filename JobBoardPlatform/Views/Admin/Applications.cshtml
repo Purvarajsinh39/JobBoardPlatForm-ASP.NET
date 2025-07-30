@@ -1,16 +1,15 @@
 @model List<JobBoardPlatform.Models.Application>
 
 @{
-    ViewBag.Title = "Pending Applications";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Pending Job Applications";
 }
 
-<h2>Pending Applications</h2>
+<h2>Pending Applications (Status = Applied)</h2>
 
-<table class="table table-bordered">
+<table class="table table-bordered table-striped">
     <thead>
         <tr>
-            <th>Candidate</th>
+            <th>Candidate Name</th>
             <th>Job Title</th>
             <th>Employer</th>
             <th>Applied Date</th>
@@ -25,18 +24,16 @@
                 <td>@app.CandidateName</td>
                 <td>@app.JobTitle</td>
                 <td>@app.EmployerName</td>
-                <td>@app.AppliedDate.ToShortDateString()</td>
-                <td>
-                    <span class="badge bg-warning text-dark">@app.Status</span>
-                </td>
+                <td>@app.AppliedDate.ToString("dd-MM-yyyy")</td>
+                <td><span class="badge badge-warning">@app.Status</span></td>
                 <td>
                     @if (!string.IsNullOrEmpty(app.ResumePath))
                     {
-                        <a href="@Url.Content(app.ResumePath)" class="btn btn-sm btn-success" download>Download</a>
+                        <a href="@Url.Content(app.ResumePath)" class="btn btn-sm btn-primary" download>Download</a>
                     }
                     else
                     {
-                        <span class="text-danger">No Resume</span>
+                        <span class="text-muted">No Resume</span>
                     }
                 </td>
             </tr>

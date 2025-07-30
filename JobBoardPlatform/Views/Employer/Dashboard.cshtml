@@ -1,29 +1,140 @@
-@model List<JobBoardPlatform.Models.Job>
+﻿@model List<JobBoardPlatform.Models.Job>
+
 @{
     ViewBag.Title = "Employer Dashboard";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>My Posted Jobs</h2>
+
+<style>
+    @@keyframes scale-up-center-normal {
+        0% {
+            transform: scale(0.5);
+        }
+        100% { transform: scale(1); }
+    }
+
+    .card-body-animated {
+        animation: scale-up-center-normal 1s cubic-bezier(0.445, 0.050, 0.550, 0.950) 0s 1 normal none;
+    }
+</style>
+<h2 class="mb-4">Your Posted Jobs</h2>
+<!-- 🔹 Row 1: Total Jobs, Approved Jobs, Total Applications -->
+<div class="row mb-4" >
+    <div class="col-md-4  card-body-animated">
+        <div class="card text-white bg-primary shadow">
+            <div class="card-body">
+                <h6 class="card-title">Total Jobs</h6>
+                <h4>@ViewBag.TotalJobs</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4  card-body-animated" >
+        <div class="card text-white bg-success shadow">
+            <div class="card-body">
+                <h6 class="card-title">Approved Jobs</h6>
+                <h4>@ViewBag.ApprovedJobs</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4  card-body-animated">
+        <div class="card text-white bg-info shadow">
+            <div class="card-body">
+                <h6 class="card-title">Total Applications</h6>
+                <h4>@ViewBag.TotalApplications</h4>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 🔸 Row 2: Pending, Approved, Rejected Applications -->
+<div class="row mb-4">
+    <div class="col-md-4  card-body-animated">
+        <div class="card text-white bg-warning shadow">
+            <div class="card-body">
+                <h6 class="card-title">Pending Applications</h6>
+                <h4>@ViewBag.PendingApplications</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4  card-body-animated">
+        <div class="card text-white bg-success shadow">
+            <div class="card-body">
+                <h6 class="card-title">Approved Applications</h6>
+                <h4>@ViewBag.ApprovedApplications</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4  card-body-animated">
+        <div class="card text-white bg-danger shadow">
+            <div class="card-body">
+                <h6 class="card-title">Rejected Applications</h6>
+                <h4>@ViewBag.RejectedApplications</h4>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- 🔍 Search & Filter Form -->
+<!--<form method="get" class="form-inline mb-3">
+    <input type="text" name="searchTerm" class="form-control mr-2" placeholder="Search by title or category" value="@ViewBag.SearchTerm" />
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
 
 <table class="table table-bordered">
-    <tr>
-        <th>Title</th>
-        <th>Location</th>
-        <th>Posted Date</th>
-        <th>Approval Status</th>
-        <th>Actions</th>
-    </tr>
-    @foreach (var job in Model)
-    {
+    <thead class="thead-dark">
         <tr>
-            <td>@job.Title</td>
-            <td>@job.Location</td>
-            <td>@job.PostedDate.ToShortDateString()</td>
-            <td>@(job.IsApproved ? "Approved" : "Pending")</td>
-            <td>
-                <a href="/Employer/ViewApplications/@job.Id" class="btn btn-info btn-sm">View Applications</a>
-            </td>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Location</th>
+            <th>Posted Date</th>
+            <th>Status</th>
+            <th>Applications</th>
+            <th>Actions</th>
         </tr>
-    }
+    </thead>
+    <tbody>
+        @foreach (var job in Model)
+        {
+            <tr>
+                <td>@job.Title</td>
+                <td>@job.Category</td>
+                <td>@job.Location</td>
+                <td>@job.PostedDate.ToShortDateString()</td>
+                <td>
+                    <span class="badge @(job.IsApproved ? "bg-success" : "bg-warning")">
+                        @(job.IsApproved ? "Approved" : "Pending")
+                    </span>
+                </td>
+                <td>
+                    <strong>@job.ApplicationCount</strong> <small>Applicants</small>
+                </td>
+
+                <td>
+                    <a href="@Url.Action("EditJob", "Employer", new { id = job.Id })" class="btn btn-warning btn-sm">Edit</a>
+                    <a href="@Url.Action("JobDetails", "Employer", new { id = job.Id })" class="btn btn-info btn-sm">Details</a>
+                    <a href="@Url.Action("DeleteJob", "Employer", new { id = job.Id })" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this job?');">Delete</a>
+                    <a href="@Url.Action("ViewApplications", "Employer", new { id = job.Id })" class="btn btn-sm btn-secondary">Applications</a>
+                </td>
+            </tr>
+        }
+    </tbody>
 </table>
+<a href="@Url.Action("DownloadPostedJobsExcel", "Employer")" class="btn btn-success mb-3">
+    <i class="fa fa-download"></i> Download Jobs
+</a>-->
+

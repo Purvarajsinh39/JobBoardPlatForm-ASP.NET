@@ -6,23 +6,40 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Web;
 using System.Web.Mvc;
+using Rotativa;
 
 public class JobSeekerController : Controller
 {
     string conStr = ConfigurationManager.ConnectionStrings["JobBoardDB"].ConnectionString;
 
-    public ActionResult Dashboard(string search = "", string category = "", string location = "")
+    public ActionResult Dashboard(string search = "", string category = "", string location = "", string sort = "", string date = "")
     {
+        string dateCondition = "";
+        if (date == "today")
+            dateCondition = "AND CAST(J.PostedDate AS DATE) = CAST(GETDATE() AS DATE)";
+        else if (date == "week")
+            dateCondition = "AND J.PostedDate >= DATEADD(DAY, -7, GETDATE())";
+        else if (date == "month")
+            dateCondition = "AND J.PostedDate >= DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1)";
         List<Job> jobs = new List<Job>();
 
         using (SqlConnection con = new SqlConnection(conStr))
         {
-            string query = @"SELECT J.*, U.Name AS EmployerName FROM Jobs J 
-                         JOIN Users U ON J.PostedBy = U.Id 
-                         WHERE IsApproved = 1 
-                         AND (J.Title LIKE @Search OR @Search = '') 
-                         AND (J.Category LIKE @Category OR @Category = '') 
-                         AND (J.Location LIKE @Location OR @Location = '')";
+            string query = $@"
+    SELECT J.*, U.Name AS EmployerName FROM Jobs J 
+    JOIN Users U ON J.PostedBy = U.Id 
+    WHERE IsApproved = 1 
+    AND (J.Title LIKE @Search OR @Search = '') 
+    AND (J.Category LIKE @Category OR @Category = '') 
+    AND (J.Location LIKE @Location OR @Location = '') 
+    {dateCondition}";
+
+            if (sort == "latest")
+                query += " ORDER BY J.PostedDate DESC";
+            else if (sort == "title_asc")
+                query += " ORDER BY J.Title ASC";
+            else if (sort == "title_desc")
+                query += " ORDER BY J.Title DESC";
 
             SqlCommand cmd = new SqlCommand(query, con);
             cmd.Parameters.AddWithValue("@Search", "%" + search + "%");
@@ -41,8 +58,11 @@ public class JobSeekerController : Controller
                     Category = dr["Category"].ToString(),
                     Location = dr["Location"].ToString(),
                     PostedDate = (DateTime)dr["PostedDate"],
-                    PostedByName = dr["EmployerName"].ToString()
+                    PostedByName = dr["EmployerName"].ToString(),
+                    ImagePath = dr["ImagePath"]?.ToString()
                 });
+
+
             }
         }
 
@@ -213,6 +233,48 @@ public class JobSeekerController : Controller
         TempData["Msg"] = "Profile updated successfully!";
         return RedirectToAction("EditProfile");
     }
+
+    public ActionResult DownloadJobPdf(int id)
+    {
+        Job job = null;
+
+        using (SqlConnection con = new SqlConnection(conStr))
+        {
+            string query = @"SELECT J.*, U.Name as EmployerName FROM Jobs J
+                         JOIN Users U ON J.PostedBy = U.Id
+                         WHERE J.Id = @Id";
+
+            SqlCommand cmd = new SqlCommand(query, con);
+            cmd.Parameters.AddWithValue("@Id", id);
+            con.Open();
+            SqlDataReader dr = cmd.ExecuteReader();
+            if (dr.Read())
+            {
+                job = new Job
+                {
+                    Id = (int)dr["Id"],
+                    Title = dr["Title"].ToString(),
+                    Description = dr["Description"].ToString(),
+                    Category = dr["Category"].ToString(),
+                    Location = dr["Location"].ToString(),
+                    PostedDate = (DateTime)dr["PostedDate"],
+                    PostedByName = dr["EmployerName"].ToString(),
+                    ImagePath = dr["ImagePath"]?.ToString() // ✅ FIXED
+                };
+            }
+        }
+
+        if (job == null)
+            return HttpNotFound();
+
+        return new Rotativa.ViewAsPdf("JobPdf", job)
+        {
+            FileName = $"{job.Title}_Details.pdf",
+            PageSize = Rotativa.Options.Size.A4,
+            PageMargins = new Rotativa.Options.Margins { Top = 20, Bottom = 20 }
+        };
+    }
+
 
 
 }

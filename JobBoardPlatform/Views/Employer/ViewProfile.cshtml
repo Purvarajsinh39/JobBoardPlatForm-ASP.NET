@@ -1,0 +1,24 @@
+@model JobBoardPlatform.Models.User
+@{
+    ViewBag.Title = "My Profile";
+}
+
+<h2>My Profile</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+@using (Html.BeginForm())
+{
+    <div class="form-group">
+        @Html.LabelFor(m => m.Name)
+        @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Email)
+        @Html.TextBoxFor(m => m.Email, new { @class = "form-control", type = "email" })
+    </div>
+    <button type="submit" class="btn btn-primary">Update</button>
+}

@@ -1,11 +1,28 @@
-@model List<JobBoardPlatform.Models.Application>
+﻿@model List<JobBoardPlatform.Models.Application>
 
 @{
-    ViewBag.Title = "Applications for Job";
+    ViewBag.Title = "My Job Applications";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var jobId = ViewBag.JobId;
 }
 
-<h2>Applications</h2>
+<h2 class="mb-4">Applications for Your Job</h2>
+
+<!-- 🔍 Search Bar -->
+<!-- 🔍 Search & Filter -->
+<form method="get" class="form-inline mb-3">
+    <input type="text" name="searchTerm" class="form-control mr-2" placeholder="Search by candidate/job title" value="@Request["searchTerm"]" />
+
+    <select name="statusFilter" class="form-control mr-2">
+        <option value="">All Statuses</option>
+        <option value="Applied" @(Request["statusFilter"] == "Applied" ? "selected" : "")>Applied</option>
+        <option value="Approved" @(Request["statusFilter"] == "Approved" ? "selected" : "")>Approved</option>
+        <option value="Rejected" @(Request["statusFilter"] == "Rejected" ? "selected" : "")>Rejected</option>
+    </select>
+
+    <button type="submit" class="btn btn-primary">Filter</button>
+</form>
+
 
 <table class="table table-bordered">
     <thead>
@@ -19,52 +36,51 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var app in Model)
+        @if (Model != null && Model.Any())
         {
-            string candidate = app.CandidateName ?? "Unknown";
-            string job = app.JobTitle ?? "Unknown";
-
+            foreach (var app in Model)
+            {
+                <tr>
+                    <td>@app.CandidateName</td>
+                    <td>@app.JobTitle</td>
+                    <td>@app.AppliedDate.ToShortDateString()</td>
+                    <td>
+                        <span class="badge @(app.Status == "Approved" ? "bg-success" : app.Status == "Rejected" ? "bg-danger" : "bg-secondary")">
+                            @app.Status
+                        </span>
+                    </td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(app.ResumePath))
+                        {
+                            <a href="@Url.Content(app.ResumePath)" class="btn btn-sm btn-success" download>Download</a>
+                        }
+                        else
+                        {
+                            <span class="text-muted">No Resume</span>
+                        }
+                    </td>
+                    <td>
+                        @if (app.Status == "Applied")
+                        {
+                            <a href="@Url.Action("ApproveApplication", "Employer", new { id = app.Id, jobId = jobId })" class="btn btn-sm btn-success">Approve</a>
+                            <a href="@Url.Action("RejectApplication", "Employer", new { id = app.Id, jobId = jobId })" class="btn btn-sm btn-danger">Reject</a>
+                        }
+                        else
+                        {
+                            <span class="text-muted">-</span>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
             <tr>
-                <td>@candidate</td>
-                <td>@job</td>
-                <td>@app.AppliedDate.ToShortDateString()</td>
-                <td>
-                    <span class="badge @(app.Status == "Approved" ? "bg-success" : app.Status == "Rejected" ? "bg-danger" : "bg-secondary")">
-                        @app.Status
-                    </span>
-                </td>
-                <td>
-                    @if (!string.IsNullOrEmpty(app.ResumePath))
-                    {
-                        <a href="@Url.Content(app.ResumePath)" download class="btn btn-sm btn-success">Download</a>
-                    }
-                    else
-                    {
-                        <span class="text-danger">No Resume</span>
-                    }
-                </td>
-                <td>
-                    @if (app.Status == "Applied")
-                    {
-                        using (Html.BeginForm("UpdateApplicationStatus", "Employer", FormMethod.Post))
-                        {
-                            @Html.Hidden("applicationId", app.Id)
-                            @Html.Hidden("status", "Approved")
-                            <button type="submit" class="btn btn-sm btn-primary me-1">Approve</button><br><br>
-                        }
-                        using (Html.BeginForm("UpdateApplicationStatus", "Employer", FormMethod.Post))
-                        {
-                            @Html.Hidden("applicationId", app.Id)
-                            @Html.Hidden("status", "Rejected")
-                            <button type="submit" class="btn btn-sm btn-danger">Reject</button>
-                        }
-                    }
-                    else
-                    {
-                        <span class="text-muted">No Action</span>
-                    }
-                </td>
+                <td colspan="6" class="text-center text-danger">No applications found.</td>
             </tr>
         }
     </tbody>
 </table>
+<a href="@Url.Action("DownloadJobApplicationsExcel", "Employer", new { jobId = ViewBag.JobId })" class="btn btn-success mb-3">
+    Download as Excel
+</a>

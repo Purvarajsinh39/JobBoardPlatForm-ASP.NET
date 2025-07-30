@@ -1,4 +1,4 @@
-@model JobBoardPlatform.Models.Job
+﻿@model JobBoardPlatform.Models.Job
 
 @{
     ViewBag.Title = "Job Details";
@@ -20,4 +20,7 @@
 </div>
 
 <a href="@Url.Action("Apply", "JobSeeker", new { id = Model.Id })" class="btn btn-success">Apply Now</a>
+<a href="@Url.Action("DownloadJobPdf", "JobSeeker", new { id = Model.Id })" class="btn btn-danger">
+    📄 Download as PDF
+</a>
 <a href="@Url.Action("Dashboard", "JobSeeker")" class="btn btn-secondary">Back</a>

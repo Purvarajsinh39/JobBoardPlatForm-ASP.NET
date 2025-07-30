@@ -1,0 +1,51 @@
+﻿@model JobBoardPlatform.Models.Job
+
+@{
+    ViewBag.Title = "Job Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2 class="mb-4">Job Details</h2>
+
+<table class="table table-bordered">
+    <tr>
+        <th>Title</th>
+        <td>@Model.Title</td>
+    </tr>
+    <tr>
+        <th>Description</th>
+        <td>@Model.Description</td>
+    </tr>
+    <tr>
+        <th>Category</th>
+        <td>@Model.Category</td>
+    </tr>
+    <tr>
+        <th>Location</th>
+        <td>@Model.Location</td>
+    </tr>
+    <tr>
+        <th>Posted Date</th>
+        <td>@Model.PostedDate.ToShortDateString()</td>
+    </tr>
+    <tr>
+        <th>Status</th>
+        <td>
+            <span class="badge @(Model.IsApproved ? "bg-success" : "bg-warning")">
+                @(Model.IsApproved ? "Approved" : "Pending")
+            </span>
+        </td>
+    </tr>
+    @* Show image if uploaded *@
+    @if (!string.IsNullOrEmpty(Model.ImagePath))
+    {
+        <tr>
+            <th>Image</th>
+            <td>
+                <img src="@Url.Content(Model.ImagePath)" alt="Job Image" class="img-thumbnail" style="max-height: 200px;" />
+            </td>
+        </tr>
+    }
+</table>
+
+<a href="@Url.Action("Dashboard", "Employer")" class="btn btn-secondary">🔙 Back to Dashboard</a>

@@ -1,0 +1,51 @@
+@model JobBoardPlatform.Models.Job
+
+@{
+    ViewBag.Title = "Edit Job";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Edit Job</h2>
+
+@using (Html.BeginForm("Edit", "Employer", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.ImagePath)
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Title)
+        @Html.TextBoxFor(model => model.Title, new { @class = "form-control" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Description)
+        @Html.TextAreaFor(model => model.Description, new { @class = "form-control", rows = 5 })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Category)
+        @Html.TextBoxFor(model => model.Category, new { @class = "form-control" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Location)
+        @Html.TextBoxFor(model => model.Location, new { @class = "form-control" })
+    </div>
+
+    <div class="form-group">
+        @Html.Label("Current Image")
+        @if (!string.IsNullOrEmpty(Model.ImagePath))
+        {
+            <br />
+            <img src="@Url.Content(Model.ImagePath)" style="max-width: 150px;" />
+        }
+    </div>
+
+    <div class="form-group">
+        @Html.Label("Upload New Image")
+        <input type="file" name="ImageFile" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Save Changes</button>
+    <a href="@Url.Action("Dashboard", "Employer")" class="btn btn-secondary mt-3">Cancel</a>
+}
