@@ -1,31 +1,42 @@
 ﻿@model JobBoardPlatform.Models.AdminDashboardViewModel
-
 @{
     ViewBag.Title = "Admin Dashboard";
 }
 
-
 <style>
     @@keyframes scale-up-center-normal {
-        0% {
-            transform: scale(0.5);
-        }
-
-        100% {
-            transform: scale(1);
-        }
+        0% { transform: scale(0.5); }
+        100% { transform: scale(1); }
     }
-
     .card-body-animated {
-        animation: scale-up-center-normal 1s cubic-bezier(0.445, 0.050, 0.550, 0.950) 0s 1 normal none;
+        animation: scale-up-center-normal 0.8s ease-out;
+    }
+    .dashboard-card {
+        border-radius: 12px;
+        min-height: 140px;
+    }
+    .dashboard-card .display-4 {
+        font-weight: bold;
+    }
+    .chart-container {
+        padding: 15px;
+        border-radius: 12px;
+        background: #fff;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+    }
+    canvas {
+        width: 100% !important;
+        height: 100% !important;
     }
 </style>
-<h2>Admin Dashboard</h2>
+
+<h2 class="mb-4 fw-bold">Admin Dashboard</h2>
 
 <div class="container">
-    <div class="row mb-4">
-        <div class="col-md-4 card-body-animated" >
-            <div class="card bg-primary text-white shadow">
+    <div class="row mb-4 g-3">
+        <div class="col-md-4 card-body-animated">
+            <div class="card bg-primary text-white shadow dashboard-card">
                 <div class="card-body">
                     Total Jobs
                     <div class="display-4">@Model.TotalJobs</div>
@@ -33,7 +44,7 @@
             </div>
         </div>
         <div class="col-md-4 card-body-animated">
-            <div class="card bg-success text-white shadow">
+            <div class="card bg-success text-white shadow dashboard-card">
                 <div class="card-body">
                     Approved Applications
                     <div class="display-4">@Model.ApprovedApplications</div>
@@ -41,7 +52,7 @@
             </div>
         </div>
         <div class="col-md-4 card-body-animated">
-            <div class="card bg-danger text-white shadow">
+            <div class="card bg-danger text-white shadow dashboard-card">
                 <div class="card-body">
                     Rejected Applications
                     <div class="display-4">@Model.RejectedApplications</div>
@@ -50,9 +61,9 @@
         </div>
     </div>
 
-    <div class="row">
+    <div class="row mb-4 g-3">
         <div class="col-md-4 card-body-animated">
-            <div class="card bg-warning text-white shadow">
+            <div class="card bg-warning text-white shadow dashboard-card">
                 <div class="card-body">
                     Pending Jobs
                     <div class="display-4">@Model.PendingJobs.Count</div>
@@ -60,7 +71,7 @@
             </div>
         </div>
         <div class="col-md-4 card-body-animated">
-            <div class="card bg-info text-white shadow">
+            <div class="card bg-info text-white shadow dashboard-card">
                 <div class="card-body">
                     Total Applications
                     <div class="display-4">@Model.TotalApplications</div>
@@ -68,7 +79,7 @@
             </div>
         </div>
         <div class="col-md-4 card-body-animated">
-            <div class="card bg-secondary text-white shadow">
+            <div class="card bg-secondary text-white shadow dashboard-card">
                 <div class="card-body">
                     Total Employers
                     <div class="display-4">@Model.TotalEmployers</div>
@@ -78,39 +89,200 @@
     </div>
 </div>
 
-<br>
-@*<h4>Pending Job Approvals</h4><br>
-<a href="@Url.Action("DownloadJobsExcel", "Admin")" class="btn btn-success">
-    📥 Download All Jobs (Excel)
-</a>
-<br><br>
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th>Description</th>
-            <th>Category</th>
-            <th>Location</th>
-            <th>Posted Date</th>
-            <th>Posted By</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var job in Model.PendingJobs)
-        {
-            <tr>
-                <td>@job.Title</td>
-                <td>@job.Description</td>
-                <td>@job.Category</td>
-                <td>@job.Location</td>
-                <td>@job.PostedDate.ToString("dd-MM-yyyy")</td>
-                <td>@job.PostedByName</td>
-                <td>
-                    <a href="@Url.Action("Approve", "Admin", new { id = job.Id })" class="btn btn-success btn-sm">Approve</a>
-                    <a href="@Url.Action("Reject", "Admin", new { id = job.Id })" class="btn btn-danger btn-sm">Reject</a>
-                </td>
-            </tr>
+<h2 class="mb-4 fw-bold">Analytics</h2>
+<div class="container-fluid">
+    <div class="row g-4 justify-content-center">
+        <div class="col-lg-7 col-md-12 chart-container">
+            <canvas id="jobsPerMonthChart"></canvas>
+        </div>
+        <div class="col-lg-5 col-md-12 chart-container">
+            <canvas id="applicationsPerStatusChart"></canvas>
+        </div>
+        <div class="col-lg-7 col-md-12 chart-container">
+            <canvas id="applicationsPerMonthChart"></canvas>
+        </div>
+        <div class="col-lg-5 col-md-12 chart-container">
+            <canvas id="jobsByCategoryChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const chartColors = [
+    '#1F77B4', '#FF7F0E', '#2CA02C', '#D62728', '#9467BD',
+    '#8C564B', '#E377C2', '#7F7F7F', '#BCBD22', '#17BECF'
+];
+
+const commonOptions = {
+    responsive: true,
+    plugins: {
+        legend: {
+            position: 'top',
+            labels: { color: '#333', font: { size: 14, weight: 'bold' } }
+        },
+        tooltip: {
+            backgroundColor: '#fff',
+            titleColor: '#000',
+            bodyColor: '#333',
+            borderColor: '#ccc',
+            borderWidth: 1,
+            bodyFont: { size: 13 },
+            padding: 10
         }
-    </tbody>
-</table>*@
+    },
+    animation: { duration: 800, easing: 'easeOutQuart' }
+};
+
+const roundChartOptions = { ...commonOptions, scales: {} };
+
+fetch('@Url.Action("GetJobsPerMonth", "Admin")')
+    .then(res => res.json())
+    .then(data => {
+        const ctx = document.getElementById('jobsPerMonthChart').getContext('2d');
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, chartColors[0]);
+        gradient.addColorStop(1, chartColors[0] + '55');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.map(x => x.Month),
+                datasets: [{
+                    label: 'Jobs Posted Per Month',
+                    data: data.map(x => x.Count),
+                    backgroundColor: gradient,
+                    borderColor: chartColors[0],
+                    borderWidth: 2
+                }]
+            },
+            options: commonOptions
+        });
+    });
+
+fetch('@Url.Action("GetApplicationsPerStatus", "Admin")')
+    .then(res => res.json())
+    .then(data => {
+        new Chart(document.getElementById('applicationsPerStatusChart'), {
+            type: 'pie',
+            data: {
+                labels: data.map(x => x.Status),
+                datasets: [{
+                    data: data.map(x => x.Count),
+                    backgroundColor: [chartColors[1], chartColors[2], chartColors[3]],
+                    borderColor: '#fff',
+                    borderWidth: 2,
+                    hoverOffset: 10
+                }]
+            },
+            options: roundChartOptions
+        });
+    });
+
+fetch('@Url.Action("GetApplicationsPerMonth", "Admin")')
+    .then(res => res.json())
+    .then(data => {
+        const ctx = document.getElementById('applicationsPerMonthChart').getContext('2d');
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, chartColors[3] + 'AA');
+        gradient.addColorStop(1, chartColors[3] + '11');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.map(x => x.Month),
+                datasets: [{
+                    label: 'Applications Received Per Month',
+                    data: data.map(x => x.Count),
+                    borderColor: chartColors[3],
+                    backgroundColor: gradient,
+                    fill: true,
+                    tension: 0.3,
+                    pointBackgroundColor: chartColors[3], // points visible
+                    pointRadius: 5,
+                    pointHoverRadius: 7
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    tooltip: {
+                        enabled: true, // hover pe dikhayega
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.formattedValue;
+                            }
+                        }
+                    },
+                    legend: {
+                        display: true
+                    }
+                },
+                interaction: {
+                    mode: 'nearest',
+                    intersect: false
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+
+
+fetch('@Url.Action("GetJobsByCategory", "Admin")')
+    .then(res => res.json())
+    .then(data => {
+        new Chart(document.getElementById('jobsByCategoryChart'), {
+            type: 'doughnut',
+            data: {
+                labels: data.map(x => x.Category),
+                datasets: [{
+                    data: data.map(x => x.Count),
+                    backgroundColor: chartColors.slice(0, data.length),
+                    borderColor: '#fff',
+                    borderWidth: 2,
+                    hoverOffset: 12
+                }]
+            },
+            options: roundChartOptions
+        });
+    });
+</script>
+
+@*<h4>Pending Job Approvals</h4><br>
+    <a href="@Url.Action("DownloadJobsExcel", "Admin")" class="btn btn-success">
+        📥 Download All Jobs (Excel)
+    </a>
+    <br><br>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Category</th>
+                <th>Location</th>
+                <th>Posted Date</th>
+                <th>Posted By</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var job in Model.PendingJobs)
+            {
+                <tr>
+                    <td>@job.Title</td>
+                    <td>@job.Description</td>
+                    <td>@job.Category</td>
+                    <td>@job.Location</td>
+                    <td>@job.PostedDate.ToString("dd-MM-yyyy")</td>
+                    <td>@job.PostedByName</td>
+                    <td>
+                        <a href="@Url.Action("Approve", "Admin", new { id = job.Id })" class="btn btn-success btn-sm">Approve</a>
+                        <a href="@Url.Action("Reject", "Admin", new { id = job.Id })" class="btn btn-danger btn-sm">Reject</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>*@

@@ -483,6 +483,116 @@ public class AdminController : Controller
         return View(jobs);
     }
 
+    public JsonResult GetJobsPerMonth()
+    {
+        using (SqlConnection con = new SqlConnection(conStr))
+        {
+            string query = @"
+            SELECT DATENAME(MONTH, PostedDate) AS MonthName, COUNT(*) AS JobCount
+            FROM Jobs
+            GROUP BY DATENAME(MONTH, PostedDate), MONTH(PostedDate)
+            ORDER BY MONTH(PostedDate)";
+
+            SqlCommand cmd = new SqlCommand(query, con);
+            con.Open();
+            SqlDataReader reader = cmd.ExecuteReader();
+
+            var data = new List<object>();
+            while (reader.Read())
+            {
+                data.Add(new
+                {
+                    Month = reader["MonthName"],
+                    Count = reader["JobCount"]
+                });
+            }
+            return Json(data, JsonRequestBehavior.AllowGet);
+        }
+    }
+
+    // Applications per Status data
+    public JsonResult GetApplicationsPerStatus()
+    {
+        using (SqlConnection con = new SqlConnection(conStr))
+        {
+            string query = @"
+            SELECT Status, COUNT(*) AS AppCount
+            FROM Applications
+            GROUP BY Status";
+
+            SqlCommand cmd = new SqlCommand(query, con);
+            con.Open();
+            SqlDataReader reader = cmd.ExecuteReader();
+
+            var data = new List<object>();
+            while (reader.Read())
+            {
+                data.Add(new
+                {
+                    Status = reader["Status"],
+                    Count = reader["AppCount"]
+                });
+            }
+            return Json(data, JsonRequestBehavior.AllowGet);
+        }
+    }
+
+    // Applications per Month
+    public JsonResult GetApplicationsPerMonth()
+    {
+        using (SqlConnection con = new SqlConnection(conStr))
+        {
+            string query = @"
+        SELECT DATENAME(MONTH, AppliedDate) AS MonthName, COUNT(*) AS AppCount
+        FROM Applications
+        GROUP BY DATENAME(MONTH, AppliedDate), MONTH(AppliedDate)
+        ORDER BY MONTH(AppliedDate)";
+
+            SqlCommand cmd = new SqlCommand(query, con);
+            con.Open();
+            SqlDataReader reader = cmd.ExecuteReader();
+
+            var data = new List<object>();
+            while (reader.Read())
+            {
+                data.Add(new
+                {
+                    Month = reader["MonthName"],
+                    Count = reader["AppCount"]
+                });
+            }
+            return Json(data, JsonRequestBehavior.AllowGet);
+        }
+    }
+
+    // Jobs by Category
+    public JsonResult GetJobsByCategory()
+    {
+        using (SqlConnection con = new SqlConnection(conStr))
+        {
+            string query = @"
+        SELECT Category, COUNT(*) AS JobCount
+        FROM Jobs
+        GROUP BY Category";
+
+            SqlCommand cmd = new SqlCommand(query, con);
+            con.Open();
+            SqlDataReader reader = cmd.ExecuteReader();
+
+            var data = new List<object>();
+            while (reader.Read())
+            {
+                data.Add(new
+                {
+                    Category = reader["Category"],
+                    Count = reader["JobCount"]
+                });
+            }
+            return Json(data, JsonRequestBehavior.AllowGet);
+        }
+    }
+
+
 
 
 }
