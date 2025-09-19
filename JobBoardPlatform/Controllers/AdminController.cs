@@ -35,7 +35,6 @@ public class AdminController : Controller
                 });
             }
         }
-        return View(jobs);
     }
 
     public ActionResult Approve(int id)
@@ -111,7 +110,6 @@ public class AdminController : Controller
                    E.Name AS EmployerName, 
                    U.Name AS CandidateName
             FROM Applications A
-            JOIN Jobs J ON A.JobId = J.Id
             JOIN Users U ON A.UserId = U.Id
             JOIN Users E ON J.PostedBy = E.Id";
 

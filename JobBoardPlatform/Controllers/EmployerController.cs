@@ -1,7 +1,3 @@
-﻿// ===============================
-// EmployerController.cs
-// ===============================
-
 using JobBoardPlatform.Models;
 using System;
 using System.Collections.Generic;
@@ -58,7 +54,6 @@ public class EmployerController : Controller
             SqlCommand cmd = new SqlCommand(query, con);
             cmd.Parameters.AddWithValue("@Title", job.Title);
             cmd.Parameters.AddWithValue("@Description", job.Description);
-            cmd.Parameters.AddWithValue("@Category", job.Category);
             cmd.Parameters.AddWithValue("@Location", job.Location);
             cmd.Parameters.AddWithValue("@PostedBy", job.PostedBy);
             cmd.Parameters.AddWithValue("@PostedDate", job.PostedDate);
@@ -116,8 +111,6 @@ public class EmployerController : Controller
         {
             string query = "UPDATE Applications SET Status=@Status WHERE Id=@Id";
             SqlCommand cmd = new SqlCommand(query, con);
-            cmd.Parameters.AddWithValue("@Status", status);
-            cmd.Parameters.AddWithValue("@Id", applicationId);
             con.Open();
             cmd.ExecuteNonQuery();
         }

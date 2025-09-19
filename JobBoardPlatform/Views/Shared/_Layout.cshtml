@@ -4,17 +4,15 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - Job Board Platform</title>
-
-    <!-- ✅ BOOTSTRAP & JQUERY CDN -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Hind&display=swap">
 </head>
 <body>
     <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
         <div class="container">
             @Html.ActionLink("JobBoard", "Index", "Home", null, new { @class = "navbar-brand" })
-            <div class="collapse navbar-collapse">
+            <div class="collapse navbar-collapse" id="navbarCollapse">
                 <ul class="navbar-nav mr-auto">
-                    <li>@Html.ActionLink("Home", "Index", "Home", null, new { @class = "nav-link" })</li>
                     @if (Session["UserRole"] != null)
                     {
                         if (Session["UserRole"].ToString() == "Employer")
@@ -27,7 +25,6 @@
                             <li>@Html.ActionLink("Browse Jobs", "Dashboard", "JobSeeker", null, new { @class = "nav-link" })</li>
                             <li>@Html.ActionLink("My Applications", "MyApplications", "JobSeeker", null, new { @class = "nav-link" })</li>
                             <li>@Html.ActionLink("My Profile", "EditProfile", "JobSeeker", null, new { @class = "nav-link" })</li>
-
                         }
                         else if (Session["UserRole"].ToString() == "Admin")
                         {
@@ -35,7 +32,6 @@
                             <li>@Html.ActionLink("Applications", "Applications", "Admin", null, new { @class = "nav-link" })</li>
                             <li>@Html.ActionLink("All Applications", "ViewApplications", "Admin", null, new { @class = "nav-link" })</li>
                         }
-
                         <li>@Html.ActionLink("Logout", "Logout", "Account", null, new { @class = "nav-link text-danger" })</li>
                     }
                     else
@@ -62,9 +58,15 @@
         </footer>
     </div>
 
-    <!-- ✅ SCRIPTS AT BOTTOM -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     @RenderSection("scripts", required: false)
+    @section scripts {
+        <script>
+            $(function () {
+                $('[data-toggle="tooltip"]').tooltip()
+            });
+        </script>
+    }
 </body>
 </html>

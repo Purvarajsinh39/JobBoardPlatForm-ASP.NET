@@ -1,32 +1,20 @@
 @model JobBoardPlatform.Models.User
 
 @{
-    ViewBag.Title = "Register";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = null;
+    ViewBag.Title = "Login";
 }
 
-<h2>Register</h2>
+        .input-focus:focus {
 
-@using (Html.BeginForm())
+                <div class="bg-white rounded-lg shadow-md p-8">
 {
-    <div class="form-group">
-        @Html.LabelFor(m => m.Name)
-        @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+                        <p class="text-red-500 text-center mb-6">@ViewBag.Error</p>
+                    }
+
     </div>
-    <div class="form-group">
-        @Html.LabelFor(m => m.Email)
-        @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
     </div>
-    <div class="form-group">
-        @Html.LabelFor(m => m.Password)
-        @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
     </div>
-    <div class="form-group">
-        <label>Role</label>
-        @Html.DropDownList("Role", new SelectList(new[] {
-            new { Value = "JobSeeker", Text = "Job Seeker" },
-            new { Value = "Employer", Text = "Employer" }
-        }, "Value", "Text"), "Select Role", new { @class = "form-control" })
     </div>
-    <button type="submit" class="btn btn-primary">Register</button>
-}
+
+    <script>
