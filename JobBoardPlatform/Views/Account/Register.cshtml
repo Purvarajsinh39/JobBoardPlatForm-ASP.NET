@@ -1,32 +1,144 @@
-@model JobBoardPlatform.Models.User
+﻿@model JobBoardPlatform.Models.User
 
 @{
+    Layout = null;
     ViewBag.Title = "Register";
-    Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareerConnect | Register</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
 
-<h2>Register</h2>
+        .input-focus:focus {
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+        }
 
-@using (Html.BeginForm())
-{
-    <div class="form-group">
-        @Html.LabelFor(m => m.Name)
-        @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+        .radio-checked:checked {
+            background-color: #667eea;
+            border-color: #667eea;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-50">
+    <div class="flex flex-col lg:flex-row min-h-screen">
+        <!-- Left Side - Branding/Illustration -->
+        <div class="w-full lg:w-1/2 gradient-bg flex items-center justify-center p-12 text-white">
+            <div class="max-w-md text-center" data-aos="fade-right">
+                <h1 class="text-4xl font-bold mb-6">Start Your Career Journey</h1>
+                <p class="text-xl mb-8 opacity-90">Join our community and take the next step in your professional life</p>
+                <div class="hidden lg:block">
+                    <img src="https://static.photos/office/640x360/144" alt="Career illustration" class="rounded-lg shadow-xl mx-auto">
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side - Registration Form -->
+        <div class="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12">
+            <div class="w-full max-w-md" data-aos="fade-left">
+                <div class="text-center mb-10">
+                    <div class="flex justify-center mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                        </svg>
+                    </div>
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Create Account</h2>
+                    <p class="text-gray-600">Fill in your details to get started</p>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-8">
+                    @if (ViewBag.Error != null)
+                    {
+                        <p class="text-red-500 text-center mb-6">@ViewBag.Error</p>
+                    }
+
+                    @using (Html.BeginForm("Register", "Account", FormMethod.Post))
+                    {
+                        <div class="mb-6">
+                            @Html.LabelFor(m => m.Name, new { @class = "block text-gray-700 text-sm font-medium mb-2" })
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i data-feather="user" class="text-gray-400"></i>
+                                </div>
+                                @Html.TextBoxFor(m => m.Name, new { @class = "w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg input-focus focus:outline-none focus:border-indigo-500 transition duration-200", placeholder = "John Doe" })
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            @Html.LabelFor(m => m.Email, new { @class = "block text-gray-700 text-sm font-medium mb-2" })
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i data-feather="mail" class="text-gray-400"></i>
+                                </div>
+                                @Html.TextBoxFor(m => m.Email, new { type = "email", @class = "w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg input-focus focus:outline-none focus:border-indigo-500 transition duration-200", placeholder = "you@example.com" })
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            @Html.LabelFor(m => m.Password, new { @class = "block text-gray-700 text-sm font-medium mb-2" })
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i data-feather="lock" class="text-gray-400"></i>
+                                </div>
+                                @Html.PasswordFor(m => m.Password, new { @class = "w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg input-focus focus:outline-none focus:border-indigo-500 transition duration-200", placeholder = "••••••••" })
+                            </div>
+                            <p class="mt-1 text-xs text-gray-500">Must be at least 8 characters</p>
+                        </div>
+
+                        <div class="mb-6">
+                            <label class="block text-gray-700 text-sm font-medium mb-2">Account Type</label>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="flex items-center space-x-3 p-4 border border-gray-300 rounded-lg cursor-pointer hover:border-indigo-400 transition duration-200">
+                                    @Html.RadioButtonFor(m => m.Role, "JobSeeker", new { @class = "form-radio h-5 w-5 text-indigo-600 radio-checked", @checked = "checked" })
+                                    <div>
+                                        <span class="block text-gray-900 font-medium">Job Seeker</span>
+                                        <span class="block text-gray-500 text-sm">Looking for opportunities</span>
+                                    </div>
+                                </label>
+                                <label class="flex items-center space-x-3 p-4 border border-gray-300 rounded-lg cursor-pointer hover:border-indigo-400 transition duration-200">
+                                    @Html.RadioButtonFor(m => m.Role, "Employer", new { @class = "form-radio h-5 w-5 text-indigo-600 radio-checked" })
+                                    <div>
+                                        <span class="block text-gray-900 font-medium">Employer</span>
+                                        <span class="block text-gray-500 text-sm">Hiring talent</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full gradient-bg text-white py-3 px-4 rounded-lg font-medium hover:opacity-90 transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 shadow-md">
+                            Create Account
+                        </button>
+
+                        <div class="mt-6 text-center">
+                            <p class="text-sm text-gray-600">
+                                Already have an account?
+                                <a href="@Url.Action("Login", "Account")" class="font-medium text-indigo-600 hover:text-indigo-500">Sign in</a>
+                            </p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="form-group">
-        @Html.LabelFor(m => m.Email)
-        @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
-    </div>
-    <div class="form-group">
-        @Html.LabelFor(m => m.Password)
-        @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
-    </div>
-    <div class="form-group">
-        <label>Role</label>
-        @Html.DropDownList("Role", new SelectList(new[] {
-            new { Value = "JobSeeker", Text = "Job Seeker" },
-            new { Value = "Employer", Text = "Employer" }
-        }, "Value", "Text"), "Select Role", new { @class = "form-control" })
-    </div>
-    <button type="submit" class="btn btn-primary">Register</button>
-}
+
+    <script>
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+        feather.replace();
+    </script>
+</body>
+</html>

@@ -1,14 +1,134 @@
 @{
+    Layout = null;
     ViewBag.Title = "Login";
 }
-<h2>Login</h2>
-@using (Html.BeginForm())
-{
-    <p>Email: <input type="email" name="email" /></p>
-    <p>Password: <input type="password" name="password" /></p>
-    <button type="submit">Login</button>
-}
-@if (ViewBag.Error != null)
-{
-    <p style="color:red;">@ViewBag.Error</p>
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareerConnect | @ViewBag.Title</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .input-focus:focus {
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-50">
+    <div class="flex flex-col lg:flex-row min-h-screen">
+        <!-- Left Side - Branding/Illustration -->
+        <div class="w-full lg:w-1/2 gradient-bg flex items-center justify-center p-12 text-white">
+            <div class="max-w-md text-center" data-aos="fade-right">
+                <h1 class="text-4xl font-bold mb-6">Find Your Dream Job Today</h1>
+                <p class="text-xl mb-8 opacity-90">Join thousands of professionals and companies connecting through CareerConnect</p>
+                <div class="hidden lg:block">
+                    <img src="http://static.photos/office/640x360/176" alt="Career illustration" class="rounded-lg shadow-xl mx-auto">
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side - Login Form -->
+        <div class="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12">
+            <div class="w-full max-w-md" data-aos="fade-left">
+                <div class="text-center mb-10">
+                    <div class="flex justify-center mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Welcome Back</h2>
+                    <p class="text-gray-600">Sign in to your account to continue</p>
+                </div>
+
+                @using (Html.BeginForm())
+                {
+                    <div class="bg-white rounded-lg shadow-md p-8">
+                        @if (ViewBag.Error != null)
+                        {
+                            <p class="text-red-500 text-center mb-6">@ViewBag.Error</p>
+                        }
+
+                        <div class="mb-6">
+                            <label for="email" class="block text-gray-700 text-sm font-medium mb-2">Email Address</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i data-feather="mail" class="text-gray-400"></i>
+                                </div>
+                                <input type="email" id="email" name="email" class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg input-focus focus:outline-none focus:border-indigo-500 transition duration-200" placeholder="you@example.com" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            <label for="password" class="block text-gray-700 text-sm font-medium mb-2">Password</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i data-feather="lock" class="text-gray-400"></i>
+                                </div>
+                                <input type="password" id="password" name="password" class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg input-focus focus:outline-none focus:border-indigo-500 transition duration-200" placeholder="* * * * * * * *" required>
+                            </div>
+                        </div>
+
+                        <!--<div class="flex items-center justify-between mb-6">-->
+                        @*<div class="flex items-center">
+                                <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                                <label for="remember-me" class="ml-2 block text-sm text-gray-700">Remember me</label>
+                            </div>*@
+                        <!--<div class="text-sm">
+                                <a href="#" class="font-medium text-indigo-600 hover:text-indigo-500">Forgot password?</a>
+                            </div>
+                        </div>-->
+
+                        <button type="submit" class="w-full gradient-bg text-white py-3 px-4 rounded-lg font-medium hover:opacity-90 transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 shadow-md">
+                            Sign In
+                        </button>
+
+                        @*<div class="mt-6 relative">
+                                <div class="absolute inset-0 flex items-center">
+                                    <div class="w-full border-t border-gray-300"></div>
+                                </div>
+                                <div class="relative flex justify-center text-sm">
+                                    <span class="px-2 bg-white text-gray-500">Or continue with</span>
+                                </div>
+                            </div>*@
+
+                        @*<div class="mt-6 grid grid-cols-2 gap-3">
+                                <button type="button" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                    <i data-feather="github" class="h-5 w-5"></i>
+                                </button>
+                                <button type="button" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                    <i data-feather="linkedin" class="h-5 w-5"></i>
+                                </button>
+                            </div>*@
+
+                        <div class="mt-6 text-center">
+                            <p class="text-sm text-gray-600">
+                                Don't have an account?
+                                <a href="@Url.Action("Register", "Account")" class="font-medium text-indigo-600 hover:text-indigo-500">Sign up</a>
+                            </p>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <script>
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+        feather.replace();
+    </script>
+</body>
+</html>
