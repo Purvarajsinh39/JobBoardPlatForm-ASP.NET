@@ -5,75 +5,177 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2 class="mb-4">Your Posted Jobs</h2>
-
-
-
-<!-- 🔍 Search & Filter Form -->
-<form method="get" class="form-inline mb-3">
-    <input type="text" name="searchTerm" class="form-control mr-2" placeholder="Search by title or category" value="@ViewBag.SearchTerm" />
-    <button type="submit" class="btn btn-primary">Search</button>
-</form>
-
-
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["SuccessMessage"]
-    </div>
-}
-
-<table class="table table-bordered">
-    <thead class="thead-dark">
-        <tr>
-            <th>Title</th>
-            <th>Category</th>
-            <th>Location</th>
-            <th>Posted Date</th>
-            <th>Status</th>
-            <th>Applications</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var job in Model)
-        {
-            <tr>
-                <td>@job.Title</td>
-                <td>@job.Category</td>
-                <td>@job.Location</td>
-                <td>@job.PostedDate.ToShortDateString()</td>
-                <td>
-                    <span class="badge @(job.IsApproved ? "bg-success" : "bg-warning")">
-                        @(job.IsApproved ? "Approved" : "Pending")
-                    </span>
-                </td>
-                <td>
-                    <strong>@job.ApplicationCount</strong> <small>Applicants</small>
-                </td>
-
-                <td>
-                    <a href="@Url.Action("EditJob", "Employer", new { id = job.Id })" class="btn btn-warning btn-sm">Edit</a>
-                    <a href="@Url.Action("JobDetails", "Employer", new { id = job.Id })" class="btn btn-info btn-sm">Details</a>
-                    <a href="@Url.Action("DeleteJob", "Employer", new { id = job.Id })" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this job?');">Delete</a>
-                    <a href="@Url.Action("ViewApplications", "Employer", new { id = job.Id })" class="btn btn-sm btn-secondary">Applications</a>
-                </td>
-            </tr>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Jobs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        .job-table {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                        0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
-    </tbody>
-</table>
-@*<a href="@Url.Action("DownloadPostedJobsExcel", "Employer")" class="btn btn-success mb-3">
-    <i class="fa fa-download"></i> Download Jobs
-</a>*@
+        .badge {
+            padding: 0.35rem 0.65rem;
+            border-radius: 50rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .search-input {
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+        .action-btn {
+            transition: all 0.2s ease;
+            border-radius: 6px;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.875rem;
+        }
+        .action-btn:hover {
+            transform: translateY(-1px);
+        }
+        .container-btn-download {
+            @@apply flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-all duration-200;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-3xl font-bold text-gray-800">Your Posted Jobs</h2>
+            <div class="relative">
+                <!-- 🔍 Search -->
+                <form method="get" class="flex gap-2">
+                    <input type="text" name="searchTerm"
+                           class="search-input w-64 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                           placeholder="Search by title or category"
+                           value="@ViewBag.SearchTerm" />
+                    <button type="submit"
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+                        <i data-feather="search"></i>
+                        <span>Search</span>
+                    </button>
+                </form>
+            </div>
+        </div>
 
+        <!-- ✅ Success Message -->
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded" role="alert">
+                <p>@TempData["SuccessMessage"]</p>
+            </div>
+        }
 
-<a href="@Url.Action("DownloadPostedJobsExcel", "Employer")" class="container-btn-download">
-    <svg fill="#fff"
-         xmlns="http://www.w3.org/2000/svg"
-         width="20"
-         height="20"
-         viewBox="0 0 50 50">
-        <path d="M28.8125 .03125L.8125 5.34375C.339844 5.433594 0 5.863281 0 6.34375L0 43.65625C0 44.136719 .339844 44.566406 .8125 44.65625L28.8125 49.96875C28.875 49.980469 28.9375 50 29 50C29.230469 50 29.445313 49.929688 29.625 49.78125C29.855469 49.589844 30 49.296875 30 49L30 1C30 .703125 29.855469 .410156 29.625 .21875C29.394531 .0273438 29.105469 -.0234375 28.8125 .03125ZM32 6L32 13L34 13L34 15L32 15L32 20L34 20L34 22L32 22L32 27L34 27L34 29L32 29L32 35L34 35L34 37L32 37L32 44L47 44C48.101563 44 49 43.101563 49 42L49 8C49 6.898438 48.101563 6 47 6ZM36 13L44 13L44 15L36 15ZM6.6875 15.6875L11.8125 15.6875L14.5 21.28125C14.710938 21.722656 14.898438 22.265625 15.0625 22.875L15.09375 22.875C15.199219 22.511719 15.402344 21.941406 15.6875 21.21875L18.65625 15.6875L23.34375 15.6875L17.75 24.9375L23.5 34.375L18.53125 34.375L15.28125 28.28125C15.160156 28.054688 15.035156 27.636719 14.90625 27.03125L14.875 27.03125C14.8125 27.316406 14.664063 27.761719 14.4375 28.34375L11.1875 34.375L6.1875 34.375L12.15625 25.03125ZM36 20L44 20L44 22L36 22ZM36 27L44 27L44 29L36 29ZM36 35L44 35L44 37L36 37Z"></path>
-    </svg>
-    Download Excel
-</a>
+        <!-- 📋 Jobs Table -->
+        <div class="bg-white job-table" data-aos="fade-up">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Posted Date</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Applications</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var job in Model)
+                            {
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">@job.Title</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">@job.Category</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">@job.Location</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">@job.PostedDate.ToShortDateString()</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="badge @(job.IsApproved ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800")">
+                                            @(job.IsApproved ? "Approved" : "Pending")
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm font-semibold text-gray-900">@job.ApplicationCount</span>
+                                        <span class="text-xs text-gray-500">Applicants</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+                                        <a href="@Url.Action("EditJob", "Employer", new { id = job.Id })"
+                                           class="action-btn bg-yellow-100 text-yellow-800 hover:bg-yellow-200 inline-flex items-center">
+                                            <i data-feather="edit-2" class="w-4 h-4 mr-1"></i> Edit
+                                        </a>
+                                        <a href="@Url.Action("JobDetails", "Employer", new { id = job.Id })"
+                                           class="action-btn bg-blue-100 text-blue-800 hover:bg-blue-200 inline-flex items-center">
+                                            <i data-feather="eye" class="w-4 h-4 mr-1"></i> Details
+                                        </a>
+                                        <a href="@Url.Action("DeleteJob", "Employer", new { id = job.Id })"
+                                           class="action-btn bg-red-100 text-red-800 hover:bg-red-200 inline-flex items-center"
+                                           onclick="return confirm('Are you sure you want to delete this job?');">
+                                            <i data-feather="trash-2" class="w-4 h-4 mr-1"></i> Delete
+                                        </a>
+                                        <a href="@Url.Action("ViewApplications", "Employer", new { id = job.Id })"
+                                           class="action-btn bg-gray-100 text-gray-800 hover:bg-gray-200 inline-flex items-center">
+                                            <i data-feather="users" class="w-4 h-4 mr-1"></i> View Applications
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="px-6 py-4 text-center text-gray-500">
+                                    No jobs found.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ⬇️ Excel Download Button -->
+        @*<div class="mt-6">
+            <a href="@Url.Action("DownloadPostedJobsExcel", "Employer")" class="container-btn-download">
+                <svg fill="#fff"
+                     xmlns="http://www.w3.org/2000/svg"
+                     width="20"
+                     height="20"
+                     viewBox="0 0 50 50">
+                    <path d="M28.8125 .03125L.8125 5.34375C.339844 5.433594 0 5.863281 0 6.34375L0 43.65625C0 44.136719 .339844 44.566406 .8125 44.65625L28.8125 49.96875C28.875 49.980469 28.9375 50 29 50C29.230469 50 29.445313 49.929688 29.625 49.78125C29.855469 49.589844 30 49.296875 30 49L30 1C30 .703125 29.855469 .410156 29.625 .21875C29.394531 .0273438 29.105469 -.0234375 28.8125 .03125ZM32 6L32 13L34 13L34 15L32 15L32 20L34 20L34 22L32 22L32 27L34 27L34 29L32 29L32 35L34 35L34 37L32 37L32 44L47 44C48.101563 44 49 43.101563 49 42L49 8C49 6.898438 48.101563 6 47 6ZM36 13L44 13L44 15L36 15ZM6.6875 15.6875L11.8125 15.6875L14.5 21.28125C14.710938 21.722656 14.898438 22.265625 15.0625 22.875L15.09375 22.875C15.199219 22.511719 15.402344 21.941406 15.6875 21.21875L18.65625 15.6875L23.34375 15.6875L17.75 24.9375L23.5 34.375L18.53125 34.375L15.28125 28.28125C15.160156 28.054688 15.035156 27.636719 14.90625 27.03125L14.875 27.03125C14.8125 27.316406 14.664063 27.761719 14.4375 28.34375L11.1875 34.375L6.1875 34.375L12.15625 25.03125ZM36 20L44 20L44 22L36 22ZM36 27L44 27L44 29L36 29ZM36 35L44 35L44 37L36 37Z"></path>
+                </svg>
+                Download Excel
+            </a>
+        </div>*@
+        <br>
+        <div class="flex space-x-4">
+            <a href="@Url.Action("DownloadPostedJobsExcel", "Employer",new { jobId = ViewBag.JobId })"
+               class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center">
+                <i data-feather="download" class="mr-2"></i> Download Excel
+            </a>
+        </div>
+    </div>
+
+    <script>
+        AOS.init();
+        feather.replace();
+    </script>
+</body>
+</html>

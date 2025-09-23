@@ -5,66 +5,161 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2 class="mb-4">Shortlisted Candidates</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
 
-<!-- 🔍 Search Bar -->
-<form method="get" class="form-inline mb-3">
-    <input type="text" name="searchTerm" class="form-control mr-2" placeholder="Search by candidate/job title" value="@ViewBag.SearchTerm" />
-    <button type="submit" class="btn btn-primary">Search</button>
-</form>
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
 
-@if (Model != null && Model.Any())
-{
-    <table class="table table-bordered">
-        <thead class="thead-dark">
-            <tr>
-                <th>Candidate</th>
-                <th>Job Title</th>
-                <th>Applied Date</th>
-                <th>Resume</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var app in Model)
-            {
-                <tr>
-                    <td>@app.CandidateName</td>
-                    <td>@app.JobTitle</td>
-                    <td>@app.AppliedDate.ToShortDateString()</td>
-                    <td>
-                        @if (!string.IsNullOrEmpty(app.ResumePath))
-                        {
-                            <a href="@Url.Content(app.ResumePath)" class="btn btn-sm btn-success" download>Download</a>
-                        }
-                        else
-                        {
-                            <span class="text-muted">No Resume</span>
-                        }
-                    </td>
-                    <td>
-                        <span class="badge badge-success">Approved</span>
-                    </td>
-                </tr>
+        .download-btn {
+            transition: all 0.3s ease;
+        }
+
+            .download-btn:hover {
+                background-color: #059669;
+                transform: translateY(-2px);
             }
-        </tbody>
-    </table>
-}
-else
-{
-    <div class="alert alert-info">No shortlisted candidates yet.</div>
-}
-@*<a href="@Url.Action("DownloadShortlistedApplicationsExcel", "Employer")" class="btn btn-success mb-3">
-    Download Excel
-</a>*@
 
-<a href="@Url.Action("DownloadShortlistedApplicationsExcel", "Employer")" class="container-btn-download">
-    <svg fill="#fff"
-         xmlns="http://www.w3.org/2000/svg"
-         width="20"
-         height="20"
-         viewBox="0 0 50 50">
-        <path d="M28.8125 .03125L.8125 5.34375C.339844 5.433594 0 5.863281 0 6.34375L0 43.65625C0 44.136719 .339844 44.566406 .8125 44.65625L28.8125 49.96875C28.875 49.980469 28.9375 50 29 50C29.230469 50 29.445313 49.929688 29.625 49.78125C29.855469 49.589844 30 49.296875 30 49L30 1C30 .703125 29.855469 .410156 29.625 .21875C29.394531 .0273438 29.105469 -.0234375 28.8125 .03125ZM32 6L32 13L34 13L34 15L32 15L32 20L34 20L34 22L32 22L32 27L34 27L34 29L32 29L32 35L34 35L34 37L32 37L32 44L47 44C48.101563 44 49 43.101563 49 42L49 8C49 6.898438 48.101563 6 47 6ZM36 13L44 13L44 15L36 15ZM6.6875 15.6875L11.8125 15.6875L14.5 21.28125C14.710938 21.722656 14.898438 22.265625 15.0625 22.875L15.09375 22.875C15.199219 22.511719 15.402344 21.941406 15.6875 21.21875L18.65625 15.6875L23.34375 15.6875L17.75 24.9375L23.5 34.375L18.53125 34.375L15.28125 28.28125C15.160156 28.054688 15.035156 27.636719 14.90625 27.03125L14.875 27.03125C14.8125 27.316406 14.664063 27.761719 14.4375 28.34375L11.1875 34.375L6.1875 34.375L12.15625 25.03125ZM36 20L44 20L44 22L36 22ZM36 27L44 27L44 29L36 29ZM36 35L44 35L44 37L36 37Z"></path>
-    </svg>
-    Download Excel
-</a>
+        .status-badge {
+            padding: 0.35rem 0.65rem;
+            font-size: 0.75rem;
+            letter-spacing: 0.025em;
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-6xl mx-auto">
+            <!-- Header Section -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800 mb-2">Shortlisted Candidates</h1>
+                    <p class="text-gray-600">Review and manage your top candidates</p>
+                </div>
+
+                <!-- Search and Download -->
+                <div class="mt-4 md:mt-0 flex flex-col sm:flex-row gap-4">
+                    <form method="get" class="flex">
+                        <div class="relative flex-grow">
+                            <input type="text" name="searchTerm"
+                                   class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                   placeholder="Search candidates..."
+                                   value="@ViewBag.SearchTerm">
+                            <i data-feather="search" class="absolute left-3 top-3 text-gray-400"></i>
+                        </div>
+                        <button type="submit" class="ml-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200">
+                            Search
+                        </button>
+                    </form>
+
+                    @*<a href="@Url.Action("DownloadShortlistedApplicationsExcel", "Employer")"
+                       class="download-btn flex items-center justify-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                        <i data-feather="download" class="mr-2"></i>
+                        Export to Excel
+                    </a>*@
+                    <div class="flex space-x-4">
+                        <a href="@Url.Action("DownloadShortlistedApplicationsExcel", "Employer")"
+                           class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center">
+                            <i data-feather="download" class="mr-2"></i> Export to Excel
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Candidates Table -->
+            @if (Model != null && Model.Any())
+            {
+                <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Candidate</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Job Title</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Applied Date</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Resume</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                @foreach (var app in Model)
+                                {
+                                    <tr class="hover:bg-gray-50 transition duration-150">
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                                    <i data-feather="user" class="text-blue-600"></i>
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-medium text-gray-900">@app.CandidateName</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">@app.JobTitle</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-500">@app.AppliedDate.ToShortDateString()</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            @if (!string.IsNullOrEmpty(app.ResumePath))
+                                            {
+                                                <a href="@Url.Content(app.ResumePath)"
+                                                   class="inline-flex items-center px-3 py-1 border border-blue-300 rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100 transition duration-200"
+                                                   download>
+                                                    <i data-feather="download" class="mr-1 w-4 h-4"></i>
+                                                    Download
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-sm text-gray-400">No Resume</span>
+                                            }
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="status-badge bg-green-100 text-green-800 rounded-full">Approved</span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="bg-white rounded-xl shadow-md p-8 text-center">
+                    <div class="mx-auto h-24 w-24 text-gray-400 mb-4">
+                        <i data-feather="users" class="w-full h-full"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">No shortlisted candidates yet</h3>
+                    <p class="text-gray-500 mb-6">When you approve candidates, they'll appear here.</p>
+                    <a href="#" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition duration-200">
+                        <i data-feather="arrow-left" class="mr-2"></i>
+                        Back to Applications
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init();
+        feather.replace();
+    </script>
+</body>
+</html>

@@ -5,47 +5,62 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2 class="mb-4">Job Details</h2>
+<div class="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">Job Details</h1>
+        <a href="@Url.Action("Dashboard", "Employer")" class="inline-flex items-center px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg transition duration-200">
+            <i data-feather="arrow-left" class="mr-2 w-4 h-4"></i>
+            Back to Dashboard
+        </a>
+    </div>
 
-<table class="table table-bordered">
-    <tr>
-        <th>Title</th>
-        <td>@Model.Title</td>
-    </tr>
-    <tr>
-        <th>Description</th>
-        <td>@Model.Description</td>
-    </tr>
-    <tr>
-        <th>Category</th>
-        <td>@Model.Category</td>
-    </tr>
-    <tr>
-        <th>Location</th>
-        <td>@Model.Location</td>
-    </tr>
-    <tr>
-        <th>Posted Date</th>
-        <td>@Model.PostedDate.ToShortDateString()</td>
-    </tr>
-    <tr>
-        <th>Status</th>
-        <td>
-            <span class="badge @(Model.IsApproved ? "bg-success" : "bg-warning")">
-                @(Model.IsApproved ? "Approved" : "Pending")
-            </span>
-        </td>
-    </tr>
-    @* Show image if uploaded *@
-    @if (!string.IsNullOrEmpty(Model.ImagePath))
-    {
-        <tr>
-            <th>Image</th>
-            <td>
-                <img src="@Url.Content(Model.ImagePath)" alt="Job Image" class="img-thumbnail" style="max-height: 200px;" />
-            </td>
-        </tr>
-    }
-</table>
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100" data-aos="fade-up">
+        <div class="p-6 md:p-8">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+                <h2 class="text-2xl font-semibold text-gray-800">@Model.Title</h2>
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium mt-2 md:mt-0 @(Model.IsApproved ? "bg-green-500 text-white" : "bg-yellow-500 text-white")">
+                    @(Model.IsApproved ? "Approved" : "Pending")
+                </span>
+            </div>
 
-<a href="@Url.Action("Dashboard", "Employer")" class="btn btn-secondary">🔙 Back to Dashboard</a>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500">Category</h3>
+                    <p class="mt-1 text-gray-900">@Model.Category</p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500">Location</h3>
+                    <p class="mt-1 text-gray-900">@Model.Location</p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500">Posted Date</h3>
+                    <p class="mt-1 text-gray-900">@Model.PostedDate.ToShortDateString()</p>
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <h3 class="text-sm font-medium text-gray-500">Description</h3>
+                <div class="mt-2 text-gray-700 prose max-w-none">
+                    @Model.Description
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.ImagePath))
+            {
+                <div class="mt-6">
+                    <h3 class="text-sm font-medium text-gray-500 mb-2">Job Image</h3>
+                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                        <img src="@Url.Content(Model.ImagePath)" alt="Job Image" class="w-full h-auto object-cover" />
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>AOS.init();</script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script>feather.replace();</script>
+}

@@ -3,33 +3,99 @@
     ViewBag.Title = "My Applications";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<h2>My Applications</h2>
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Job Title</th>
-            <th>Employer</th>
-            <th>Applied Date</th>
-            <th>Status</th>
-            <th>Resume</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var app in Model)
+
+<div class="container mx-auto px-4 py-8 max-w-7xl">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-800">My Applications</h1>
+        <div class="flex items-center space-x-2">
+            <i data-feather="briefcase" class="text-blue-500"></i>
+            <span class="text-gray-600">Total: @Model.Count</span>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+        <!-- Table header for desktop -->
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 p-6 bg-gray-100 border-b border-gray-200 hidden md:grid">
+            <div class="font-medium text-gray-700">Job Title</div>
+            <div class="font-medium text-gray-700">Employer</div>
+            <div class="font-medium text-gray-700">Applied Date</div>
+            <div class="font-medium text-gray-700">Status</div>
+            <div class="font-medium text-gray-700">Resume</div>
+        </div>
+
+        <div class="divide-y divide-gray-200">
+            @foreach (var app in Model)
+            {
+                <div class="application-card transition-all duration-300 hover:bg-gray-50">
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 p-6">
+                        <!-- Job Title -->
+                        <div class="flex flex-col">
+                            <span class="text-xs text-gray-500 md:hidden">Job Title</span>
+                            <span class="font-medium text-gray-800">@app.JobTitle</span>
+                        </div>
+                        <!-- Employer -->
+                        <div class="flex flex-col">
+                            <span class="text-xs text-gray-500 md:hidden">Employer</span>
+                            <span class="text-gray-700">@app.EmployerName</span>
+                        </div>
+                        <!-- Applied Date -->
+                        <div class="flex flex-col">
+                            <span class="text-xs text-gray-500 md:hidden">Applied Date</span>
+                            <span class="text-gray-600">@app.AppliedDate.ToShortDateString()</span>
+                        </div>
+                        <!-- Status -->
+                        <div class="flex flex-col">
+                            <span class="text-xs text-gray-500 md:hidden">Status</span>
+                            <span class="status-badge inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                                @(app.Status == "Approved" ? "bg-green-100 text-green-800" :
+                                  app.Status == "Rejected" ? "bg-red-100 text-red-800" : "bg-gray-100 text-gray-800")">
+                                @app.Status
+                            </span>
+                        </div>
+                        <!-- Resume Download -->
+                        <div class="flex flex-col">
+                            <span class="text-xs text-gray-500 md:hidden">Resume</span>
+                            <a href="@Url.Content(app.ResumePath)" download
+                               class="download-btn inline-flex items-center justify-center px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-all">
+                                <i data-feather="download" class="w-4 h-4 mr-2 transition-transform"></i>
+                                Download
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        @if (!Model.Any())
         {
-            <tr>
-                <td>@app.JobTitle</td>
-                <td>@app.EmployerName</td>
-                <td>@app.AppliedDate.ToShortDateString()</td>
-                <td>
-                    <span class="badge @(app.Status == "Approved" ? "bg-success" : app.Status == "Rejected" ? "bg-danger" : "bg-secondary")">
-                        @app.Status
-                    </span>
-                </td>
-                <td>
-                    <a href="@Url.Content(app.ResumePath)" download class="btn btn-sm btn-info">Download</a>
-                </td>
-            </tr>
+            <div class="p-12 text-center">
+                <i data-feather="inbox" class="w-16 h-16 mx-auto text-gray-400 mb-4"></i>
+                <h3 class="text-lg font-medium text-gray-700">No applications yet</h3>
+                <p class="text-gray-500 mt-2">You haven't applied to any jobs yet. Start applying now!</p>
+            </div>
         }
-    </tbody>
-</table>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script>
+        AOS.init();
+        feather.replace();
+    </script>
+    <style>
+        .application-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-badge {
+            transition: all 0.3s ease;
+        }
+
+        .download-btn:hover i {
+            transform: translateY(2px);
+        }
+    </style>
+}
