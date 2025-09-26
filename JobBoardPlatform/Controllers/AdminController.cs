@@ -8,8 +8,9 @@ using System.Data.SqlClient;
 using System.Web.Mvc;
 using System.Drawing;
 using System.IO;
+using JobBoardPlatform.Helpers;
 
-public class AdminController : Controller
+public class AdminController : BaseController
 {
     string conStr = ConfigurationManager.ConnectionStrings["JobBoardDB"].ConnectionString;
 
@@ -82,6 +83,7 @@ public class AdminController : Controller
     // ✅ 2. Approve Job
     public ActionResult ApproveJob(int id)
     {
+        // ✅ Step 1: Approve Job
         using (SqlConnection con = new SqlConnection(conStr))
         {
             string query = "UPDATE Jobs SET IsApproved = 1 WHERE Id = @Id";
@@ -90,8 +92,42 @@ public class AdminController : Controller
             con.Open();
             cmd.ExecuteNonQuery();
         }
+
+        // ✅ Step 2: Get Job Title
+        string jobTitle = "";
+        using (SqlConnection con = new SqlConnection(conStr))
+        {
+            string query = "SELECT Title FROM Jobs WHERE Id=@Id";
+            SqlCommand cmd = new SqlCommand(query, con);
+            cmd.Parameters.AddWithValue("@Id", id);
+            con.Open();
+            jobTitle = cmd.ExecuteScalar()?.ToString();
+        }
+
+        // ✅ Step 3: Get All Seekers
+        List<int> seekerIds = new List<int>();
+        using (SqlConnection con = new SqlConnection(conStr))
+        {
+            string query = "SELECT Id FROM Users WHERE Role='JobSeeker'";
+            SqlCommand cmd = new SqlCommand(query, con);
+            con.Open();
+            SqlDataReader dr = cmd.ExecuteReader();
+            while (dr.Read())
+            {
+                seekerIds.Add((int)dr["Id"]);
+            }
+        }
+
+        // ✅ Step 4: Send Notification to All Seekers
+        var helper = new JobBoardPlatform.Helpers.NotificationHelper();
+        foreach (var seekerId in seekerIds)
+        {
+            helper.AddNotification(seekerId, $"New job approved: {jobTitle}. Apply now!");
+        }
+
         return RedirectToAction("Dashboard");
     }
+
 
     // ✅ 3. Reject Job
     public ActionResult RejectJob(int id)
@@ -590,6 +626,67 @@ public class AdminController : Controller
             }
             return Json(data, JsonRequestBehavior.AllowGet);
         }
+    }
+    public ActionResult MarkNotificationAsRead(int id)
+    {
+        using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["JobBoardDB"].ConnectionString))
+        {
+            string query = "UPDATE Notifications SET IsRead = 1 WHERE Id=@Id";
+            SqlCommand cmd = new SqlCommand(query, con);
+            cmd.Parameters.AddWithValue("@Id", id);
+            con.Open();
+            cmd.ExecuteNonQuery();
+        }
+
+        return RedirectToAction("NotificationsAdmin","Admin"); // seeker ka full page
+    }
+
+    //private void AddNotification(int userId, string message)
+    //{
+    //    using (SqlConnection con = new SqlConnection(conStr))
+    //    {
+    //        string query = @"INSERT INTO Notifications (UserId, Message, CreatedAt, IsRead) 
+    //                     VALUES (@UserId, @Message, @CreatedAt, 0)";
+    //        SqlCommand cmd = new SqlCommand(query, con);
+    //        cmd.Parameters.AddWithValue("@UserId", userId);
+    //        cmd.Parameters.AddWithValue("@Message", message);
+    //        cmd.Parameters.AddWithValue("@CreatedAt", DateTime.Now);
+
+    //        con.Open();
+    //        cmd.ExecuteNonQuery();
+    //    }
+    //}
+
+    public ActionResult Notifications()
+    {
+        if (Session["UserId"] == null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        int seekerId = Convert.ToInt32(Session["UserId"]);
+        List<Notification> notifications = new List<Notification>();
+
+        using (SqlConnection con = new SqlConnection(conStr))
+        {
+            string query = "SELECT * FROM Notifications WHERE UserId=@UserId ORDER BY CreatedAt DESC";
+            SqlCommand cmd = new SqlCommand(query, con);
+            cmd.Parameters.AddWithValue("@UserId", seekerId);
+            con.Open();
+            SqlDataReader dr = cmd.ExecuteReader();
+            while (dr.Read())
+            {
+                notifications.Add(new Notification
+                {
+                    Id = (int)dr["Id"],
+                    Message = dr["Message"].ToString(),
+                    CreatedAt = Convert.ToDateTime(dr["CreatedAt"]),
+                    IsRead = Convert.ToBoolean(dr["IsRead"])
+                });
+            }
+        }
+
+        return View(notifications);
     }
 
 

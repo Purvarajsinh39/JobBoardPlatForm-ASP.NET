@@ -3,8 +3,20 @@
   "WorkspaceRootPath": "C:\\Users\\Purvarajsinh\\OneDrive\\Desktop\\JobBoardPlatForm Main\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{B633AB90-E26A-42E2-AAB3-9A43357A18DF}|JobBoardPlatform\\JobBoardPlatform.csproj|C:\\Users\\Purvarajsinh\\OneDrive\\Desktop\\JobBoardPlatForm Main\\jobboardplatform\\views\\account\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{B633AB90-E26A-42E2-AAB3-9A43357A18DF}|JobBoardPlatform\\JobBoardPlatform.csproj|c:\\users\\purvarajsinh\\onedrive\\desktop\\jobboardplatform main\\jobboardplatform\\views\\account\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{B633AB90-E26A-42E2-AAB3-9A43357A18DF}|JobBoardPlatform\\JobBoardPlatform.csproj|solutionrelative:jobboardplatform\\views\\account\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B633AB90-E26A-42E2-AAB3-9A43357A18DF}|JobBoardPlatform\\JobBoardPlatform.csproj|c:\\users\\purvarajsinh\\onedrive\\desktop\\jobboardplatform main\\jobboardplatform\\controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B633AB90-E26A-42E2-AAB3-9A43357A18DF}|JobBoardPlatform\\JobBoardPlatform.csproj|solutionrelative:jobboardplatform\\controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B633AB90-E26A-42E2-AAB3-9A43357A18DF}|JobBoardPlatform\\JobBoardPlatform.csproj|C:\\Users\\Purvarajsinh\\OneDrive\\Desktop\\JobBoardPlatForm Main\\jobboardplatform\\controllers\\employercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B633AB90-E26A-42E2-AAB3-9A43357A18DF}|JobBoardPlatform\\JobBoardPlatform.csproj|solutionrelative:jobboardplatform\\controllers\\employercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B633AB90-E26A-42E2-AAB3-9A43357A18DF}|JobBoardPlatform\\JobBoardPlatform.csproj|C:\\Users\\Purvarajsinh\\OneDrive\\Desktop\\JobBoardPlatForm Main\\jobboardplatform\\controllers\\jobseekercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B633AB90-E26A-42E2-AAB3-9A43357A18DF}|JobBoardPlatform\\JobBoardPlatform.csproj|solutionrelative:jobboardplatform\\controllers\\jobseekercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -24,10 +36,49 @@
               "RelativeDocumentMoniker": "JobBoardPlatform\\Views\\Account\\Login.cshtml",
               "ToolTip": "C:\\Users\\Purvarajsinh\\OneDrive\\Desktop\\JobBoardPlatForm Main\\JobBoardPlatform\\Views\\Account\\Login.cshtml",
               "RelativeToolTip": "JobBoardPlatform\\Views\\Account\\Login.cshtml",
-              "ViewState": "AgIAAFIAAAAAAAAAAAAAAIUAAAAHAAAAAAAAAA==",
+              "ViewState": "AgIAAHIAAAAAAAAAAAAAAFoAAAASAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2025-09-19T10:19:49.163Z",
               "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "AdminController.cs",
+              "DocumentMoniker": "C:\\Users\\Purvarajsinh\\OneDrive\\Desktop\\JobBoardPlatForm Main\\JobBoardPlatform\\Controllers\\AdminController.cs",
+              "RelativeDocumentMoniker": "JobBoardPlatform\\Controllers\\AdminController.cs",
+              "ToolTip": "C:\\Users\\Purvarajsinh\\OneDrive\\Desktop\\JobBoardPlatForm Main\\JobBoardPlatform\\Controllers\\AdminController.cs",
+              "RelativeToolTip": "JobBoardPlatform\\Controllers\\AdminController.cs",
+              "ViewState": "AgIAAI0CAAAAAAAAAAAkwIECAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-26T10:27:40.259Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "JobSeekerController.cs",
+              "DocumentMoniker": "C:\\Users\\Purvarajsinh\\OneDrive\\Desktop\\JobBoardPlatForm Main\\JobBoardPlatform\\Controllers\\JobSeekerController.cs",
+              "RelativeDocumentMoniker": "JobBoardPlatform\\Controllers\\JobSeekerController.cs",
+              "ToolTip": "C:\\Users\\Purvarajsinh\\OneDrive\\Desktop\\JobBoardPlatForm Main\\JobBoardPlatform\\Controllers\\JobSeekerController.cs",
+              "RelativeToolTip": "JobBoardPlatform\\Controllers\\JobSeekerController.cs",
+              "ViewState": "AgIAAC8BAAAAAAAAAAAuwDIBAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-25T05:10:03.84Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "EmployerController.cs",
+              "DocumentMoniker": "C:\\Users\\Purvarajsinh\\OneDrive\\Desktop\\JobBoardPlatForm Main\\JobBoardPlatform\\Controllers\\EmployerController.cs",
+              "RelativeDocumentMoniker": "JobBoardPlatform\\Controllers\\EmployerController.cs",
+              "ToolTip": "C:\\Users\\Purvarajsinh\\OneDrive\\Desktop\\JobBoardPlatForm Main\\JobBoardPlatform\\Controllers\\EmployerController.cs",
+              "RelativeToolTip": "JobBoardPlatform\\Controllers\\EmployerController.cs",
+              "ViewState": "AgIAAIsDAAAAAAAAAAAgwKEDAAA6AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-25T05:05:34.732Z",
               "EditorCaption": ""
             }
           ]

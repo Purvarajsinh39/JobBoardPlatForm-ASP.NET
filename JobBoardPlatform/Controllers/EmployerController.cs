@@ -9,8 +9,8 @@ using System.Web;
 using System.Web.Mvc;
 using OfficeOpenXml.Style;
 using System.Drawing;
-
-public class EmployerController : Controller
+using JobBoardPlatform.Helpers;
+public class EmployerController : BaseController
 {
     string conStr = ConfigurationManager.ConnectionStrings["JobBoardDB"].ConnectionString;
 
@@ -159,9 +159,9 @@ public class EmployerController : Controller
         using (SqlConnection con = new SqlConnection(conStr))
         {
             string query = @"INSERT INTO Jobs 
-                            (Title, Description, Category, Location, PostedBy, PostedDate, IsApproved, ImagePath)
-                             VALUES 
-                            (@Title, @Description, @Category, @Location, @PostedBy, @PostedDate, @IsApproved, @ImagePath)";
+                        (Title, Description, Category, Location, PostedBy, PostedDate, IsApproved, ImagePath)
+                         VALUES 
+                        (@Title, @Description, @Category, @Location, @PostedBy, @PostedDate, @IsApproved, @ImagePath)";
 
             SqlCommand cmd = new SqlCommand(query, con);
             cmd.Parameters.AddWithValue("@Title", job.Title);
@@ -177,8 +177,23 @@ public class EmployerController : Controller
             cmd.ExecuteNonQuery();
         }
 
+        // ✅ Notification Part - After Job Insert
+        int adminId;
+        using (SqlConnection con = new SqlConnection(conStr))
+        {
+            string query = "SELECT TOP 1 Id FROM Users WHERE Role = 'Admin'";
+            SqlCommand cmd = new SqlCommand(query, con);
+            con.Open();
+            adminId = (int)cmd.ExecuteScalar();
+        }
+
+        var helper = new JobBoardPlatform.Helpers.NotificationHelper();
+        helper.AddNotification(adminId, $"New job posted: {job.Title}. Please review.");
+
         return RedirectToAction("Dashboard");
     }
+
+
 
     public ActionResult EditJob(int id)
     {
@@ -361,6 +376,9 @@ public class EmployerController : Controller
 
     public ActionResult ApproveApplication(int id, int jobId)
     {
+        int seekerId = 0;
+        string jobTitle = "";
+
         using (SqlConnection con = new SqlConnection(conStr))
         {
             string query = "UPDATE Applications SET Status = 'Approved' WHERE Id = @Id";
@@ -369,11 +387,37 @@ public class EmployerController : Controller
             con.Open();
             cmd.ExecuteNonQuery();
         }
+
+        // ✅ Get seeker id and job title
+        using (SqlConnection con = new SqlConnection(conStr))
+        {
+            string query = @"SELECT A.UserId, J.Title 
+                         FROM Applications A 
+                         JOIN Jobs J ON A.JobId = J.Id 
+                         WHERE A.Id=@Id";
+            SqlCommand cmd = new SqlCommand(query, con);
+            cmd.Parameters.AddWithValue("@Id", id);
+            con.Open();
+            SqlDataReader dr = cmd.ExecuteReader();
+            if (dr.Read())
+            {
+                seekerId = (int)dr["UserId"];
+                jobTitle = dr["Title"].ToString();
+            }
+        }
+
+        var helper = new JobBoardPlatform.Helpers.NotificationHelper();
+        helper.AddNotification(seekerId, $"Your application for '{jobTitle}' has been approved!");
+
         return RedirectToAction("ViewApplications", new { id = jobId });
     }
 
+
     public ActionResult RejectApplication(int id, int jobId)
     {
+        int seekerId = 0;
+        string jobTitle = "";
+
         using (SqlConnection con = new SqlConnection(conStr))
         {
             string query = "UPDATE Applications SET Status = 'Rejected' WHERE Id = @Id";
@@ -382,8 +426,34 @@ public class EmployerController : Controller
             con.Open();
             cmd.ExecuteNonQuery();
         }
+
+        // ✅ Get seeker id and job title
+        using (SqlConnection con = new SqlConnection(conStr))
+        {
+            string query = @"SELECT A.UserId, J.Title 
+                         FROM Applications A 
+                         JOIN Jobs J ON A.JobId = J.Id 
+                         WHERE A.Id=@Id";
+            SqlCommand cmd = new SqlCommand(query, con);
+            cmd.Parameters.AddWithValue("@Id", id);
+            con.Open();
+            SqlDataReader dr = cmd.ExecuteReader();
+            if (dr.Read())
+            {
+                seekerId = (int)dr["UserId"];
+                jobTitle = dr["Title"].ToString();
+            }
+        }
+
+        // ✅ Send notification to seeker
+        //AddNotification(seekerId, $"Your application for '{jobTitle}' has been rejected.");
+        
+        var helper = new JobBoardPlatform.Helpers.NotificationHelper();
+        helper.AddNotification(seekerId, $"Your application for '{jobTitle}' has been rejected!");
+
         return RedirectToAction("ViewApplications", new { id = jobId });
     }
+
 
     public ActionResult ShortlistedCandidates(string searchTerm = "")
     {
@@ -845,6 +915,67 @@ public class EmployerController : Controller
         ViewBag.SearchTerm = searchTerm;
 
         return View(jobs);
+    }
+    public ActionResult MarkNotificationAsRead(int id)
+    {
+        using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["JobBoardDB"].ConnectionString))
+        {
+            string query = "UPDATE Notifications SET IsRead = 1 WHERE Id=@Id";
+            SqlCommand cmd = new SqlCommand(query, con);
+            cmd.Parameters.AddWithValue("@Id", id);
+            con.Open();
+            cmd.ExecuteNonQuery();
+        }
+
+        return RedirectToAction("NotificationsEmployer", "Employer"); // seeker ka full page
+    }
+
+    //private void AddNotification(int userId, string message)
+    //{
+    //    using (SqlConnection con = new SqlConnection(conStr))
+    //    {
+    //        string query = @"INSERT INTO Notifications (UserId, Message, CreatedAt, IsRead) 
+    //                     VALUES (@UserId, @Message, @CreatedAt, 0)";
+    //        SqlCommand cmd = new SqlCommand(query, con);
+    //        cmd.Parameters.AddWithValue("@UserId", userId);
+    //        cmd.Parameters.AddWithValue("@Message", message);
+    //        cmd.Parameters.AddWithValue("@CreatedAt", DateTime.Now);
+
+    //        con.Open();
+    //        cmd.ExecuteNonQuery();
+    //    }
+    //}
+
+    public ActionResult Notifications()
+    {
+        if (Session["UserId"] == null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        int seekerId = Convert.ToInt32(Session["UserId"]);
+        List<Notification> notifications = new List<Notification>();
+
+        using (SqlConnection con = new SqlConnection(conStr))
+        {
+            string query = "SELECT * FROM Notifications WHERE UserId=@UserId ORDER BY CreatedAt DESC";
+            SqlCommand cmd = new SqlCommand(query, con);
+            cmd.Parameters.AddWithValue("@UserId", seekerId);
+            con.Open();
+            SqlDataReader dr = cmd.ExecuteReader();
+            while (dr.Read())
+            {
+                notifications.Add(new Notification
+                {
+                    Id = (int)dr["Id"],
+                    Message = dr["Message"].ToString(),
+                    CreatedAt = Convert.ToDateTime(dr["CreatedAt"]),
+                    IsRead = Convert.ToBoolean(dr["IsRead"])
+                });
+            }
+        }
+
+        return View(notifications);
     }
 
 }

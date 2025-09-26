@@ -8,7 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using Rotativa;
 
-public class JobSeekerController : Controller
+public class JobSeekerController : BaseController
 {
     string conStr = ConfigurationManager.ConnectionStrings["JobBoardDB"].ConnectionString;
 
@@ -101,10 +101,11 @@ public class JobSeekerController : Controller
             resumePath = "/Resumes/" + fileName;
         }
 
+        // ✅ Insert Application
         using (SqlConnection con = new SqlConnection(conStr))
         {
             string query = @"INSERT INTO Applications (JobId, UserId, ResumePath, AppliedDate, Status)
-                             VALUES (@JobId, @UserId, @ResumePath, GETDATE(), 'Applied')";
+                         VALUES (@JobId, @UserId, @ResumePath, GETDATE(), 'Applied')";
             SqlCommand cmd = new SqlCommand(query, con);
             cmd.Parameters.AddWithValue("@JobId", jobId);
             cmd.Parameters.AddWithValue("@UserId", Convert.ToInt32(Session["UserId"]));
@@ -113,9 +114,33 @@ public class JobSeekerController : Controller
             cmd.ExecuteNonQuery();
         }
 
+        // ✅ Get EmployerId + JobTitle
+        int employerId = 0;
+        string jobTitle = "";
+        using (SqlConnection con = new SqlConnection(conStr))
+        {
+            string query = "SELECT PostedBy, Title FROM Jobs WHERE Id=@JobId";
+            SqlCommand cmd = new SqlCommand(query, con);
+            cmd.Parameters.AddWithValue("@JobId", jobId);
+            con.Open();
+            SqlDataReader dr = cmd.ExecuteReader();
+            if (dr.Read())
+            {
+                employerId = (int)dr["PostedBy"];
+                jobTitle = dr["Title"].ToString();
+            }
+        }
+
+        // ✅ Send Notification to Employer
+        // AddNotification(employerId, $"A candidate applied for your job: {jobTitle}");
+
+        var helper = new JobBoardPlatform.Helpers.NotificationHelper();
+        helper.AddNotification(employerId, $"A candidate applied for your job: {jobTitle}");
+
         TempData["Msg"] = "Applied with resume!";
         return RedirectToAction("Dashboard");
     }
+
 
     public ActionResult MyApplications()
     {
@@ -234,6 +259,8 @@ public class JobSeekerController : Controller
         return RedirectToAction("EditProfile");
     }
 
+
+
     public ActionResult DownloadJobPdf(int id)
     {
         Job job = null;
@@ -274,6 +301,57 @@ public class JobSeekerController : Controller
             PageMargins = new Rotativa.Options.Margins { Top = 20, Bottom = 20 }
         };
     }
+
+
+
+    public ActionResult Notifications()
+    {
+        if (Session["UserId"] == null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        int seekerId = Convert.ToInt32(Session["UserId"]);
+        List<Notification> notifications = new List<Notification>();
+
+        using (SqlConnection con = new SqlConnection(conStr))
+        {
+            string query = "SELECT * FROM Notifications WHERE UserId=@UserId ORDER BY CreatedAt DESC";
+            SqlCommand cmd = new SqlCommand(query, con);
+            cmd.Parameters.AddWithValue("@UserId", seekerId);
+            con.Open();
+            SqlDataReader dr = cmd.ExecuteReader();
+            while (dr.Read())
+            {
+                notifications.Add(new Notification
+                {
+                    Id = (int)dr["Id"],
+                    Message = dr["Message"].ToString(),
+                    CreatedAt = Convert.ToDateTime(dr["CreatedAt"]),
+                    IsRead = Convert.ToBoolean(dr["IsRead"])
+                });
+            }
+        }
+
+        return View(notifications);
+    }
+
+
+
+    public ActionResult MarkNotificationAsRead(int id)
+    {
+        using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["JobBoardDB"].ConnectionString))
+        {
+            string query = "UPDATE Notifications SET IsRead = 1 WHERE Id=@Id";
+            SqlCommand cmd = new SqlCommand(query, con);
+            cmd.Parameters.AddWithValue("@Id", id);
+            con.Open();
+            cmd.ExecuteNonQuery();
+        }
+
+        return RedirectToAction("Notifications", "JobSeeker");// seeker ka full page
+    }
+
 
 
 

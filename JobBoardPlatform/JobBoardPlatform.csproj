@@ -143,18 +143,21 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\EmployerController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\JobSeekerController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\NotificationHelper.cs" />
     <Compile Include="Models\AdminDashboardViewModel.cs" />
     <Compile Include="Models\Application.cs" />
     <Compile Include="Models\ApplicationViewModel.cs" />
     <Compile Include="Models\ApplyViewModel.cs" />
     <Compile Include="Models\Job.cs" />
     <Compile Include="Models\JobWithEmployerViewModel.cs" />
+    <Compile Include="Models\Notification.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -238,6 +241,9 @@
     <Content Include="Views\Employer\ViewAllApplications.cshtml" />
     <Content Include="Views\Admin\ManageJobs.cshtml" />
     <Content Include="Views\Employer\ManageJobs.cshtml" />
+    <Content Include="Views\JobSeeker\Notifications.cshtml" />
+    <Content Include="Views\Admin\NotificationsAdmin.cshtml" />
+    <Content Include="Views\Employer\NotificationsEmployer.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

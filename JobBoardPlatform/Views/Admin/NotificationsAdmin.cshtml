@@ -1,0 +1,197 @@
+@model List<JobBoardPlatform.Models.Notification>
+
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-4">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header Section -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2">My Notifications</h1>
+                    <p class="text-gray-600">Stay updated with your latest activities</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="bg-white px-4 py-2 rounded-full shadow-sm border">
+                        <span class="text-sm font-medium text-gray-700">Total: </span>
+                        <span class="text-sm font-bold text-blue-600">@Model.Count</span>
+                    </div>
+                    <div class="bg-white px-4 py-2 rounded-full shadow-sm border">
+                        <span class="text-sm font-medium text-gray-700">Unread: </span>
+                        <span class="text-sm font-bold text-orange-600">@Model.Count(n => !n.IsRead)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notifications Container -->
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+            @if (Model.Any())
+            {
+                <!-- Table Header -->
+                <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
+                    <div class="grid grid-cols-12 gap-4 text-white font-semibold">
+                        <div class="col-span-6 md:col-span-7">
+                            <div class="flex items-center space-x-2">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M8.707 7.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l2-2a1 1 0 00-1.414-1.414L11 7.586V3a1 1 0 10-2 0v4.586l-.293-.293z"></path>
+                                    <path d="M3 5a2 2 0 012-2h1a1 1 0 010 2H5v7h2l1 2h4l1-2h2V5h-1a1 1 0 110-2h1a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"></path>
+                                </svg>
+                                <span>Message</span>
+                            </div>
+                        </div>
+                        <div class="col-span-3 md:col-span-2">
+                            <div class="flex items-center space-x-2">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span>Date</span>
+                            </div>
+                        </div>
+                        <div class="col-span-3">
+                            <div class="flex items-center space-x-2">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span>Status</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notifications List -->
+                <div class="divide-y divide-gray-100">
+                    @foreach (var n in Model)
+                    {
+                        <div class="@(n.IsRead ? "bg-white hover:bg-gray-50" : "bg-blue-50 hover:bg-blue-100") transition-colors duration-200 ease-in-out">
+                            <div class="px-6 py-4">
+                                <div class="grid grid-cols-12 gap-4 items-center">
+                                    <!-- Message Column -->
+                                    <div class="col-span-6 md:col-span-7">
+                                        <div class="flex items-start space-x-3">
+                                            @if (!n.IsRead)
+                                            {
+                                                <div class="flex-shrink-0 w-2 h-2 bg-blue-600 rounded-full mt-2 animate-pulse"></div>
+                                            }
+                                            else
+                                            {
+                                                <div class="flex-shrink-0 w-2 h-2 bg-gray-300 rounded-full mt-2"></div>
+                                            }
+                                            <div class="min-w-0 flex-1">
+                                                <p class="@(n.IsRead ? "text-gray-700" : "text-gray-900 font-medium") text-sm leading-relaxed break-words">
+                                                    @n.Message
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Date Column -->
+                                    <div class="col-span-3 md:col-span-2">
+                                        <div class="text-sm text-gray-600">
+                                            <div class="font-medium">@n.CreatedAt.ToString("dd MMM")</div>
+                                            <div class="text-xs text-gray-500">@n.CreatedAt.ToString("HH:mm")</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Status Column -->
+                                    <div class="col-span-3">
+                                        @if (n.IsRead)
+                                        {
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
+                                                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                                </svg>
+                                                Read
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 border border-orange-200">
+                                                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                                                </svg>
+                                                Unread
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <!-- Empty State -->
+                <div class="text-center py-16">
+                    <svg class="mx-auto h-24 w-24 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M15 17h5l-5 5v-5zM10.5 3.75a6 6 0 016 6v4.5h-3a3 3 0 00-3 3v3h-4.5a1.5 1.5 0 01-1.5-1.5v-9a6 6 0 016-6z"></path>
+                    </svg>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">No notifications yet</h3>
+                    <p class="text-gray-600 max-w-sm mx-auto">When you receive notifications, they'll appear here to keep you updated on important activities.</p>
+                </div>
+            }
+        </div>
+
+        <!-- Footer Info -->
+        @if (Model.Any())
+        {
+            <div class="mt-6 text-center">
+                <p class="text-sm text-gray-500">
+                    Showing @Model.Count notification@(Model.Count != 1 ? "s" : "") •
+                    Last updated: @DateTime.Now.ToString("dd MMM yyyy, HH:mm")
+                </p>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    /* Custom animations for enhanced UX */
+    @@keyframes slideInUp {
+        from {
+            transform: translateY(10px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .animate-slide-in {
+        animation: slideInUp 0.3s ease-out;
+    }
+
+    /* Subtle hover effects */
+    .notification-row {
+        transition: all 0.2s ease-in-out;
+    }
+
+    .notification-row:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Enhanced scrollbar for better UX */
+    .notifications-container {
+        scrollbar-width: thin;
+        scrollbar-color: #cbd5e1 #f1f5f9;
+    }
+
+    .notifications-container::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .notifications-container::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 3px;
+    }
+
+    .notifications-container::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 3px;
+    }
+
+    .notifications-container::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+    }
+</style>
