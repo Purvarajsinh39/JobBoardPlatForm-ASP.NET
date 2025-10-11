@@ -1,0 +1,400 @@
+﻿@model JobBoardPlatform.Models.QuizStatsViewModel
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz Statistics - Admin Dashboard</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Feather Icons -->
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+
+    <style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .stat-card {
+            transition: all 0.3s ease;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+            .stat-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            }
+
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+
+        @@keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @@keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 min-h-screen">
+
+    <!-- Animated Background Elements -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute -top-20 -right-20 w-40 h-40 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 floating"></div>
+        <div class="absolute -bottom-20 -left-20 w-40 h-40 bg-yellow-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 floating" style="animation-delay: -2s;"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 floating" style="animation-delay: -4s;"></div>
+    </div>
+
+    <!-- Header Section -->
+    <div class="gradient-bg py-12 px-4 shadow-2xl relative overflow-hidden">
+        <div class="absolute inset-0 bg-black opacity-10"></div>
+        <div class="max-w-6xl mx-auto relative z-10 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold text-white mb-4 drop-shadow-2xl">
+                📊 Quiz Statistics
+            </h1>
+            <p class="text-xl text-white opacity-90 font-light">
+                Comprehensive overview of quiz performance and results
+            </p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-6xl mx-auto px-4 py-12 -mt-8 relative z-10">
+
+        <!-- Debug Message -->
+        <!--@if (ViewBag.DebugMsg != null)
+        {
+            <div class="glass-card p-6 mb-8 border-l-4 border-blue-500">
+                <div class="flex items-center">
+                    <i data-feather="info" class="w-5 h-5 text-blue-500 mr-3"></i>
+                    <p class="text-blue-700 font-medium">@ViewBag.DebugMsg</p>
+                </div>
+            </div>
+        }-->
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <!-- Total Attempts Card -->
+            <div class="stat-card glass-card p-6 text-center">
+                <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <i data-feather="clipboard" class="w-8 h-8 text-white"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-2 pulse-animation">@Model.TotalAttempts</h3>
+                <p class="text-gray-600 font-medium">Total Attempts</p>
+                <div class="mt-3 pt-3 border-t border-gray-200 border-opacity-30">
+                    <span class="text-sm text-gray-500">All quiz submissions</span>
+                </div>
+            </div>
+
+            <!-- Passed Card -->
+            <div class="stat-card glass-card p-6 text-center">
+                <div class="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <i data-feather="check-circle" class="w-8 h-8 text-white"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-2 pulse-animation">@Model.Passed</h3>
+                <p class="text-gray-600 font-medium">Passed</p>
+                <div class="mt-3 pt-3 border-t border-gray-200 border-opacity-30">
+                    <span class="text-sm text-green-600 font-semibold">
+                        @if (Model.TotalAttempts > 0)
+                        {
+                            var passRate = (Model.Passed * 100.0 / Model.TotalAttempts).ToString("0.0");
+                            @:@passRate% Success Rate
+                        }
+                        else
+                        {
+                            @:0% Success Rate
+                        }
+                    </span>
+                </div>
+            </div>
+
+            <!-- Failed Card -->
+            <div class="stat-card glass-card p-6 text-center">
+                <div class="w-16 h-16 bg-gradient-to-r from-red-500 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <i data-feather="x-circle" class="w-8 h-8 text-white"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-2 pulse-animation">@Model.Failed</h3>
+                <p class="text-gray-600 font-medium">Failed</p>
+                <div class="mt-3 pt-3 border-t border-gray-200 border-opacity-30">
+                    <span class="text-sm text-red-600 font-semibold">
+                        @if (Model.TotalAttempts > 0)
+                        {
+                            var failRate = (Model.Failed * 100.0 / Model.TotalAttempts).ToString("0.0");
+                            @:@failRate% Failure Rate
+                        }
+                        else
+                        {
+                            @:0% Failure Rate
+                        }
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart Section -->
+        <div class="glass-card p-8 relative overflow-hidden">
+            <!-- Grid Background Pattern -->
+            <div class="absolute inset-0 opacity-10 pointer-events-none">
+                <div class="absolute inset-0" style="
+            background-image:
+                linear-gradient(rgba(147, 51, 234, 0.2) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(147, 51, 234, 0.2) 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: center center;
+        "></div>
+                <div class="absolute inset-0 bg-gradient-to-br from-purple-50/30 via-transparent to-pink-50/30"></div>
+            </div>
+
+            <!-- Animated Floating Elements -->
+            <div class="absolute top-4 right-4 w-20 h-20 bg-purple-200/20 rounded-full blur-xl animate-pulse"></div>
+            <div class="absolute bottom-4 left-4 w-16 h-16 bg-pink-200/20 rounded-full blur-xl animate-pulse" style="animation-delay: 1s;"></div>
+
+            <div class="relative z-10">
+                <div class="flex items-center justify-between mb-8">
+                    <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                        <div class="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mr-3 shadow-lg">
+                            <i data-feather="bar-chart-2" class="w-5 h-5 text-white"></i>
+                        </div>
+                        Quiz Results Overview
+                    </h2>
+                    @if (Model.TotalAttempts > 0)
+                    {
+                        <div class="flex items-center space-x-3">
+                            <span class="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full text-sm font-medium shadow-lg">
+                                @Model.TotalAttempts Total Attempts
+                            </span>
+                        </div>
+                    }
+                </div>
+
+                @if (Model.TotalAttempts > 0)
+                {
+                    <div class="relative">
+                        <!-- Chart Container with Enhanced Grid -->
+                        <div class="h-96 relative bg-white/50 rounded-2xl p-4 border border-white/50 shadow-inner">
+                            <!-- Detailed Grid Pattern for Chart Area -->
+                            <div class="absolute inset-4 opacity-20 pointer-events-none">
+                                <div class="w-full h-full" style="
+                            background-image:
+                                linear-gradient(rgba(147, 51, 234, 0.3) 1px, transparent 1px),
+                                linear-gradient(90deg, rgba(147, 51, 234, 0.3) 1px, transparent 1px);
+                            background-size: 20px 20px;
+                            background-position: center center;
+                        "></div>
+                            </div>
+                            <canvas id="quizChart" class="relative z-10"></canvas>
+                        </div>
+
+                        <!-- Stats Indicators -->
+                        <div class="flex justify-center space-x-8 mt-6">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+                                <span class="text-sm text-gray-600">Passed: @Model.Passed</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+                                <span class="text-sm text-gray-600">Failed: @Model.Failed</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Enhanced Insights Cards -->
+                    <!--<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10 pt-10 border-t border-gray-200/50">
+                        <div class="glass-card p-6 text-center transform hover:scale-105 transition-transform duration-300">
+                            <div class="w-16 h-16 bg-gradient-to-r from-green-400 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                                <i data-feather="check" class="w-8 h-8 text-white"></i>
+                            </div>
+                            <div class="text-4xl font-bold text-green-600 mb-2">@Model.Passed</div>
+                            <p class="text-gray-600 font-medium">Successful Completions</p>
+                            @if (Model.TotalAttempts > 0)
+                            {
+                                var passRate = (Model.Passed * 100.0 / Model.TotalAttempts).ToString("0.0");
+                                <div class="mt-3 inline-flex items-center px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">
+                                    <i data-feather="trending-up" class="w-3 h-3 mr-1"></i>
+                                    @passRate% Success Rate
+                                </div>
+                            }
+                        </div>
+
+                        <div class="glass-card p-6 text-center transform hover:scale-105 transition-transform duration-300">
+                            <div class="w-16 h-16 bg-gradient-to-r from-red-400 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                                <i data-feather="x" class="w-8 h-8 text-white"></i>
+                            </div>
+                            <div class="text-4xl font-bold text-red-600 mb-2">@Model.Failed</div>
+                            <p class="text-gray-600 font-medium">Needs Improvement</p>
+                            @if (Model.TotalAttempts > 0)
+                            {
+                                var failRate = (Model.Failed * 100.0 / Model.TotalAttempts).ToString("0.0");
+                                <div class="mt-3 inline-flex items-center px-3 py-1 bg-red-100 text-red-800 rounded-full text-xs font-semibold">
+                                    <i data-feather="trending-down" class="w-3 h-3 mr-1"></i>
+                                    @failRate% Failure Rate
+                                </div>
+                            }
+                        </div>
+                    </div>-->
+
+                    <!-- Performance Summary -->
+                    <div class="mt-8 p-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl border border-purple-100">
+                        <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                            <i data-feather="activity" class="w-5 h-5 mr-2 text-purple-500"></i>
+                            Performance Summary
+                        </h4>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                            <div>
+                                <div class="text-2xl font-bold text-purple-600">@Model.TotalAttempts</div>
+                                <div class="text-sm text-gray-600">Total Attempts</div>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-bold text-green-600">@Model.Passed</div>
+                                <div class="text-sm text-gray-600">Passed</div>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-bold text-red-600">@Model.Failed</div>
+                                <div class="text-sm text-gray-600">Failed</div>
+                            </div>
+                            <div>
+                                @if (Model.TotalAttempts > 0)
+                                {
+                                    var overallRate = (Model.Passed * 100.0 / Model.TotalAttempts).ToString("0.0");
+                                    <div class="text-2xl font-bold text-blue-600">@overallRate%</div>
+                                }
+                                else
+                                {
+                                    <div class="text-2xl font-bold text-blue-600">0%</div>
+                                }
+                                <div class="text-sm text-gray-600">Overall Rate</div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <!-- Enhanced Empty State -->
+                    <div class="text-center py-16 relative">
+                        <!-- Background Pattern for Empty State -->
+                        <div class="absolute inset-0 opacity-5">
+                            <div class="w-full h-full" style="
+                        background-image:
+                            radial-gradient(circle at 25% 25%, rgba(147, 51, 234, 0.3) 0%, transparent 50%),
+                            radial-gradient(circle at 75% 75%, rgba(236, 72, 153, 0.3) 0%, transparent 50%);
+                    "></div>
+                        </div>
+
+                        <div class="relative z-10">
+                            <div class="w-32 h-32 bg-gradient-to-r from-gray-300 to-gray-400 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                                <i data-feather="clipboard" class="w-16 h-16 text-gray-500"></i>
+                            </div>
+                            <h3 class="text-3xl font-bold text-gray-600 mb-4">No Quiz Data Available</h3>
+                            <p class="text-gray-500 max-w-md mx-auto text-lg mb-8">
+                                There are no quiz attempts recorded yet. The dashboard will populate automatically once users start taking quizzes.
+                            </p>
+                            <div class="flex justify-center space-x-4">
+                                <button onclick="location.reload()" class="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center">
+                                    <i data-feather="refresh-cw" class="w-5 h-5 mr-2"></i>
+                                    Refresh Page
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="mt-8 glass-card p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                <i data-feather="zap" class="w-5 h-5 mr-2 text-yellow-500"></i>
+                Quick Actions
+            </h3>
+            <div class="flex flex-wrap gap-4">
+                <a href="/Admin/Dashboard" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition duration-200 flex items-center">
+                    <i data-feather="arrow-left" class="w-4 h-4 mr-2"></i>
+                    Back to Dashboard
+                </a>
+                <button onclick="location.reload()" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition duration-200 flex items-center">
+                    <i data-feather="refresh-cw" class="w-4 h-4 mr-2"></i>
+                    Refresh Data
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Feather Icons
+        feather.replace();
+
+        // Chart Logic (same as original)
+        @if (Model.TotalAttempts > 0)
+        {
+            @:setTimeout(function() {
+            @:    var ctx = document.getElementById('quizChart').getContext('2d');
+            @:    var quizChart = new Chart(ctx, {
+            @:        type: 'bar',
+            @:        data: {
+            @:            labels: ['Passed', 'Failed'],
+            @:            datasets: [{
+            @:                label: 'Quiz Results',
+            @:                data: [@Model.Passed, @Model.Failed],
+            @:                backgroundColor: ['#4CAF50', '#F44336'],
+            @:                borderColor: ['#388E3C', '#D32F2F'],
+            @:                borderWidth: 1
+            @:            }]
+            @:        },
+            @:        options: {
+            @:            responsive: true,
+            @:            maintainAspectRatio: false,
+            @:            scales: {
+            @:                y: {
+            @:                    beginAtZero: true,
+            @:                    ticks: {
+            @:                        precision: 0
+            @:                    }
+            @:                }
+            @:            },
+            @:            plugins: {
+            @:                legend: {
+            @:                    display: true,
+            @:                    position: 'top'
+            @:                }
+            @:            }
+            @:        }
+            @:    });
+            @:}, 100);
+        }
+    </script>
+</body>
+</html>

@@ -16,15 +16,5 @@ namespace JobBoardPlatform.Models
         public int PostedBy { get; set; }
         public string PostedByName { get; set; }
         public bool IsApproved { get; set; }
-        public int ApplicationCount { get; set; }
-        public bool AlreadyApplied { get; set; }
-        public string ImagePath { get; set; }
-
-        public string Status { get; set; }
-        public int Applications { get; set; }
-        public string EmployerName { get; set; }
-
-
-
     }
 }

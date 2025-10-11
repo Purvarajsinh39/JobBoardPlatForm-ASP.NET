@@ -1,118 +1,53 @@
-@model IEnumerable<JobBoardPlatform.Models.Job>
+@model List<JobBoardPlatform.Models.Job>
 
 @{
-    ViewBag.Title = "Available Jobs";
+    ViewBag.Title = "Browse Jobs";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<!-- Tailwind & AOS -->
-<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
-<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-<script src="https://unpkg.com/feather-icons"></script>
+<h2>Available Jobs</h2>
 
-<style>
-    .job-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    }
-
-    .gradient-bg {
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    }
-</style>
-
-<div class="gradient-bg min-h-screen py-8">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-3xl font-bold text-gray-800 mb-8 flex items-center">
-            <i data-feather="briefcase" class="mr-3"></i> Available Jobs
-        </h2>
-
-        <!-- Search / Filter Form -->
-        @using (Html.BeginForm("Dashboard", "JobSeeker", FormMethod.Get))
-        {
-            <div class="bg-white rounded-xl shadow-md p-6 mb-8" data-aos="fade-up">
-                <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
-                    <input type="text" name="search" value="@Request["search"]"
-                           class="col-span-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
-                           placeholder="Search by title" />
-
-                    <input type="text" name="category" value="@Request["category"]"
-                           class="col-span-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
-                           placeholder="Filter by category" />
-
-                    <input type="text" name="location" value="@Request["location"]"
-                           class="col-span-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
-                           placeholder="Filter by location" />
-
-                    <select name="sort" class="col-span-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
-                        <option value="">Sort By</option>
-                        <option value="latest" @(Request["sort"] == "latest" ? "selected" : "")>Posted Date (Latest)</option>
-                        <option value="title_asc" @(Request["sort"] == "title_asc" ? "selected" : "")>Title A-Z</option>
-                        <option value="title_desc" @(Request["sort"] == "title_desc" ? "selected" : "")>Title Z-A</option>
-                    </select>
-
-                    <select name="date" class="col-span-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
-                        <option value="">All Dates</option>
-                        <option value="today" @(Request["date"] == "today" ? "selected" : "")>Today</option>
-                        <option value="week" @(Request["date"] == "week" ? "selected" : "")>This Week</option>
-                        <option value="month" @(Request["date"] == "month" ? "selected" : "")>This Month</option>
-                    </select>
-
-                    <button type="submit"
-                            class="col-span-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition duration-300 flex items-center justify-center">
-                        <i data-feather="search" class="mr-2"></i> Search
-                    </button>
-                </div>
-            </div>
-        }
-
-        <!-- Jobs Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            @foreach (var job in Model)
-            {
-                <div class="job-card bg-white rounded-xl shadow-md overflow-hidden transition duration-300 hover:shadow-xl" data-aos="fade-up">
-                    <img src="@(string.IsNullOrEmpty(job.ImagePath) ? Url.Content("~/Content/Images/default-job.png") : Url.Content(job.ImagePath))"
-                         alt="Job Image" class="w-full h-48 object-cover">
-
-                    <div class="p-6">
-                        <div class="flex justify-between items-start">
-                            <h3 class="text-xl font-semibold text-gray-800 mb-2">@job.Title</h3>
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
-                                @job.Category
-                            </span>
-                        </div>
-
-                        <div class="flex items-center text-gray-600 mb-2">
-                            <i data-feather="briefcase" class="mr-2 w-4 h-4"></i>
-                            <span>@job.PostedByName</span>
-                        </div>
-
-                        <div class="flex items-center text-gray-600 mb-4">
-                            <i data-feather="map-pin" class="mr-2 w-4 h-4"></i>
-                            <span>@job.Location</span>
-                        </div>
-
-                        <p class="text-gray-600 mb-4">
-                            @(job.Description.Length > 60 ? job.Description.Substring(0, 60) + "..." : job.Description)
-                        </p>
-
-                        <div class="flex justify-between items-center">
-                            <span class="text-sm text-gray-500">Posted on @job.PostedDate.ToShortDateString()</span>
-                            <a href="@Url.Action("JobDetails", "JobSeeker", new { id = job.Id })"
-                               class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition duration-300">
-                                View Details
-                                <i data-feather="arrow-right" class="ml-2 w-4 h-4"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            }
+@using (Html.BeginForm("Dashboard", "JobSeeker", FormMethod.Get))
+{
+    <div class="form-row mb-3">
+        <div class="col-md-3">
+            <input type="text" name="search" class="form-control" placeholder="Search by title" />
+        </div>
+        <div class="col-md-3">
+            <input type="text" name="category" class="form-control" placeholder="Filter by category" />
+        </div>
+        <div class="col-md-3">
+            <input type="text" name="location" class="form-control" placeholder="Filter by location" />
+        </div>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-primary btn-block">Search</button>
         </div>
     </div>
-</div>
+}
+<br />
 
-<script>
-    AOS.init({ duration: 800, easing: 'ease-in-out', once: true });
-    feather.replace();
-</script>
+@if (TempData["Msg"] != null)
+{
+    <p class="text-success">@TempData["Msg"]</p>
+}
+
+<table class="table table-bordered">
+    <tr>
+        <th>Title</th>
+        <th> Category</th>
+        <th>Location</th>
+        <th>Description</th>
+        @*<th>Apply</th>*@
+    </tr>
+    @foreach (var job in Model)
+    {
+        <tr>
+            <td>@job.Title</td>
+            <td>@job.Category</td>
+            <td>@job.Location</td>
+            <td>
+                <a href="@Url.Action("JobDetails", "JobSeeker", new { id = job.Id })" class="btn btn-sm btn-info">View</a>
+            </td>
+        </tr>
+    }
+</table>

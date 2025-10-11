@@ -5,62 +5,287 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-    <div class="flex items-center justify-between mb-8">
-        <h1 class="text-3xl font-bold text-gray-900">Job Details</h1>
-        <a href="@Url.Action("Dashboard", "Employer")" class="inline-flex items-center px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg transition duration-200">
-            <i data-feather="arrow-left" class="mr-2 w-4 h-4"></i>
-            Back to Dashboard
-        </a>
-    </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <style>
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
 
-    <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100" data-aos="fade-up">
-        <div class="p-6 md:p-8">
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-                <h2 class="text-2xl font-semibold text-gray-800">@Model.Title</h2>
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium mt-2 md:mt-0 @(Model.IsApproved ? "bg-green-500 text-white" : "bg-yellow-500 text-white")">
-                    @(Model.IsApproved ? "Approved" : "Pending")
-                </span>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .hover-lift {
+            transition: all 0.3s ease;
+        }
+
+            .hover-lift:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+            }
+
+        .status-badge {
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+            .status-badge::before {
+                content: '';
+                position: absolute;
+                left: 0.75rem;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 0.5rem;
+                height: 0.5rem;
+                border-radius: 50%;
+                animation: pulse 2s infinite;
+            }
+
+        .status-approved::before {
+            background-color: #10B981;
+        }
+
+        .status-pending::before {
+            background-color: #F59E0B;
+        }
+
+        @@keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .info-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-left: 4px solid #3b82f6;
+        }
+
+        .description-box {
+            background: linear-gradient(to bottom right, #f8fafc, #ffffff);
+            border: 1px solid #e2e8f0;
+        }
+
+        .image-frame {
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen py-8">
+    <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto">
+            <!-- Header Section --><br><br>
+            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8" data-aos="fade-down">
+                <div class="mb-6 lg:mb-0">
+                    <div class="flex items-center space-x-3 mb-2">
+                        <div class="p-2 bg-opacity-20 rounded-xl" style="color: #6A5ACD;">
+                            <i data-feather="briefcase" class="w-6 h-6" style="color: #6A5ACD;"></i>
+                        </div>
+                        <h1 class="text-4xl font-bold" style="color: #6A5ACD;">Job Details</h1>
+                    </div>
+                    <p class="text-blue-100 text-lg" style="color: #6A5ACD;" >Complete information about your job posting</p>
+                </div>
+                <a href="@Url.Action("Dashboard", "Employer")"
+                   class="flex items-center px-6 py-3
+          bg-indigo-600 bg-opacity-10
+          hover:bg-opacity-20
+          text-indigo-800 font-semibold
+          rounded-2xl transition-all duration-300
+          hover:shadow-lg hover:scale-[1.02]
+          border border-indigo-200 backdrop-blur-sm">
+                    <i data-feather="arrow-left" class="w-5 h-5 mr-3"></i>
+                    Back to Dashboard
+                </a>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div>
-                    <h3 class="text-sm font-medium text-gray-500">Category</h3>
-                    <p class="mt-1 text-gray-900">@Model.Category</p>
-                </div>
-                <div>
-                    <h3 class="text-sm font-medium text-gray-500">Location</h3>
-                    <p class="mt-1 text-gray-900">@Model.Location</p>
-                </div>
-                <div>
-                    <h3 class="text-sm font-medium text-gray-500">Posted Date</h3>
-                    <p class="mt-1 text-gray-900">@Model.PostedDate.ToShortDateString()</p>
-                </div>
-            </div>
-
-            <div class="mb-6">
-                <h3 class="text-sm font-medium text-gray-500">Description</h3>
-                <div class="mt-2 text-gray-700 prose max-w-none">
-                    @Model.Description
-                </div>
-            </div>
-
-            @if (!string.IsNullOrEmpty(Model.ImagePath))
-            {
-                <div class="mt-6">
-                    <h3 class="text-sm font-medium text-gray-500 mb-2">Job Image</h3>
-                    <div class="border border-gray-200 rounded-lg overflow-hidden">
-                        <img src="@Url.Content(Model.ImagePath)" alt="Job Image" class="w-full h-auto object-cover" />
+            <!-- Main Content Card -->
+            <div class="glass-effect rounded-2xl shadow-2xl overflow-hidden" data-aos="fade-up" data-aos-delay="200">
+                <!-- Job Header -->
+                <div class="bg-gradient-to-r from-blue-600 to-purple-600 p-8 text-white">
+                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                        <div class="mb-4 lg:mb-0">
+                            <h2 class="text-3xl font-bold mb-2">@Model.Title</h2>
+                            <div class="flex items-center space-x-4 text-blue-100">
+                                <div class="flex items-center">
+                                    <i data-feather="calendar" class="w-4 h-4 mr-2"></i>
+                                    <span>Posted @Model.PostedDate.ToShortDateString()</span>
+                                </div>
+                            </div>
+                        </div>
+                        <span class="status-badge px-4 py-2 inline-flex items-center text-sm font-semibold rounded-full bg-white bg-opacity-20 backdrop-blur-sm @(Model.IsApproved ? "status-approved" : "status-pending")">
+                            @(Model.IsApproved ? "Approved" : "Pending Review")
+                        </span>
                     </div>
                 </div>
-            }
+
+                <!-- Job Details -->
+                <div class="p-8">
+                    <!-- Key Information Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <div class="info-card rounded-xl p-5 hover-lift">
+                            <div class="flex items-center mb-3">
+                                <div class="p-2 bg-blue-100 rounded-lg mr-3">
+                                    <i data-feather="tag" class="w-5 h-5 text-blue-600"></i>
+                                </div>
+                                <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Category</h3>
+                            </div>
+                            <p class="text-lg font-semibold text-gray-900">@Model.Category</p>
+                        </div>
+
+                        <div class="info-card rounded-xl p-5 hover-lift">
+                            <div class="flex items-center mb-3">
+                                <div class="p-2 bg-green-100 rounded-lg mr-3">
+                                    <i data-feather="map-pin" class="w-5 h-5 text-green-600"></i>
+                                </div>
+                                <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Location</h3>
+                            </div>
+                            <p class="text-lg font-semibold text-gray-900">@Model.Location</p>
+                        </div>
+
+                        <div class="info-card rounded-xl p-5 hover-lift">
+                            <div class="flex items-center mb-3">
+                                <div class="p-2 bg-purple-100 rounded-lg mr-3">
+                                    <i data-feather="clock" class="w-5 h-5 text-purple-600"></i>
+                                </div>
+                                <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Posted Date</h3>
+                            </div>
+                            <p class="text-lg font-semibold text-gray-900">@Model.PostedDate.ToShortDateString()</p>
+                        </div>
+                    </div>
+
+                    <!-- Job Description -->
+                    <div class="mb-8">
+                        <div class="flex items-center mb-4">
+                            <div class="p-2 bg-indigo-100 rounded-lg mr-3">
+                                <i data-feather="file-text" class="w-5 h-5 text-indigo-600"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold text-gray-800">Job Description</h3>
+                        </div>
+                        <div class="description-box rounded-xl p-6">
+                            <div class="text-gray-700 leading-relaxed prose max-w-none">
+                                @Html.Raw(Model.Description.Replace("\n", "<br>"))
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Job Image -->
+                    @if (!string.IsNullOrEmpty(Model.ImagePath))
+                    {
+                        <div class="mt-8">
+                            <div class="flex items-center mb-4">
+                                <div class="p-2 bg-pink-100 rounded-lg mr-3">
+                                    <i data-feather="image" class="w-5 h-5 text-pink-600"></i>
+                                </div>
+                                <h3 class="text-xl font-semibold text-gray-800">Job Image</h3>
+                            </div>
+                            <div class="image-frame rounded-xl overflow-hidden">
+                                <img src="@Url.Content(Model.ImagePath)" alt="Job Image" class="w-full h-auto object-cover transition-transform duration-300 hover:scale-105" />
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="mt-8">
+                            <div class="flex items-center mb-4">
+                                <div class="p-2 bg-gray-100 rounded-lg mr-3">
+                                    <i data-feather="image" class="w-5 h-5 text-gray-400"></i>
+                                </div>
+                                <h3 class="text-xl font-semibold text-gray-800">Job Image</h3>
+                            </div>
+                            <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center">
+                                <div class="flex flex-col items-center justify-center">
+                                    <i data-feather="image" class="w-12 h-12 text-gray-400 mb-4"></i>
+                                    <p class="text-gray-500 font-medium">No image uploaded for this job</p>
+                                    <p class="text-gray-400 text-sm mt-1">Add an image to make your job posting stand out</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-4 pt-8 mt-8 border-t border-gray-200">
+                        <a href="@Url.Action("EditJob", "Employer", new { id = Model.Id })"
+                           class="flex-1 flex items-center justify-center px-6 py-4 border-2 border-blue-200 text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-xl font-medium transition-all duration-300 hover-lift">
+                            <i data-feather="edit-2" class="w-5 h-5 mr-3"></i>
+                            Edit Job Details
+                        </a>
+                        <a href="@Url.Action("ViewApplications", "Employer", new { jobId = Model.Id })"
+                           class="flex-1 flex items-center justify-center px-6 py-4 border-2 border-green-200 text-green-700 bg-green-50 hover:bg-green-100 rounded-xl font-medium transition-all duration-300 hover-lift">
+                            <i data-feather="users" class="w-5 h-5 mr-3"></i>
+                            View Applications
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats Card -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8" data-aos="fade-up" data-aos-delay="400">
+                @*<div class="glass-effect rounded-2xl p-6 text-center hover-lift">
+                    <div class="p-3 bg-blue-100 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-3">
+                        <i data-feather="eye" class="w-6 h-6 text-blue-600"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800">Total Views</h3>
+                    <p class="text-2xl font-bold text-blue-600 mt-1">Coming Soon</p>
+                </div>*@
+
+                @*<div class="glass-effect rounded-2xl p-6 text-center hover-lift">
+                    <div class="p-3 bg-green-100 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-3">
+                        <i data-feather="users" class="w-6 h-6 text-green-600"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800">Applications</h3>
+                    <p class="text-2xl font-bold text-green-600 mt-1">@Model.Application</p>
+                </div>*@
+
+                <div class="glass-effect rounded-2xl p-6 text-center hover-lift">
+                    <div class="p-3 bg-purple-100 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-3">
+                        <i data-feather="star" class="w-6 h-6 text-purple-600"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800">Status</h3>
+                    <p class="text-xl font-bold @(Model.IsApproved ? "text-green-600" : "text-yellow-600") mt-1">
+                        @(Model.IsApproved ? "Active" : "Pending")
+                    </p>
+                </div>
+            </div>
         </div>
     </div>
-</div>
 
-@section Scripts {
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>AOS.init();</script>
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
-    <script>feather.replace();</script>
-}
+    <script>
+        AOS.init({
+            duration: 800,
+            once: true
+        });
+
+        feather.replace();
+
+        // Add smooth scrolling and additional interactions
+        document.addEventListener('DOMContentLoaded', function () {
+            // Add loading animation for images
+            const images = document.querySelectorAll('img');
+            images.forEach(img => {
+                img.addEventListener('load', function () {
+                    this.classList.add('loaded');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

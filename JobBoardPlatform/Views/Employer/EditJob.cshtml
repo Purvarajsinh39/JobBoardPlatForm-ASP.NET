@@ -5,97 +5,284 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-3xl w-full space-y-8 bg-white rounded-xl shadow-lg overflow-hidden p-8">
-        <div class="text-center">
-            <div class="flex justify-center mb-6">
-                <i data-feather="edit-2" class="w-12 h-12 text-blue-500"></i>
-            </div>
-            <h2 class="text-3xl font-extrabold text-gray-900">Edit Job Posting</h2>
-            <p class="mt-2 text-sm text-gray-600">Update your job details below</p>
-        </div>
-
-        @using (Html.BeginForm("Edit", "Employer", FormMethod.Post, new { enctype = "multipart/form-data" }))
-        {
-            @Html.HiddenFor(model => model.Id)
-            @Html.HiddenFor(model => model.ImagePath)
-
-            <div class="rounded-md shadow-sm space-y-4">
-                <div>
-                    <label for="Title" class="block text-sm font-medium text-gray-700 mb-1">Job Title</label>
-                    @Html.TextBoxFor(model => model.Title, new { @class = "form-input appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" })
-                </div>
-
-                <div>
-                    <label for="Description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                    @Html.TextAreaFor(model => model.Description, new { @class = "form-input appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm", rows = 6 })
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label for="Category" class="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                        @Html.TextBoxFor(model => model.Category, new { @class = "form-input appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" })
-                    </div>
-                    <div>
-                        <label for="Location" class="block text-sm font-medium text-gray-700 mb-1">Location</label>
-                        @Html.TextBoxFor(model => model.Location, new { @class = "form-input appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" })
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Current Image</label>
-                    @if (!string.IsNullOrEmpty(Model.ImagePath))
-                    {
-                        <div class="flex items-center space-x-4">
-                            <img src="@Url.Content(Model.ImagePath)" class="h-24 w-24 rounded-lg object-cover border border-gray-200" />
-                            <span class="text-sm text-gray-500">Current job image</span>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="flex items-center space-x-4">
-                            <div class="h-24 w-24 rounded-lg bg-gray-100 flex items-center justify-center">
-                                <i data-feather="image" class="w-8 h-8 text-gray-400"></i>
-                            </div>
-                            <span class="text-sm text-gray-500">No image uploaded</span>
-                        </div>
-                    }
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Upload New Image</label>
-                    <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg">
-                        <div class="space-y-1 text-center">
-                            <div class="flex text-sm text-gray-600">
-                                <label for="ImageFile" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none">
-                                    <span>Upload a file</span>
-                                    <input id="ImageFile" name="ImageFile" type="file" class="sr-only">
-                                </label>
-                                <p class="pl-1">or drag and drop</p>
-                            </div>
-                            <p class="text-xs text-gray-500">PNG, JPG up to 2MB</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex items-center justify-between space-x-4 pt-6">
-                <a href="@Url.Action("Dashboard", "Employer")" class="w-1/2 flex items-center justify-center px-4 py-3 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all">
-                    <i data-feather="x" class="w-4 h-4 mr-2"></i>
-                    Cancel
-                </a>
-                <button type="submit" class="w-1/2 flex items-center justify-center px-4 py-3 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all">
-                    <i data-feather="save" class="w-4 h-4 mr-2"></i>
-                    Save Changes
-                </button>
-            </div>
-        }
-    </div>
-</div>
-
-@section Scripts {
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>AOS.init();</script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
-    <script>feather.replace();</script>
-}
+    <style>
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .hover-lift {
+            transition: all 0.3s ease;
+        }
+
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-input {
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .file-upload-area {
+            transition: all 0.3s ease;
+            border: 2px dashed #d1d5db;
+        }
+
+        .file-upload-area:hover {
+            border-color: #3b82f6;
+            background-color: #f8fafc;
+        }
+
+        .file-upload-area.dragover {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+        }
+
+        @@keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen py-8">
+    <div class="container mx-auto px-4">
+        <div class="max-w-2xl mx-auto">
+            <!-- Header Card --><br>
+            <div class="glass-effect rounded-2xl shadow-2xl mb-8 overflow-hidden animate-fade-in" data-aos="fade-up">
+                <div class="bg-gradient-to-r from-blue-600 to-purple-600 p-8 text-white text-center">
+                    <div class="flex justify-center mb-4">
+                        <div class="p-4 bg-white bg-opacity-20 rounded-2xl">
+                            <i data-feather="edit-3" class="w-8 h-8"></i>
+                        </div>
+                    </div>
+                    <h1 class="text-3xl font-bold mb-2">Edit Job Posting</h1>
+                    <p class="text-blue-100 opacity-90">Update your job details to attract the best candidates</p>
+                </div>
+            </div>
+
+            <!-- Form Card -->
+            <div class="glass-effect rounded-2xl shadow-2xl overflow-hidden animate-fade-in" data-aos="fade-up" data-aos-delay="200">
+                @using (Html.BeginForm("Edit", "Employer", FormMethod.Post, new { enctype = "multipart/form-data", @class = "p-8" }))
+                {
+                    @Html.HiddenFor(model => model.Id)
+                    @Html.HiddenFor(model => model.ImagePath)
+
+                    <div class="space-y-6">
+                        <!-- Job Title -->
+                        <div class="group">
+                            <label for="Title" class="block text-sm font-semibold text-gray-700 mb-2 flex items-center">
+                                <i data-feather="type" class="w-4 h-4 mr-2 text-blue-500"></i>
+                                Job Title
+                            </label>
+                            @Html.TextBoxFor(model => model.Title, new
+                            {
+                                @class = "form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200",
+                                placeholder = "Enter job title..."
+                            })
+                        </div>
+
+                        <!-- Description -->
+                        <div class="group">
+                            <label for="Description" class="block text-sm font-semibold text-gray-700 mb-2 flex items-center">
+                                <i data-feather="file-text" class="w-4 h-4 mr-2 text-blue-500"></i>
+                                Job Description
+                            </label>
+                            @Html.TextAreaFor(model => model.Description, new
+                            {
+                                @class = "form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200",
+                                rows = 6,
+                                placeholder = "Describe the role, responsibilities, and requirements..."
+                            })
+                        </div>
+
+                        <!-- Category & Location -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="group">
+                                <label for="Category" class="block text-sm font-semibold text-gray-700 mb-2 flex items-center">
+                                    <i data-feather="tag" class="w-4 h-4 mr-2 text-blue-500"></i>
+                                    Category
+                                </label>
+                                @Html.TextBoxFor(model => model.Category, new
+                                {
+                                    @class = "form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200",
+                                    placeholder = "e.g., Technology, Marketing..."
+                                })
+                            </div>
+
+                            <div class="group">
+                                <label for="Location" class="block text-sm font-semibold text-gray-700 mb-2 flex items-center">
+                                    <i data-feather="map-pin" class="w-4 h-4 mr-2 text-blue-500"></i>
+                                    Location
+                                </label>
+                                @Html.TextBoxFor(model => model.Location, new
+                                {
+                                    @class = "form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200",
+                                    placeholder = "e.g., Remote, New York..."
+                                })
+                            </div>
+                        </div>
+
+                        <!-- Current Image -->
+                        <div class="group">
+                            <label class="block text-sm font-semibold text-gray-700 mb-3 flex items-center">
+                                <i data-feather="image" class="w-4 h-4 mr-2 text-blue-500"></i>
+                                Current Job Image
+                            </label>
+                            @if (!string.IsNullOrEmpty(Model.ImagePath))
+                            {
+                                <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                                    <img src="@Url.Content(Model.ImagePath)" class="h-20 w-20 rounded-lg object-cover border-2 border-white shadow-sm" />
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Current image</p>
+                                        <p class="text-xs text-gray-500">This image will be replaced if you upload a new one</p>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                                    <div class="h-20 w-20 rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center border-2 border-dashed border-gray-300">
+                                        <i data-feather="image" class="w-6 h-6 text-gray-400"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">No image uploaded</p>
+                                        <p class="text-xs text-gray-500">Upload an image to make your job stand out</p>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Upload New Image -->
+                        <div class="group">
+                            <label class="block text-sm font-semibold text-gray-700 mb-3 flex items-center">
+                                <i data-feather="upload" class="w-4 h-4 mr-2 text-blue-500"></i>
+                                Upload New Image
+                            </label>
+                            <div class="file-upload-area rounded-xl p-6 text-center cursor-pointer hover-lift" id="uploadArea">
+                                <div class="space-y-3">
+                                    <div class="mx-auto w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                        <i data-feather="upload-cloud" class="w-6 h-6 text-blue-500"></i>
+                                    </div>
+                                    <div class="flex flex-col items-center">
+                                        <label for="ImageFile" class="cursor-pointer">
+                                            <span class="text-blue-600 hover:text-blue-500 font-medium">Click to upload</span>
+                                        </label>
+                                        <p class="text-sm text-gray-500 mt-1">or drag and drop</p>
+                                    </div>
+                                    <p class="text-xs text-gray-400">PNG, JPG, JPEG up to 2MB</p>
+                                    <input id="ImageFile" name="ImageFile" type="file" class="sr-only" accept="image/*">
+                                </div>
+                            </div>
+                            <div id="fileName" class="mt-2 text-sm text-green-600 font-medium hidden"></div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-4 pt-8 mt-8 border-t border-gray-200">
+                        <a href="@Url.Action("Dashboard", "Employer")"
+                           class="flex-1 flex items-center justify-center px-6 py-4 border-2 border-gray-300 text-base font-medium rounded-xl text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all hover-lift">
+                            <i data-feather="arrow-left" class="w-5 h-5 mr-3"></i>
+                            Back to Dashboard
+                        </a>
+                        <button type="submit"
+                                class="flex-1 flex items-center justify-center px-6 py-4 border border-transparent text-base font-medium rounded-xl text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all hover-lift shadow-lg">
+                            <i data-feather="check" class="w-5 h-5 mr-3"></i>
+                            Update Job Posting
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <script>
+        AOS.init({
+            duration: 800,
+            once: true
+        });
+
+        feather.replace();
+
+        // File upload interaction
+        document.addEventListener('DOMContentLoaded', function () {
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('ImageFile');
+            const fileName = document.getElementById('fileName');
+
+            uploadArea.addEventListener('click', () => fileInput.click());
+
+            fileInput.addEventListener('change', function (e) {
+                if (this.files && this.files[0]) {
+                    fileName.textContent = `Selected: ${this.files[0].name}`;
+                    fileName.classList.remove('hidden');
+                    uploadArea.classList.add('bg-green-50', 'border-green-200');
+                }
+            });
+
+            // Drag and drop functionality
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, highlight, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, unhighlight, false);
+            });
+
+            function highlight() {
+                uploadArea.classList.add('dragover');
+            }
+
+            function unhighlight() {
+                uploadArea.classList.remove('dragover');
+            }
+
+            uploadArea.addEventListener('drop', handleDrop, false);
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                fileInput.files = files;
+
+                if (files && files[0]) {
+                    fileName.textContent = `Selected: ${files[0].name}`;
+                    fileName.classList.remove('hidden');
+                    uploadArea.classList.add('bg-green-50', 'border-green-200');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

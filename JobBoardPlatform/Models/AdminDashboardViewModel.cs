@@ -16,6 +16,7 @@ namespace JobBoardPlatform.Models
 
         public List<Job> PendingJobs { get; set; } // Make sure this exists
 
+        public QuizStatsViewModel QuizStats { get; set; }
 
     }
 }

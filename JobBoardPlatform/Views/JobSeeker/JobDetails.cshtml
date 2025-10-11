@@ -1,128 +1,23 @@
-﻿@model JobBoardPlatform.Models.Job
+@model JobBoardPlatform.Models.Job
 
 @{
     ViewBag.Title = "Job Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-@section Styles {
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
-    <style>
-        .job-header {
-            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
+<h2>@Model.Title</h2>
 
-        .description-box {
-            background-color: white;
-            border-radius: 0.5rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            border-left: 4px solid #4f46e5;
-            transition: all 0.3s ease;
-        }
-
-            .description-box:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            }
-
-        .action-btn {
-            transition: all 0.3s ease;
-        }
-
-            .action-btn:hover {
-                transform: translateY(-2px);
-            }
-    </style>
-}
-
-<div class="min-h-screen bg-gray-50">
-    <!-- Header -->
-    <div class="job-header text-white py-16 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-4xl mx-auto" data-aos="fade-up">
-            <div class="flex items-center space-x-4 mb-6">
-                <div class="p-4 bg-white bg-opacity-20 rounded-xl shadow-sm">
-                    <i data-feather="briefcase" class="w-8 h-8"></i>
-                </div>
-                <h1 class="text-4xl font-bold tracking-tight">@Model.Title</h1>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-                <div class="flex items-center space-x-2">
-                    <i data-feather="map-pin" class="w-5 h-5"></i>
-                    <span>@Model.Location</span>
-                </div>
-                <div class="flex items-center space-x-2">
-                    <i data-feather="tag" class="w-5 h-5"></i>
-                    <span>@Model.Category</span>
-                </div>
-                <div class="flex items-center space-x-2">
-                    <i data-feather="user" class="w-5 h-5"></i>
-                    <span>Posted by @Model.PostedByName</span>
-                </div>
-            </div>
-            <div class="mt-4 flex items-center space-x-2">
-                <i data-feather="calendar" class="w-5 h-5"></i>
-                <span>Posted on @Model.PostedDate.ToShortDateString()</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-
-        <!-- Company / Poster Info -->
-        @*<div class="description-box p-8 mb-10" data-aos="fade-up" data-aos-delay="50">
-            <h3 class="text-2xl font-semibold mb-6 flex items-center text-gray-800">
-                <i data-feather="building" class="w-6 h-6 mr-3 text-indigo-600"></i>
-                Posted Company Information
-            </h3>
-            <div>
-                <p class="text-gray-700"><strong>Posted By:</strong> @Model.PostedByName</p>
-                <p class="text-gray-700"><strong>Location:</strong> @Model.Location</p>
-                <p class="text-gray-700"><strong>Category:</strong> @Model.Category</p>
-                <p class="text-gray-700"><strong>Date:</strong> @Model.PostedDate.ToShortDateString()</p>
-            </div>
-        </div>*@
-
-        <!-- Job Description -->
-        <div class="description-box p-8 mb-10" data-aos="fade-up" data-aos-delay="100">
-            <h3 class="text-2xl font-semibold mb-6 flex items-center text-gray-800">
-                <i data-feather="file-text" class="w-6 h-6 mr-3 text-indigo-600"></i>
-                Job Description
-            </h3>
-            <div class="prose max-w-none text-gray-600 leading-relaxed">
-                <p>@Model.Description</p>
-            </div>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="flex flex-wrap gap-6" data-aos="fade-up" data-aos-delay="150">
-            <a href="@Url.Action("Apply", "JobSeeker", new { id = Model.Id })"
-               class="action-btn flex items-center px-8 py-4 bg-gradient-to-r from-green-600 to-green-500 text-white rounded-xl hover:from-green-700 hover:to-green-600 shadow-md">
-                <i data-feather="send" class="w-6 h-6 mr-3"></i>
-                <span class="font-medium">Apply Now</span>
-            </a>
-            <a href="@Url.Action("DownloadJobPdf", "JobSeeker", new { id = Model.Id })"
-               class="action-btn flex items-center px-8 py-4 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-xl hover:from-red-700 hover:to-red-600 shadow-md">
-                <i data-feather="download" class="w-6 h-6 mr-3"></i>
-                <span class="font-medium">Download as PDF</span>
-            </a>
-            <a href="@Url.Action("Dashboard", "JobSeeker")"
-               class="action-btn flex items-center px-8 py-4 bg-gradient-to-r from-gray-600 to-gray-500 text-white rounded-xl hover:from-gray-700 hover:to-gray-600 shadow-md">
-                <i data-feather="arrow-left" class="w-6 h-6 mr-3"></i>
-                <span class="font-medium">Back to Dashboard</span>
-            </a>
-        </div>
-    </div>
+<div class="mb-3">
+    <strong>Location:</strong> @Model.Location <br />
+    <strong>Category:</strong> @Model.Category <br />
+    <strong>Posted By:</strong> @Model.PostedByName <br />
+    <strong>Posted On:</strong> @Model.PostedDate.ToShortDateString()
 </div>
 
-@section Scripts {
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script src="https://unpkg.com/feather-icons"></script>
-    <script>
-        AOS.init();
-        feather.replace();
-    </script>
-}
+<div class="mb-4">
+    <h4>Description</h4>
+    <p>@Model.Description</p>
+</div>
+
+<a href="@Url.Action("Apply", "JobSeeker", new { id = Model.Id })" class="btn btn-success">Apply Now</a>
+<a href="@Url.Action("Dashboard", "JobSeeker")" class="btn btn-secondary">Back</a>
