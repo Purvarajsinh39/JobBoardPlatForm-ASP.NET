@@ -7,86 +7,6 @@ A comprehensive, full-featured Job Board Management System built using ASP.NET F
 ## 🚀 Project Overview
 JobBoardPlatform revolutionizes the hiring process by providing a robust, user-friendly platform that connects employers with qualified job seekers. The system streamlines recruitment workflows while offering powerful administrative controls and comprehensive analytics.
 
-## 🎯 Key User Roles & Capabilities
-
-### 👤 Job Seeker Module
-- **User Management:** Register, login, and comprehensive profile management
-- **Job Discovery:** Advanced search and filtering capabilities
-- **Application System:** Apply for jobs with tracking and status updates
-- **Interactive Features:** Attempt job-based quizzes (when enabled)
-- **Dashboard:** Track applied jobs and receive real-time notifications
-
-### 💼 Employer Module
-- **Job Management:** Create, edit, and manage job postings with rich media support
-- **Candidate Management:** View, screen, and manage applications
-- **Decision Tools:** Approve/reject candidates with automated notifications
-- **Analytics:** Comprehensive application statistics and quiz performance analysis
-- **Shortlisting:** Advanced candidate shortlisting system
-
-### 👑 Admin Module
-- **Content Moderation:** Approve/reject newly created job postings
-- **User Management:** Complete control over Employers and Job Seekers
-- **Advanced Analytics:** Detailed platform insights and reporting
-- **Export Capabilities:** Generate PDF (Rotativa) and Excel (EPPlus) reports
-- **System Monitoring:** Real-time notifications for platform activities
-
-## 🛠 Technical Stack
-
-| Component | Technology |
-|-----------|------------|
-| Frontend | Razor Views, HTML5, CSS3, Bootstrap, Chart.js |
-| Backend | ASP.NET Framework (MVC Architecture) |
-| Database | Microsoft SQL Server (SSMS) |
-| Export Tools | EPPlus (Excel), Rotativa (PDF) |
-| Notifications | Custom NotificationHelper.cs |
-| Development IDE | Visual Studio |
-| Programming Language | C# |
-
-# 📥 Installation & Setup
-
-## Step 1: Clone the Repository
-```bash
-git clone https://github.com/your-username/JobBoardPlatform.git
-cd JobBoardPlatform
-```
-## Step 2: Open in Visual Studio
-- Launch Visual Studio
-- Navigate to **File → Open → Project/Solution**
-- Select the `.sln` file from the project directory
-
-## Step 3: Database Configuration
-1. Open **SQL Server Management Studio (SSMS)**
-2. Create a new database (e.g., `JobBoardDB`)
-3. Execute the SQL script located in the `/Database` folder
-4. Update the connection string in `Web.config`:
-
-```xml
-<connectionStrings>
-    <add name="JobBoardDB" 
-         connectionString="Server=YOUR_SERVER;Database=JobBoardDB;Integrated Security=true;" 
-         providerName="System.Data.SqlClient" />
-</connectionStrings>
-```
-## 🔄 Project Workflow
-
-### Job Creation
-- **Employer** creates job posting → Notification sent to **Admin**
-
-### Job Approval
-- **Admin** reviews and approves/rejects → Job becomes visible to **Job Seekers**
-
-### Application Process
-- **Job Seeker** applies → Notification sent to **Employer**
-
-### Candidate Review
-- **Employer** approves/rejects application → Notification sent to **Job Seeker**
-
-### Analytics & Reporting
-- **Admin** and **Employer** access comprehensive analytics and export reports
-
-### Real-time Notifications
-- All users receive instant updates on relevant activities
-
 # 📸 Application Screenshots
 
 ## 🔐 Authentication
@@ -180,6 +100,86 @@ cd JobBoardPlatform
 
 ![Interactive Quiz](img/takquiz.png)
 *Interactive quiz interface*
+
+## 🎯 Key User Roles & Capabilities
+
+### 👤 Job Seeker Module
+- **User Management:** Register, login, and comprehensive profile management
+- **Job Discovery:** Advanced search and filtering capabilities
+- **Application System:** Apply for jobs with tracking and status updates
+- **Interactive Features:** Attempt job-based quizzes (when enabled)
+- **Dashboard:** Track applied jobs and receive real-time notifications
+
+### 💼 Employer Module
+- **Job Management:** Create, edit, and manage job postings with rich media support
+- **Candidate Management:** View, screen, and manage applications
+- **Decision Tools:** Approve/reject candidates with automated notifications
+- **Analytics:** Comprehensive application statistics and quiz performance analysis
+- **Shortlisting:** Advanced candidate shortlisting system
+
+### 👑 Admin Module
+- **Content Moderation:** Approve/reject newly created job postings
+- **User Management:** Complete control over Employers and Job Seekers
+- **Advanced Analytics:** Detailed platform insights and reporting
+- **Export Capabilities:** Generate PDF (Rotativa) and Excel (EPPlus) reports
+- **System Monitoring:** Real-time notifications for platform activities
+
+## 🛠 Technical Stack
+
+| Component | Technology |
+|-----------|------------|
+| Frontend | Razor Views, HTML5, CSS3, Bootstrap, Chart.js |
+| Backend | ASP.NET Framework (MVC Architecture) |
+| Database | Microsoft SQL Server (SSMS) |
+| Export Tools | EPPlus (Excel), Rotativa (PDF) |
+| Notifications | Custom NotificationHelper.cs |
+| Development IDE | Visual Studio |
+| Programming Language | C# |
+
+# 📥 Installation & Setup
+
+## Step 1: Clone the Repository
+```bash
+git clone https://github.com/your-username/JobBoardPlatform.git
+cd JobBoardPlatform
+```
+## Step 2: Open in Visual Studio
+- Launch Visual Studio
+- Navigate to **File → Open → Project/Solution**
+- Select the `.sln` file from the project directory
+
+## Step 3: Database Configuration
+1. Open **SQL Server Management Studio (SSMS)**
+2. Create a new database (e.g., `JobBoardDB`)
+3. Execute the SQL script located in the `/Database` folder
+4. Update the connection string in `Web.config`:
+
+```xml
+<connectionStrings>
+    <add name="JobBoardDB" 
+         connectionString="Server=YOUR_SERVER;Database=JobBoardDB;Integrated Security=true;" 
+         providerName="System.Data.SqlClient" />
+</connectionStrings>
+```
+## 🔄 Project Workflow
+
+### Job Creation
+- **Employer** creates job posting → Notification sent to **Admin**
+
+### Job Approval
+- **Admin** reviews and approves/rejects → Job becomes visible to **Job Seekers**
+
+### Application Process
+- **Job Seeker** applies → Notification sent to **Employer**
+
+### Candidate Review
+- **Employer** approves/rejects application → Notification sent to **Job Seeker**
+
+### Analytics & Reporting
+- **Admin** and **Employer** access comprehensive analytics and export reports
+
+### Real-time Notifications
+- All users receive instant updates on relevant activities
 
 # 📊 Analytics & Reporting
 
