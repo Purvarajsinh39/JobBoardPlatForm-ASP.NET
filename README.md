@@ -2,6 +2,30 @@
 
 A comprehensive, full-featured Job Board Management System built using ASP.NET Framework (MVC) with SQL Server (SSMS) as the database. This platform enables seamless interaction between Admin, Employers, and Job Seekers with advanced modules for job posting, application management, analytics, and real-time notifications.
 
+**Live demo / deployed URL**
+
+http://jobboardplatform.somee.com/Account/Login
+
+---
+
+## Quick access (default accounts)
+
+Use these accounts to sign in on the demo site:
+
+- **Admin**
+  - Email: `admin@jobboard.com`
+  - Password: `admin123`
+
+- **Employer / Company**
+  - Email: `employer@job.com`
+  - Password: `123456`
+
+- **Users / Applicants**
+  - Email: `purvarajsinh@test.com` — Password: `12345`
+  - Email: `tester@gmail.com` — Password: `12345`
+
+---
+
 **Developed By:** Vaghela Purvarajsinh
 
 ## 🚀 Project Overview
