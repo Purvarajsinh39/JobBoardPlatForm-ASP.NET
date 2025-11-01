@@ -4,7 +4,7 @@ A comprehensive, full-featured Job Board Management System built using ASP.NET F
 
 **Live demo / deployed URL**
 
-http://jobboardplatform.somee.com/Account/Login
+http://jobboardplatform.somee.com
 
 ---
 
