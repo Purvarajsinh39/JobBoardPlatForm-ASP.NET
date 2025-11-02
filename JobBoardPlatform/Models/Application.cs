@@ -21,5 +21,9 @@ namespace JobBoardPlatform.Models
         public string CandidateName { get; set; }
 
         public string EmployerName { get; set; }
+
+        public int QuizAttemptCount { get; set; }
+
+        public string CandidateEmail { get; set; }
     }
 }

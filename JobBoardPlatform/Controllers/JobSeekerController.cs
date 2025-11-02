@@ -6,23 +6,41 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Web;
 using System.Web.Mvc;
+using Rotativa;
 
-public class JobSeekerController : Controller
+public class JobSeekerController : BaseController
 {
     string conStr = ConfigurationManager.ConnectionStrings["JobBoardDB"].ConnectionString;
 
-    public ActionResult Dashboard(string search = "", string category = "", string location = "")
+    public ActionResult Dashboard(string search = "", string category = "", string location = "", string sort = "", string date = "")
     {
+        ViewBag.Msg = TempData["Msg"];
+        string dateCondition = "";
+        if (date == "today")
+            dateCondition = "AND CAST(J.PostedDate AS DATE) = CAST(GETDATE() AS DATE)";
+        else if (date == "week")
+            dateCondition = "AND J.PostedDate >= DATEADD(DAY, -7, GETDATE())";
+        else if (date == "month")
+            dateCondition = "AND J.PostedDate >= DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1)";
         List<Job> jobs = new List<Job>();
 
         using (SqlConnection con = new SqlConnection(conStr))
         {
-            string query = @"SELECT J.*, U.Name AS EmployerName FROM Jobs J 
-                         JOIN Users U ON J.PostedBy = U.Id 
-                         WHERE IsApproved = 1 
-                         AND (J.Title LIKE @Search OR @Search = '') 
-                         AND (J.Category LIKE @Category OR @Category = '') 
-                         AND (J.Location LIKE @Location OR @Location = '')";
+            string query = $@"
+    SELECT J.*, U.Name AS EmployerName FROM Jobs J 
+    JOIN Users U ON J.PostedBy = U.Id 
+    WHERE IsApproved = 1 
+    AND (J.Title LIKE @Search OR @Search = '') 
+    AND (J.Category LIKE @Category OR @Category = '') 
+    AND (J.Location LIKE @Location OR @Location = '') 
+    {dateCondition}";
+
+            if (sort == "latest")
+                query += " ORDER BY J.PostedDate DESC";
+            else if (sort == "title_asc")
+                query += " ORDER BY J.Title ASC";
+            else if (sort == "title_desc")
+                query += " ORDER BY J.Title DESC";
 
             SqlCommand cmd = new SqlCommand(query, con);
             cmd.Parameters.AddWithValue("@Search", "%" + search + "%");
@@ -41,12 +59,16 @@ public class JobSeekerController : Controller
                     Category = dr["Category"].ToString(),
                     Location = dr["Location"].ToString(),
                     PostedDate = (DateTime)dr["PostedDate"],
-                    PostedByName = dr["EmployerName"].ToString()
+                    PostedByName = dr["EmployerName"].ToString(),
+                    ImagePath = dr["ImagePath"]?.ToString()
                 });
+
+
             }
         }
 
         return View(jobs);
+
     }
 
 
@@ -81,21 +103,63 @@ public class JobSeekerController : Controller
             resumePath = "/Resumes/" + fileName;
         }
 
+        // New: Check if job has quiz
+        bool hasQuiz = false;
         using (SqlConnection con = new SqlConnection(conStr))
         {
-            string query = @"INSERT INTO Applications (JobId, UserId, ResumePath, AppliedDate, Status)
-                             VALUES (@JobId, @UserId, @ResumePath, GETDATE(), 'Applied')";
+            string query = "SELECT COUNT(*) FROM JobQuestions WHERE JobId = @JobId";
             SqlCommand cmd = new SqlCommand(query, con);
             cmd.Parameters.AddWithValue("@JobId", jobId);
-            cmd.Parameters.AddWithValue("@UserId", Convert.ToInt32(Session["UserId"]));
-            cmd.Parameters.AddWithValue("@ResumePath", resumePath);
             con.Open();
-            cmd.ExecuteNonQuery();
+            hasQuiz = (int)cmd.ExecuteScalar() > 0;
         }
 
-        TempData["Msg"] = "Applied with resume!";
-        return RedirectToAction("Dashboard");
+        if (hasQuiz)
+        {
+            // Redirect to TakeQuiz, carry resumePath
+            var quizModel = new QuizViewModel { JobId = jobId, ResumePath = resumePath };
+            return RedirectToAction("TakeQuiz", new { jobId = jobId, resumePath = resumePath });
+        }
+        else
+        {
+            // Old logic: Insert application directly
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                string query = @"INSERT INTO Applications (JobId, UserId, ResumePath, AppliedDate, Status)
+                         VALUES (@JobId, @UserId, @ResumePath, GETDATE(), 'Applied')";
+                SqlCommand cmd = new SqlCommand(query, con);
+                cmd.Parameters.AddWithValue("@JobId", jobId);
+                cmd.Parameters.AddWithValue("@UserId", Convert.ToInt32(Session["UserId"]));
+                cmd.Parameters.AddWithValue("@ResumePath", resumePath);
+                con.Open();
+                cmd.ExecuteNonQuery();
+            }
+
+            // Old: Get EmployerId + JobTitle and notify
+            int employerId = 0;
+            string jobTitle = "";
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                string query = "SELECT PostedBy, Title FROM Jobs WHERE Id=@JobId";
+                SqlCommand cmd = new SqlCommand(query, con);
+                cmd.Parameters.AddWithValue("@JobId", jobId);
+                con.Open();
+                SqlDataReader dr = cmd.ExecuteReader();
+                if (dr.Read())
+                {
+                    employerId = (int)dr["PostedBy"];
+                    jobTitle = dr["Title"].ToString();
+                }
+            }
+
+            var helper = new JobBoardPlatform.Helpers.NotificationHelper();
+            helper.AddNotification(employerId, $"A candidate applied for your job: {jobTitle}");
+
+            TempData["Msg"] = "Applied with resume!";
+            return RedirectToAction("Dashboard");
+        }
     }
+
 
     public ActionResult MyApplications()
     {
@@ -165,6 +229,7 @@ public class JobSeekerController : Controller
     }
     public ActionResult EditProfile()
     {
+        ViewBag.Msg = TempData["Msg"];
         int userId = Convert.ToInt32(Session["UserId"]);
         User user = null;
 
@@ -214,5 +279,229 @@ public class JobSeekerController : Controller
         return RedirectToAction("EditProfile");
     }
 
+
+
+    public ActionResult DownloadJobPdf(int id)
+    {
+        Job job = null;
+
+        using (SqlConnection con = new SqlConnection(conStr))
+        {
+            string query = @"SELECT J.*, U.Name as EmployerName FROM Jobs J
+                         JOIN Users U ON J.PostedBy = U.Id
+                         WHERE J.Id = @Id";
+
+            SqlCommand cmd = new SqlCommand(query, con);
+            cmd.Parameters.AddWithValue("@Id", id);
+            con.Open();
+            SqlDataReader dr = cmd.ExecuteReader();
+            if (dr.Read())
+            {
+                job = new Job
+                {
+                    Id = (int)dr["Id"],
+                    Title = dr["Title"].ToString(),
+                    Description = dr["Description"].ToString(),
+                    Category = dr["Category"].ToString(),
+                    Location = dr["Location"].ToString(),
+                    PostedDate = (DateTime)dr["PostedDate"],
+                    PostedByName = dr["EmployerName"].ToString(),
+                    ImagePath = dr["ImagePath"]?.ToString() // ✅ FIXED
+                };
+            }
+        }
+
+        if (job == null)
+            return HttpNotFound();
+
+        return new Rotativa.ViewAsPdf("JobPdf", job)
+        {
+            FileName = $"{job.Title}_Details.pdf",
+            PageSize = Rotativa.Options.Size.A4,
+            PageMargins = new Rotativa.Options.Margins { Top = 20, Bottom = 20 }
+        };
+    }
+
+
+
+    public ActionResult Notifications()
+    {
+        if (Session["UserId"] == null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        int seekerId = Convert.ToInt32(Session["UserId"]);
+        List<Notification> notifications = new List<Notification>();
+
+        using (SqlConnection con = new SqlConnection(conStr))
+        {
+            string query = "SELECT * FROM Notifications WHERE UserId=@UserId ORDER BY CreatedAt DESC";
+            SqlCommand cmd = new SqlCommand(query, con);
+            cmd.Parameters.AddWithValue("@UserId", seekerId);
+            con.Open();
+            SqlDataReader dr = cmd.ExecuteReader();
+            while (dr.Read())
+            {
+                notifications.Add(new Notification
+                {
+                    Id = (int)dr["Id"],
+                    Message = dr["Message"].ToString(),
+                    CreatedAt = Convert.ToDateTime(dr["CreatedAt"]),
+                    IsRead = Convert.ToBoolean(dr["IsRead"])
+                });
+            }
+        }
+
+        return View(notifications);
+    }
+
+
+
+    public ActionResult MarkNotificationAsRead(int id)
+    {
+        using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["JobBoardDB"].ConnectionString))
+        {
+            string query = "UPDATE Notifications SET IsRead = 1 WHERE Id=@Id";
+            SqlCommand cmd = new SqlCommand(query, con);
+            cmd.Parameters.AddWithValue("@Id", id);
+            con.Open();
+            cmd.ExecuteNonQuery();
+        }
+
+        return RedirectToAction("Notifications", "JobSeeker");// seeker ka full page
+    }
+
+
+    // GET: TakeQuiz (new)
+    // GET: TakeQuiz
+    public ActionResult TakeQuiz(int jobId, string resumePath)
+    {
+        var model = new QuizViewModel { JobId = jobId, ResumePath = resumePath };
+
+        using (SqlConnection con = new SqlConnection(conStr))
+        {
+            string query = "SELECT Id, QuestionText, OptionA, OptionB, OptionC, OptionD FROM JobQuestions WHERE JobId = @JobId";
+            SqlCommand cmd = new SqlCommand(query, con);
+            cmd.Parameters.AddWithValue("@JobId", jobId);
+            con.Open();
+            SqlDataReader dr = cmd.ExecuteReader();
+            while (dr.Read())
+            {
+                model.Questions.Add(new JobQuestion
+                {
+                    Id = (int)dr["Id"],
+                    QuestionText = dr["QuestionText"].ToString(),
+                    OptionA = dr["OptionA"].ToString(),
+                    OptionB = dr["OptionB"].ToString(),
+                    OptionC = dr["OptionC"].ToString(),
+                    OptionD = dr["OptionD"].ToString()
+                });
+            }
+        }
+
+        return View(model);
+    }
+
+    // POST: TakeQuiz (new, process answers)
+    [HttpPost]
+    // POST: TakeQuiz
+   
+    public ActionResult TakeQuiz(QuizViewModel model)
+    {
+        try
+        {
+            // Load correct answers from DB
+            var corrects = new Dictionary<int, string>();
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                string query = "SELECT Id, CorrectOption FROM JobQuestions WHERE JobId = @JobId";
+                SqlCommand cmd = new SqlCommand(query, con);
+                cmd.Parameters.AddWithValue("@JobId", model.JobId);
+                con.Open();
+                SqlDataReader dr = cmd.ExecuteReader();
+                while (dr.Read())
+                {
+                    corrects.Add((int)dr["Id"], dr["CorrectOption"].ToString());
+                }
+            }
+
+            // Calculate score
+            int correctCount = 0;
+            foreach (var q in model.Questions)
+            {
+                if (!string.IsNullOrEmpty(q.SelectedAnswer) && corrects.TryGetValue(q.Id, out string correctOption) && q.SelectedAnswer == correctOption)
+                {
+                    correctCount++;
+                }
+            }
+            int total = model.Questions.Count;
+            int score = total > 0 ? (correctCount * 100 / total) : 0;
+            bool passed = score >= 80;
+
+            // Record attempt
+            using (SqlConnection con = new SqlConnection(conStr))
+            {
+                string query = @"INSERT INTO QuizAttempts (JobId, UserId, Score, Passed)
+                             VALUES (@JobId, @UserId, @Score, @Passed)";
+                SqlCommand cmd = new SqlCommand(query, con);
+                cmd.Parameters.AddWithValue("@JobId", model.JobId);
+                cmd.Parameters.AddWithValue("@UserId", Convert.ToInt32(Session["UserId"]));
+                cmd.Parameters.AddWithValue("@Score", score);
+                cmd.Parameters.AddWithValue("@Passed", passed);
+                con.Open();
+                cmd.ExecuteNonQuery();
+            }
+
+            if (passed)
+            {
+                // Create application
+                using (SqlConnection con = new SqlConnection(conStr))
+                {
+                    string query = @"INSERT INTO Applications (JobId, UserId, ResumePath, AppliedDate, Status)
+                                 VALUES (@JobId, @UserId, @ResumePath, GETDATE(), 'Applied')";
+                    SqlCommand cmd = new SqlCommand(query, con);
+                    cmd.Parameters.AddWithValue("@JobId", model.JobId);
+                    cmd.Parameters.AddWithValue("@UserId", Convert.ToInt32(Session["UserId"]));
+                    cmd.Parameters.AddWithValue("@ResumePath", model.ResumePath);
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                }
+
+                // Notify employer
+                int employerId = 0;
+                string jobTitle = "";
+                using (SqlConnection con = new SqlConnection(conStr))
+                {
+                    string query = "SELECT PostedBy, Title FROM Jobs WHERE Id=@JobId";
+                    SqlCommand cmd = new SqlCommand(query, con);
+                    cmd.Parameters.AddWithValue("@JobId", model.JobId);
+                    con.Open();
+                    SqlDataReader dr = cmd.ExecuteReader();
+                    if (dr.Read())
+                    {
+                        employerId = (int)dr["PostedBy"];
+                        jobTitle = dr["Title"].ToString();
+                    }
+                }
+
+                var helper = new JobBoardPlatform.Helpers.NotificationHelper();
+                helper.AddNotification(employerId, $"A candidate applied for your job: {jobTitle} after passing quiz.");
+
+                TempData["Msg"] = $"Quiz passed with score {score}%! Application submitted.";
+            }
+            else
+            {
+                TempData["Msg"] = $"Quiz failed with score {score}%. Application not submitted. You can try again.";
+            }
+
+            return RedirectToAction("Dashboard");
+        }
+        catch (Exception ex)
+        {
+            TempData["Msg"] = $"Error during quiz submission: {ex.Message}";
+            return RedirectToAction("Dashboard");
+        }
+    }
 
 }

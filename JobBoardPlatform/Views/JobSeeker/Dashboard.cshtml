@@ -1,53 +1,442 @@
-@model List<JobBoardPlatform.Models.Job>
+@model IEnumerable<JobBoardPlatform.Models.Job>
 
 @{
-    ViewBag.Title = "Browse Jobs";
+    ViewBag.Title = "Available Jobs";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Available Jobs</h2>
-
-@using (Html.BeginForm("Dashboard", "JobSeeker", FormMethod.Get))
+@if (ViewBag.Msg != null && ViewBag.Msg.ToString() != "Job posted! Awaiting approval.")
 {
-    <div class="form-row mb-3">
-        <div class="col-md-3">
-            <input type="text" name="search" class="form-control" placeholder="Search by title" />
-        </div>
-        <div class="col-md-3">
-            <input type="text" name="category" class="form-control" placeholder="Filter by category" />
-        </div>
-        <div class="col-md-3">
-            <input type="text" name="location" class="form-control" placeholder="Filter by location" />
-        </div>
-        <div class="col-md-3">
-            <button type="submit" class="btn btn-primary btn-block">Search</button>
+    <div class="alert alert-info p-4 mb-4 bg-blue-100 border border-blue-400 text-blue-700 rounded-lg shadow-sm" data-aos="fade-down">
+        <div class="flex items-center">
+            <i data-feather="info" class="w-5 h-5 mr-2"></i>
+            @ViewBag.Msg
         </div>
     </div>
 }
-<br />
 
-@if (TempData["Msg"] != null)
-{
-    <p class="text-success">@TempData["Msg"]</p>
-}
 
-<table class="table table-bordered">
-    <tr>
-        <th>Title</th>
-        <th> Category</th>
-        <th>Location</th>
-        <th>Description</th>
-        @*<th>Apply</th>*@
-    </tr>
-    @foreach (var job in Model)
-    {
-        <tr>
-            <td>@job.Title</td>
-            <td>@job.Category</td>
-            <td>@job.Location</td>
-            <td>
-                <a href="@Url.Action("JobDetails", "JobSeeker", new { id = job.Id })" class="btn btn-sm btn-info">View</a>
-            </td>
-        </tr>
+<!-- Tailwind & AOS -->
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script src="https://unpkg.com/feather-icons"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+<style>
+    @@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+    body {
+        font-family: 'Poppins', sans-serif;
     }
-</table>
+
+    .gradient-bg {
+        background: linear-gradient(135deg, #f5f7fa 0%, #e4e7eb 100%);
+        min-height: 100vh;
+    }
+
+    .job-card {
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        border-radius: 20px;
+        overflow: hidden;
+        position: relative;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    }
+
+        .job-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 25px 50px rgba(102, 126, 234, 0.15);
+            border-color: rgba(102, 126, 234, 0.2);
+        }
+
+        .job-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #667eea 0%, #8a2be2 100%);
+            z-index: 2;
+        }
+
+    .image-container {
+        position: relative;
+        height: 220px;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .job-image {
+        width: 100%;
+        height: 100%;
+        object-fit: fill;
+        object-position: center;
+        transition: all 0.6s ease;
+    }
+
+    .job-card:hover .job-image {
+        transform: scale(1.1);
+    }
+
+    .image-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.3));
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .job-card:hover .image-overlay {
+        opacity: 1;
+    }
+
+    .category-tag {
+        background: linear-gradient(135deg, #667eea 0%, #9f7aea 100%);
+        color: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        padding: 6px 14px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        position: relative;
+        z-index: 3;
+    }
+
+    .search-box {
+        backdrop-filter: blur(16px);
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    }
+
+    .view-btn {
+        background: linear-gradient(135deg, #667eea 0%, #9f7aea 100%);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        border-radius: 12px;
+        padding: 12px 24px;
+        font-weight: 500;
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 120px;
+    }
+
+        .view-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(102, 126, 234, 0.4);
+            background: linear-gradient(135deg, #5a6fd8 0%, #8a6dec 100%);
+        }
+
+    .job-title {
+        color: #2d3748;
+        font-weight: 600;
+        position: relative;
+        display: inline-block;
+        line-height: 1.3;
+    }
+
+        .job-title::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea 0%, #9f7aea 100%);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+    .job-card:hover .job-title::after {
+        width: 60px;
+    }
+
+    .job-content {
+        padding: 1.75rem;
+        display: flex;
+        flex-direction: column;
+        height: calc(100% - 220px);
+    }
+
+    .job-meta {
+        flex-grow: 1;
+    }
+
+    .job-description {
+        color: #6b7280;
+        line-height: 1.6;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .job-footer {
+        margin-top: auto;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .date-posted {
+        color: #9ca3af;
+        font-size: 0.875rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .floating-shapes {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: -1;
+    }
+
+    .shape {
+        position: absolute;
+        border-radius: 50%;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(154, 102, 234, 0.1) 100%);
+        animation: float 6s ease-in-out infinite;
+    }
+
+    .shape-1 {
+        width: 200px;
+        height: 200px;
+        top: 10%;
+        left: 5%;
+        animation-delay: 0s;
+    }
+
+    .shape-2 {
+        width: 150px;
+        height: 150px;
+        top: 60%;
+        right: 8%;
+        animation-delay: -2s;
+    }
+
+    .shape-3 {
+        width: 100px;
+        height: 100px;
+        bottom: 20%;
+        left: 15%;
+        animation-delay: -4s;
+    }
+
+    @@keyframes float {
+        0%, 100% {
+            transform: translateY(0px) rotate(0deg);
+        }
+
+        50% {
+            transform: translateY(-20px) rotate(5deg);
+        }
+    }
+
+    .search-btn {
+        background: linear-gradient(135deg, #667eea 0%, #9f7aea 100%);
+        transition: all 0.3s ease;
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+    }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+    .form-input {
+        transition: all 0.3s ease;
+        border: 1px solid #e5e7eb;
+    }
+
+        .form-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+</style>
+
+<!-- Floating Background Shapes -->
+<div class="floating-shapes">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+</div>
+
+<div class="gradient-bg py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-16 text-center" data-aos="fade-up">
+            <h2 class="text-5xl font-bold text-gray-800 mb-4 flex items-center justify-center">
+                <i data-feather="briefcase" class="mr-4 text-indigo-500"></i>
+                Find Your Dream <span class="text-indigo-600 ml-3">Job</span>
+            </h2>
+            <p class="text-gray-600 text-lg max-w-2xl mx-auto leading-relaxed">
+                Discover amazing opportunities from top companies worldwide. Your next career move starts here.
+            </p>
+        </div>
+
+        <!-- Search / Filter Form -->
+        @using (Html.BeginForm("Dashboard", "JobSeeker", FormMethod.Get))
+        {
+            <div class="search-box p-8 mb-16" data-aos="fade-up" data-aos-delay="100">
+                <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
+                    <input type="text" name="search" value="@Request["search"]"
+                           class="col-span-1 form-input px-4 py-3 rounded-xl focus:ring-2 focus:ring-indigo-500"
+                           placeholder="Job title or keywords" />
+
+                    <input type="text" name="category" value="@Request["category"]"
+                           class="col-span-1 form-input px-4 py-3 rounded-xl focus:ring-2 focus:ring-indigo-500"
+                           placeholder="Category" />
+
+                    <input type="text" name="location" value="@Request["location"]"
+                           class="col-span-1 form-input px-4 py-3 rounded-xl focus:ring-2 focus:ring-indigo-500"
+                           placeholder="Location" />
+
+                    <select name="sort" class="col-span-1 form-input px-4 py-3 rounded-xl focus:ring-2 focus:ring-indigo-500">
+                        <option value="">Sort By</option>
+                        <option value="latest" @(Request["sort"] == "latest" ? "selected" : "")>Posted Date (Latest)</option>
+                        <option value="title_asc" @(Request["sort"] == "title_asc" ? "selected" : "")>Title A-Z</option>
+                        <option value="title_desc" @(Request["sort"] == "title_desc" ? "selected" : "")>Title Z-A</option>
+                    </select>
+
+                    <select name="date" class="col-span-1 form-input px-4 py-3 rounded-xl focus:ring-2 focus:ring-indigo-500">
+                        <option value="">All Dates</option>
+                        <option value="today" @(Request["date"] == "today" ? "selected" : "")>Today</option>
+                        <option value="week" @(Request["date"] == "week" ? "selected" : "")>This Week</option>
+                        <option value="month" @(Request["date"] == "month" ? "selected" : "")>This Month</option>
+                    </select>
+
+                    <button type="submit"
+                            class="col-span-1 search-btn text-white font-medium py-3 px-6 rounded-xl transition-all duration-300 flex items-center justify-center">
+                        <i data-feather="search" class="mr-2 w-5 h-5"></i>
+                        Search Jobs
+                    </button>
+                </div>
+            </div>
+        }
+
+        <!-- Jobs Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            @foreach (var job in Model)
+            {
+                <div class="job-card" data-aos="fade-up" data-aos-delay="150">
+                    <div class="image-container">
+                        <img src="@(string.IsNullOrEmpty(job.ImagePath) ? "https://via.placeholder.com/400x220/667eea/ffffff?text=Job+Image" : Url.Content(job.ImagePath))"
+                             alt="@job.Title"
+                             class="job-image"
+                             onerror="this.src='https://via.placeholder.com/400x220/667eea/ffffff?text=Job+Image'">
+                        <div class="image-overlay"></div>
+                    </div>
+
+                    <div class="job-content">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-xl font-semibold text-gray-800 job-title flex-1 mr-3">@job.Title</h3>
+                            <span class="category-tag whitespace-nowrap">
+                                @job.Category
+                            </span>
+                        </div>
+
+                        <div class="job-meta">
+                            <div class="flex items-center text-gray-600 mb-3">
+                                <i data-feather="briefcase" class="mr-3 w-4 h-4 text-indigo-500"></i>
+                                <span class="text-sm">@job.PostedByName</span>
+                            </div>
+
+                            <div class="flex items-center text-gray-600 mb-4">
+                                <i data-feather="map-pin" class="mr-3 w-4 h-4 text-indigo-500"></i>
+                                <span class="text-sm">@job.Location</span>
+                            </div>
+
+                            <p class="job-description text-sm mb-4">
+                                @(job.Description.Length > 120 ? job.Description.Substring(0, 120) + "..." : job.Description)
+                            </p>
+                        </div>
+
+                        <div class="job-footer">
+                            <div class="flex justify-between items-center">
+                                <span class="date-posted">
+                                    <i data-feather="calendar" class="mr-2 w-4 h-4"></i>
+                                    @job.PostedDate.ToString("MMM dd, yyyy")
+                                </span>
+                                <a href="@Url.Action("JobDetails", "JobSeeker", new { id = job.Id })"
+                                   class="view-btn text-white text-sm font-medium">
+                                    View Details
+                                    <i data-feather="arrow-right" class="ml-2 w-4 h-4"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Empty State -->
+        @if (!Model.Any())
+        {
+            <div class="text-center py-16" data-aos="fade-up">
+                <i data-feather="search" class="w-16 h-16 text-gray-400 mx-auto mb-4"></i>
+                <h3 class="text-2xl font-semibold text-gray-600 mb-2">No jobs found</h3>
+                <p class="text-gray-500">Try adjusting your search criteria to find more opportunities.</p>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    AOS.init({
+        duration: 1000,
+        easing: 'ease-out-back',
+        once: true,
+        offset: 120,
+        delay: 100
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        feather.replace();
+
+        // Enhanced card animations
+        const cards = document.querySelectorAll('.job-card');
+        cards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                anime({
+                    targets: card,
+                    scale: 1.02,
+                    duration: 400,
+                    easing: 'easeOutElastic(1, .8)'
+                });
+            });
+
+            card.addEventListener('mouseleave', () => {
+                anime({
+                    targets: card,
+                    scale: 1,
+                    duration: 300,
+                    easing: 'easeOutQuad'
+                });
+            });
+        });
+
+        // Add loading animation for images
+        const images = document.querySelectorAll('.job-image');
+        images.forEach(img => {
+            img.addEventListener('load', function () {
+                anime({
+                    targets: this,
+                    opacity: [0, 1],
+                    duration: 600,
+                    easing: 'easeOutQuad'
+                });
+            });
+        });
+    });
+</script>

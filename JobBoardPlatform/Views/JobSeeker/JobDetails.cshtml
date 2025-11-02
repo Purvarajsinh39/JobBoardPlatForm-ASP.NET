@@ -1,23 +1,425 @@
-@model JobBoardPlatform.Models.Job
+﻿@model JobBoardPlatform.Models.Job
 
 @{
     ViewBag.Title = "Job Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>@Model.Title</h2>
+@section Styles {
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <style>
+        .job-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            position: relative;
+            overflow: hidden;
+        }
 
-<div class="mb-3">
-    <strong>Location:</strong> @Model.Location <br />
-    <strong>Category:</strong> @Model.Category <br />
-    <strong>Posted By:</strong> @Model.PostedByName <br />
-    <strong>Posted On:</strong> @Model.PostedDate.ToShortDateString()
+        .job-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .description-box {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border-left: 6px solid;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .description-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .description-box:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .description-box:hover::before {
+            opacity: 1;
+        }
+
+        .action-btn {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 12px;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .action-btn:hover::before {
+            left: 100%;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .info-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .floating-shapes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+
+        .shape {
+            position: absolute;
+            opacity: 0.1;
+            border-radius: 50%;
+            background: white;
+        }
+
+        .shape-1 {
+            width: 100px;
+            height: 100px;
+            top: 10%;
+            right: 10%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .shape-2 {
+            width: 60px;
+            height: 60px;
+            bottom: 20%;
+            left: 5%;
+            animation: float 4s ease-in-out infinite reverse;
+        }
+
+        .shape-3 {
+            width: 80px;
+            height: 80px;
+            top: 50%;
+            left: 10%;
+            animation: float 5s ease-in-out infinite 1s;
+        }
+
+        @@keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .pulse-dot {
+            animation: pulse 2s infinite;
+        }
+
+        @@keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .job-meta-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            background: rgba(102, 126, 234, 0.1);
+            color: white;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+}
+
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+    <!-- Enhanced Header -->
+    <div class="job-header text-white py-20 px-4 sm:px-6 lg:px-8 relative">
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+        </div>
+
+        <div class="max-w-6xl mx-auto relative z-10" data-aos="fade-up">
+            <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between mb-8">
+                <div class="flex items-center space-x-6 mb-6 lg:mb-0">
+                    <div class="p-5 bg-white bg-opacity-20 rounded-2xl shadow-lg backdrop-blur-sm">
+                        <i data-feather="briefcase" class="w-10 h-10"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-5xl font-bold tracking-tight mb-3">@Model.Title</h1>
+                        <div class="flex items-center space-x-4 text-lg opacity-90">
+                            <span class="tag bg-white bg-opacity-20 backdrop-blur-sm">
+                                <i data-feather="tag" class="w-4 h-4 mr-2"></i>
+                                @Model.Category
+                            </span>
+                            <span class="flex items-center">
+                                <i data-feather="map-pin" class="w-5 h-5 mr-2"></i>
+                                @Model.Location
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!--<div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-2xl p-6 text-center">-->
+                    @*<div class="stat-number">@Model.ApplicationsCount</div>*@
+                    <!--<div class="text-sm opacity-80">Total Applications</div>
+                </div>-->
+            </div>
+
+            <!-- Job Meta Information -->
+            <div class="job-meta-grid">
+                <div class="info-card bg-white bg-opacity-10 backdrop-blur-sm border-0">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-3 bg-white bg-opacity-20 rounded-xl">
+                            <i data-feather="user" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <div class="text-sm opacity-80">Posted By</div>
+                            <div class="font-semibold text-lg">@Model.PostedByName</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-card bg-white bg-opacity-10 backdrop-blur-sm border-0">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-3 bg-white bg-opacity-20 rounded-xl">
+                            <i data-feather="calendar" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <div class="text-sm opacity-80">Posted Date</div>
+                            <div class="font-semibold text-lg">@Model.PostedDate.ToString("MMM dd, yyyy")</div>
+                        </div>
+                    </div>
+                </div>
+
+                @*<div class="info-card bg-white bg-opacity-10 backdrop-blur-sm border-0">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-3 bg-white bg-opacity-20 rounded-xl">
+                            <i data-feather="clock" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <div class="text-sm opacity-80">Job Type</div>
+                            <div class="font-semibold text-lg">Full Time</div>
+                        </div>
+                    </div>
+                </div>*@
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 -mt-10 relative z-20">
+
+        <!-- Quick Stats -->
+        <!--<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            <div class="info-card text-center" data-aos="fade-up" data-aos-delay="50">
+                <div class="p-3 bg-green-100 rounded-full w-12 h-12 mx-auto mb-4 flex items-center justify-center">
+                    <i data-feather="eye" class="w-6 h-6 text-green-600"></i>
+                </div>-->
+                @*<div class="stat-number">@Model.ViewsCount</div>*@
+                <!--<div class="text-gray-600">Total Views</div>
+            </div>
+
+            <div class="info-card text-center" data-aos="fade-up" data-aos-delay="100">
+                <div class="p-3 bg-blue-100 rounded-full w-12 h-12 mx-auto mb-4 flex items-center justify-center">
+                    <i data-feather="users" class="w-6 h-6 text-blue-600"></i>
+                </div>-->
+                @*<div class="stat-number">@Model.ApplicationsCount</div>*@
+                <!--<div class="text-gray-600">Applications</div>
+            </div>
+
+            <div class="info-card text-center" data-aos="fade-up" data-aos-delay="150">
+                <div class="p-3 bg-purple-100 rounded-full w-12 h-12 mx-auto mb-4 flex items-center justify-center">
+                    <i data-feather="trending-up" class="w-6 h-6 text-purple-600"></i>
+                </div>-->
+                @*<div class="stat-number">@Model.SuccessRate%</div>*@
+                <!--<div class="text-gray-600">Success Rate</div>
+            </div>
+        </div>-->
+        <br><br>
+        <!-- Job Description -->
+        <div class="description-box p-10 mb-10" data-aos="fade-up" data-aos-delay="200">
+            <div class="flex items-center mb-8">
+                <div class="p-3 bg-indigo-100 rounded-xl mr-4">
+                    <i data-feather="file-text" class="w-8 h-8 text-indigo-600"></i>
+                </div>
+                <h3 class="text-3xl font-bold gradient-text">Job Description</h3>
+            </div>
+            <div class="prose max-w-none text-gray-700 leading-relaxed text-lg">
+                <div class="bg-gray-50 rounded-2xl p-8 border-l-4 border-indigo-400">
+                    <p class="text-gray-800 text-xl leading-9">@Model.Description</p>
+                </div>
+
+                <!-- Additional Job Details -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+                    <div class="space-y-4">
+                        <h4 class="font-semibold text-gray-900 flex items-center">
+                            <i data-feather="award" class="w-5 h-5 mr-2 text-green-500"></i>
+                            Requirements
+                        </h4>
+                        <ul class="space-y-2 text-gray-700">
+                            <li class="flex items-center">
+                                <i data-feather="check-circle" class="w-4 h-4 mr-2 text-green-500"></i>
+                                Minimum 2 years experience
+                            </li>
+                            <li class="flex items-center">
+                                <i data-feather="check-circle" class="w-4 h-4 mr-2 text-green-500"></i>
+                                Relevant degree or certification
+                            </li>
+                            <li class="flex items-center">
+                                <i data-feather="check-circle" class="w-4 h-4 mr-2 text-green-500"></i>
+                                Strong communication skills
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="space-y-4">
+                        <h4 class="font-semibold text-gray-900 flex items-center">
+                            <i data-feather="dollar-sign" class="w-5 h-5 mr-2 text-blue-500"></i>
+                            Benefits
+                        </h4>
+                        <ul class="space-y-2 text-gray-700">
+                            <li class="flex items-center">
+                                <i data-feather="star" class="w-4 h-4 mr-2 text-yellow-500"></i>
+                                Competitive salary package
+                            </li>
+                            <li class="flex items-center">
+                                <i data-feather="star" class="w-4 h-4 mr-2 text-yellow-500"></i>
+                                Health insurance coverage
+                            </li>
+                            <li class="flex items-center">
+                                <i data-feather="star" class="w-4 h-4 mr-2 text-yellow-500"></i>
+                                Flexible working hours
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enhanced Action Buttons -->
+        <div class="flex flex-col sm:flex-row gap-6 justify-center items-stretch" data-aos="fade-up" data-aos-delay="250">
+            <a href="@Url.Action("Apply", "JobSeeker", new { id = Model.Id })"
+               class="action-btn flex-1 flex items-center justify-center px-8 py-6 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-2xl hover:from-green-600 hover:to-emerald-700 shadow-xl group">
+                <div class="flex items-center">
+                    <div class="p-2 bg-white bg-opacity-20 rounded-lg mr-4 group-hover:scale-110 transition-transform">
+                        <i data-feather="send" class="w-6 h-6"></i>
+                    </div>
+                    <div class="text-left">
+                        <div class="font-bold text-xl">Apply Now</div>
+                        <div class="text-sm opacity-90">Submit your application</div>
+                    </div>
+                </div>
+                <i data-feather="arrow-right" class="w-6 h-6 ml-4 group-hover:translate-x-2 transition-transform"></i>
+            </a>
+
+            <a href="@Url.Action("DownloadJobPdf", "JobSeeker", new { id = Model.Id })"
+               class="action-btn flex-1 flex items-center justify-center px-8 py-6 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-2xl hover:from-blue-600 hover:to-indigo-700 shadow-xl group">
+                <div class="flex items-center">
+                    <div class="p-2 bg-white bg-opacity-20 rounded-lg mr-4 group-hover:scale-110 transition-transform">
+                        <i data-feather="download" class="w-6 h-6"></i>
+                    </div>
+                    <div class="text-left">
+                        <div class="font-bold text-xl">Download PDF</div>
+                        <div class="text-sm opacity-90">Save job details</div>
+                    </div>
+                </div>
+            </a>
+
+            <a href="@Url.Action("Dashboard", "JobSeeker")"
+               class="action-btn flex-1 flex items-center justify-center px-8 py-6 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-2xl hover:from-gray-600 hover:to-gray-700 shadow-xl group">
+                <div class="flex items-center">
+                    <div class="p-2 bg-white bg-opacity-20 rounded-lg mr-4 group-hover:scale-110 transition-transform">
+                        <i data-feather="arrow-left" class="w-6 h-6"></i>
+                    </div>
+                    <div class="text-left">
+                        <div class="font-bold text-xl">Back to Jobs</div>
+                        <div class="text-sm opacity-90">View all opportunities</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Quick Contact Info -->
+        <div class="mt-16 text-center" data-aos="fade-up" data-aos-delay="300">
+            <div class="inline-flex items-center space-x-2 text-gray-600">
+                <i data-feather="help-circle" class="w-5 h-5"></i>
+                <span>Need help? Contact our support team</span>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div class="mb-4">
-    <h4>Description</h4>
-    <p>@Model.Description</p>
-</div>
-
-<a href="@Url.Action("Apply", "JobSeeker", new { id = Model.Id })" class="btn btn-success">Apply Now</a>
-<a href="@Url.Action("Dashboard", "JobSeeker")" class="btn btn-secondary">Back</a>
+@section Scripts {
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script>
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+        feather.replace();
+    </script>
+}

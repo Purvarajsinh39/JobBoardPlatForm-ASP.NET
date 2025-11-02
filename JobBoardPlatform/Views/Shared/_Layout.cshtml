@@ -4,69 +4,336 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - Job Board Platform</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Hind&display=swap">
+
+    <!-- ✅ TailwindCSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    @RenderSection("Styles", required: false)
+
+    <style>
+        /* Smooth scroll behavior */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Sticky navbar styles */
+        .sticky-nav {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+            .sticky-nav.scrolled {
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+                backdrop-filter: blur(10px);
+                background: rgba(255, 255, 255, 0.95);
+            }
+    </style>
 </head>
-<body>
-    <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
-        <div class="container">
-            @Html.ActionLink("JobBoard", "Index", "Home", null, new { @class = "navbar-brand" })
-            <div class="collapse navbar-collapse" id="navbarCollapse">
-                <ul class="navbar-nav mr-auto">
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <!-- ✅ Sticky Navbar -->
+    <nav class="sticky-nav bg-white shadow-lg transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="@Url.Action("Index","Home")" class="text-xl font-bold text-indigo-600 flex items-center">
+                        <i data-feather="briefcase" class="mr-2 w-5 h-5"></i>
+                        JobBoard
+                    </a>
+                </div>
+
+                <!-- Links -->
+                <div class="hidden sm:flex sm:space-x-6 items-center">
                     @if (Session["UserRole"] != null)
                     {
                         if (Session["UserRole"].ToString() == "Employer")
                         {
-                            <li>@Html.ActionLink("Dashboard", "Dashboard", "Employer", null, new { @class = "nav-link" })</li>
-                            <li>@Html.ActionLink("Post Job", "CreateJob", "Employer", null, new { @class = "nav-link" })</li>
+                            <a href="@Url.Action("Dashboard","Employer")" class="text-gray-700 hover:text-indigo-600 flex items-center transition-colors duration-200">
+                                <i data-feather="home" class="mr-1 w-4 h-4"></i> Dashboard
+                            </a>
+                            <a href="@Url.Action("ManageJobs","Employer")" class="text-gray-700 hover:text-indigo-600 flex items-center transition-colors duration-200">
+                                <i data-feather="briefcase" class="mr-1 w-4 h-4"></i> Manage Jobs
+                            </a>
+                            @*<a href="@Url.Action("CreateJob","Employer")" class="text-gray-700 hover:text-indigo-600 flex items-center transition-colors duration-200">
+                    <i data-feather="plus-circle" class="mr-1 w-4 h-4"></i> Post Job
+                </a>*@
+                            <a href="@Url.Action("CreateJob","Employer")" class="text-gray-700 hover:text-indigo-600 flex items-center">
+                                <i data-feather="plus-circle" class="mr-1 w-4 h-4"></i> Post Job
+                            </a>
+                            <a href="@Url.Action("ShortlistedCandidates","Employer")" class="text-gray-700 hover:text-indigo-600 flex items-center transition-colors duration-200">
+                                <i data-feather="star" class="mr-1 w-4 h-4"></i> Shortlisted
+                            </a>
+                            <a href="@Url.Action("ViewProfile","Employer")" class="text-gray-700 hover:text-indigo-600 flex items-center transition-colors duration-200">
+                                <i data-feather="user" class="mr-1 w-4 h-4"></i> My Profile
+                            </a>
+                            <a href="@Url.Action("ViewAllApplications","Employer")" class="text-gray-700 hover:text-indigo-600 flex items-center transition-colors duration-200">
+                                <i data-feather="file-text" class="mr-1 w-4 h-4"></i> Applications
+                            </a>
+                            <a href="@Url.Action("ViewQuizAttempts","Employer")" class="text-gray-700 hover:text-indigo-600 flex items-center">
+                                <i data-feather="book" class="mr-1 w-4 h-4"></i> Quiz Attempts
+                            </a>
                         }
                         else if (Session["UserRole"].ToString() == "JobSeeker")
                         {
-                            <li>@Html.ActionLink("Browse Jobs", "Dashboard", "JobSeeker", null, new { @class = "nav-link" })</li>
-                            <li>@Html.ActionLink("My Applications", "MyApplications", "JobSeeker", null, new { @class = "nav-link" })</li>
-                            <li>@Html.ActionLink("My Profile", "EditProfile", "JobSeeker", null, new { @class = "nav-link" })</li>
+                            <a href="@Url.Action("Dashboard","JobSeeker")" class="text-gray-700 hover:text-indigo-600 flex items-center transition-colors duration-200">
+                                <i data-feather="search" class="mr-1 w-4 h-4"></i> Browse Jobs
+                            </a>
+                            <a href="@Url.Action("MyApplications","JobSeeker")" class="text-gray-700 hover:text-indigo-600 flex items-center transition-colors duration-200">
+                                <i data-feather="file-text" class="mr-1 w-4 h-4"></i> My Applications
+                            </a>
+                            <a href="@Url.Action("EditProfile","JobSeeker")" class="text-gray-700 hover:text-indigo-600 flex items-center transition-colors duration-200">
+                                <i data-feather="user" class="mr-1 w-4 h-4"></i> My Profile
+                            </a>
                         }
                         else if (Session["UserRole"].ToString() == "Admin")
                         {
-                            <li>@Html.ActionLink("Admin Panel", "Dashboard", "Admin", null, new { @class = "nav-link" })</li>
-                            <li>@Html.ActionLink("Applications", "Applications", "Admin", null, new { @class = "nav-link" })</li>
-                            <li>@Html.ActionLink("All Applications", "ViewApplications", "Admin", null, new { @class = "nav-link" })</li>
+                            <a href="@Url.Action("Dashboard","Admin")" class="text-gray-700 hover:text-indigo-600 flex items-center transition-colors duration-200">
+                                <i data-feather="settings" class="mr-1 w-4 h-4"></i> Admin Panel
+                            </a>
+                            <a href="@Url.Action("Applications","Admin")" class="text-gray-700 hover:text-indigo-600 flex items-center transition-colors duration-200">
+                                <i data-feather="inbox" class="mr-1 w-4 h-4"></i> Applications
+                            </a>
+                            <a href="@Url.Action("ViewApplications","Admin")" class="text-gray-700 hover:text-indigo-600 flex items-center transition-colors duration-200">
+                                <i data-feather="list" class="mr-1 w-4 h-4"></i> All Applications
+                            </a>
+                            <a href="@Url.Action("ManageJobs","Admin")" class="text-gray-700 hover:text-indigo-600 flex items-center transition-colors duration-200">
+                                <i data-feather="briefcase" class="mr-1 w-4 h-4"></i> Manage Jobs
+                            </a>
+                            <a href="@Url.Action("ViewEmployers","Admin")" class="text-gray-700 hover:text-indigo-600 flex items-center transition-colors duration-200">
+                                <i data-feather="users" class="mr-1 w-4 h-4"></i> Employers
+                            </a>
+                            <a href="@Url.Action("ManageJobSeekers","Admin")" class="text-gray-700 hover:text-indigo-600 flex items-center transition-colors duration-200">
+                                <i data-feather="users" class="mr-1 w-4 h-4"></i> Job Seekers
+                            </a>
+                            <a href="@Url.Action("QuizStats", "Admin")" class="text-gray-700 hover:text-indigo-600 flex items-center">
+                                <i data-feather="bar-chart" class="mr-1 w-4 h-4"></i> Quiz Stats
+                            </a>
                         }
-                        <li>@Html.ActionLink("Logout", "Logout", "Account", null, new { @class = "nav-link text-danger" })</li>
+
+                        <!-- ✅ Notification Bell -->
+                        <div class="relative">
+                            <a href="#" class="text-gray-700 hover:text-indigo-600 flex items-center ml-4 transition-colors duration-200" id="notifDropdown">
+                                <i data-feather="bell" class="w-5 h-5"></i>
+                                <span id="notifCount" class="absolute -top-1 -right-2 bg-red-600 text-white text-xs rounded-full px-1 min-w-[18px] h-[18px] flex items-center justify-center">
+                                    @Html.Raw(ViewBag.UnreadNotificationCount ?? "0")
+                                </span>
+                            </a>
+
+                            <!-- Dropdown -->
+                            <div id="notifMenu" class="hidden absolute right-0 mt-2 w-80 bg-white shadow-xl rounded-lg overflow-hidden z-50 border border-gray-200">
+                                <div class="px-4 py-3 bg-indigo-600 text-white">
+                                    <h3 class="text-sm font-semibold">Notifications</h3>
+                                </div>
+                                <ul class="max-h-80 overflow-y-auto">
+                                    @if (ViewBag.Notifications != null)
+                                    {
+                                        foreach (var notif in ViewBag.Notifications)
+                                        {
+                                            <li class="px-4 py-3 border-b border-gray-100 hover:bg-indigo-50 transition-colors duration-200">
+                                                <a href="@Url.Action("MarkNotificationAsRead", "JobSeeker", new { id = notif.Id })" class="block">
+                                                    <p class="text-sm text-gray-800">@notif.Message</p>
+                                                    <span class="text-xs text-gray-500 mt-1 block">@notif.CreatedAt.ToString("dd-MM-yyyy HH:mm")</span>
+                                                </a>
+                                            </li>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <li class="px-4 py-4 text-gray-500 text-center">
+                                            <i data-feather="bell-off" class="w-8 h-8 mx-auto mb-2 text-gray-300"></i>
+                                            <p class="text-sm">No notifications</p>
+                                        </li>
+                                    }
+                                </ul>
+                                @if (ViewBag.Notifications != null && ViewBag.Notifications.Count > 0)
+                                {
+                                    @*<div class="px-4 py-2 bg-gray-50 border-t">
+                            <a href="@Url.Action("ClearAllNotifications", "JobSeeker")" class="text-xs text-gray-500 hover:text-gray-700 transition-colors duration-200">
+                                Clear all
+                            </a>
+                        </div>*@
+                                }
+                            </div>
+                        </div>
+
+                        <a href="@Url.Action("Logout","Account")" class="text-red-600 hover:text-red-800 flex items-center ml-4 transition-colors duration-200">
+                            <i data-feather="log-out" class="mr-1 w-4 h-4"></i> Logout
+                        </a>
                     }
                     else
                     {
-                        <li>@Html.ActionLink("Login", "Login", "Account", null, new { @class = "nav-link" })</li>
-                        <li>@Html.ActionLink("Register", "Register", "Account", null, new { @class = "nav-link" })</li>
+                        <a href="@Url.Action("Login","Account")" class="text-gray-700 hover:text-indigo-600 flex items-center transition-colors duration-200">
+                            <i data-feather="log-in" class="mr-1 w-4 h-4"></i> Login
+                        </a>
+                        <a href="@Url.Action("Register","Account")" class="text-gray-700 hover:text-indigo-600 flex items-center transition-colors duration-200">
+                            <i data-feather="user-plus" class="mr-1 w-4 h-4"></i> Register
+                        </a>
                     }
-                </ul>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="sm:hidden flex items-center">
+                    <button type="button" class="text-gray-700 hover:text-indigo-600 focus:outline-none focus:text-indigo-600" id="mobileMenuButton">
+                        <i data-feather="menu" class="w-6 h-6"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile menu -->
+            <div class="sm:hidden hidden" id="mobileMenu">
+                <div class="px-2 pt-2 pb-3 space-y-1 border-t border-gray-200">
+                    @if (Session["UserRole"] != null)
+                    {
+                        if (Session["UserRole"].ToString() == "Employer")
+                        {
+                            <a href="@Url.Action("Dashboard","Employer")" class="block px-3 py-2 text-gray-700 hover:text-indigo-600 hover:bg-gray-50 rounded-md transition-colors duration-200">
+                                <i data-feather="home" class="mr-2 w-4 h-4 inline"></i> Dashboard
+                            </a>
+                            <a href="@Url.Action("ManageJobs","Employer")" class="block px-3 py-2 text-gray-700 hover:text-indigo-600 hover:bg-gray-50 rounded-md transition-colors duration-200">
+                                <i data-feather="briefcase" class="mr-2 w-4 h-4 inline"></i> Manage Jobs
+                            </a>
+                            <a href="@Url.Action("CreateJob","Employer")" class="block px-3 py-2 text-gray-700 hover:text-indigo-600 hover:bg-gray-50 rounded-md transition-colors duration-200">
+                                <i data-feather="plus-circle" class="mr-2 w-4 h-4 inline"></i> Post Job
+                            </a>
+                            <a href="@Url.Action("ShortlistedCandidates","Employer")" class="block px-3 py-2 text-gray-700 hover:text-indigo-600 hover:bg-gray-50 rounded-md transition-colors duration-200">
+                                <i data-feather="star" class="mr-2 w-4 h-4 inline"></i> Shortlisted
+                            </a>
+                            <a href="@Url.Action("ViewProfile","Employer")" class="block px-3 py-2 text-gray-700 hover:text-indigo-600 hover:bg-gray-50 rounded-md transition-colors duration-200">
+                                <i data-feather="user" class="mr-2 w-4 h-4 inline"></i> My Profile
+                            </a>
+                            <a href="@Url.Action("ViewAllApplications","Employer")" class="block px-3 py-2 text-gray-700 hover:text-indigo-600 hover:bg-gray-50 rounded-md transition-colors duration-200">
+                                <i data-feather="file-text" class="mr-2 w-4 h-4 inline"></i> Applications
+                            </a>
+                        }
+                        else if (Session["UserRole"].ToString() == "JobSeeker")
+                        {
+                            <a href="@Url.Action("Dashboard","JobSeeker")" class="block px-3 py-2 text-gray-700 hover:text-indigo-600 hover:bg-gray-50 rounded-md transition-colors duration-200">
+                                <i data-feather="search" class="mr-2 w-4 h-4 inline"></i> Browse Jobs
+                            </a>
+                            <a href="@Url.Action("MyApplications","JobSeeker")" class="block px-3 py-2 text-gray-700 hover:text-indigo-600 hover:bg-gray-50 rounded-md transition-colors duration-200">
+                                <i data-feather="file-text" class="mr-2 w-4 h-4 inline"></i> My Applications
+                            </a>
+                            <a href="@Url.Action("EditProfile","JobSeeker")" class="block px-3 py-2 text-gray-700 hover:text-indigo-600 hover:bg-gray-50 rounded-md transition-colors duration-200">
+                                <i data-feather="user" class="mr-2 w-4 h-4 inline"></i> My Profile
+                            </a>
+                        }
+                        else if (Session["UserRole"].ToString() == "Admin")
+                        {
+                            <a href="@Url.Action("Dashboard","Admin")" class="block px-3 py-2 text-gray-700 hover:text-indigo-600 hover:bg-gray-50 rounded-md transition-colors duration-200">
+                                <i data-feather="settings" class="mr-2 w-4 h-4 inline"></i> Admin Panel
+                            </a>
+                            <a href="@Url.Action("Applications","Admin")" class="block px-3 py-2 text-gray-700 hover:text-indigo-600 hover:bg-gray-50 rounded-md transition-colors duration-200">
+                                <i data-feather="inbox" class="mr-2 w-4 h-4 inline"></i> Applications
+                            </a>
+                            <a href="@Url.Action("ViewApplications","Admin")" class="block px-3 py-2 text-gray-700 hover:text-indigo-600 hover:bg-gray-50 rounded-md transition-colors duration-200">
+                                <i data-feather="list" class="mr-2 w-4 h-4 inline"></i> All Applications
+                            </a>
+                            <a href="@Url.Action("ManageJobs","Admin")" class="block px-3 py-2 text-gray-700 hover:text-indigo-600 hover:bg-gray-50 rounded-md transition-colors duration-200">
+                                <i data-feather="briefcase" class="mr-2 w-4 h-4 inline"></i> Manage Jobs
+                            </a>
+                            <a href="@Url.Action("ViewEmployers","Admin")" class="block px-3 py-2 text-gray-700 hover:text-indigo-600 hover:bg-gray-50 rounded-md transition-colors duration-200">
+                                <i data-feather="users" class="mr-2 w-4 h-4 inline"></i> Employers
+                            </a>
+                            <a href="@Url.Action("ManageJobSeekers","Admin")" class="block px-3 py-2 text-gray-700 hover:text-indigo-600 hover:bg-gray-50 rounded-md transition-colors duration-200">
+                                <i data-feather="users" class="mr-2 w-4 h-4 inline"></i> Job Seekers
+                            </a>
+                        }
+
+                        <!-- Mobile Notification -->
+                        <a href="@Url.Action("Notifications","JobSeeker")" class="block px-3 py-2 text-gray-700 hover:text-indigo-600 hover:bg-gray-50 rounded-md transition-colors duration-200">
+                            <i data-feather="bell" class="mr-2 w-4 h-4 inline"></i> Notifications
+                            <span class="ml-2 bg-red-600 text-white text-xs rounded-full px-2 py-0.5">
+                                @Html.Raw(ViewBag.UnreadNotificationCount ?? "0")
+                            </span>
+                        </a>
+
+                        <a href="@Url.Action("Logout","Account")" class="block px-3 py-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-md transition-colors duration-200">
+                            <i data-feather="log-out" class="mr-2 w-4 h-4 inline"></i> Logout
+                        </a>
+                    }
+                    else
+                    {
+                        <a href="@Url.Action("Login","Account")" class="block px-3 py-2 text-gray-700 hover:text-indigo-600 hover:bg-gray-50 rounded-md transition-colors duration-200">
+                            <i data-feather="log-in" class="mr-2 w-4 h-4 inline"></i> Login
+                        </a>
+                        <a href="@Url.Action("Register","Account")" class="block px-3 py-2 text-gray-700 hover:text-indigo-600 hover:bg-gray-50 rounded-md transition-colors duration-200">
+                            <i data-feather="user-plus" class="mr-2 w-4 h-4 inline"></i> Register
+                        </a>
+                    }
+                </div>
             </div>
         </div>
     </nav>
 
-    <div class="container body-content">
+    <!-- ✅ Page Body -->
+    <div class="flex-grow">
         @RenderBody()
         @if (Session["UserName"] != null)
         {
-            <div style="margin-top:10px;">
-                <p>Welcome, <strong>@Session["UserName"]</strong>!</p>
+            <div class="max-w-7xl mx-auto px-4 mt-4 text-gray-600">
+                Welcome, <strong>@Session["UserName"]</strong>!
             </div>
         }
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - Job Board Platform</p>
-        </footer>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- ✅ Footer -->
+    <footer class="bg-white border-t py-4 mt-8 text-center text-gray-500">
+        <p>&copy; @DateTime.Now.Year - Job Board Platform</p>
+    </footer>
+
+    <!-- ✅ Scripts -->
+    <script>
+        feather.replace();
+
+        // Sticky navbar scroll effect
+        window.addEventListener('scroll', function () {
+            const nav = document.querySelector('.sticky-nav');
+            if (window.scrollY > 10) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // Notification dropdown toggle
+        document.addEventListener('DOMContentLoaded', function () {
+            const dropdown = document.getElementById('notifDropdown');
+            const menu = document.getElementById('notifMenu');
+            const mobileMenuButton = document.getElementById('mobileMenuButton');
+            const mobileMenu = document.getElementById('mobileMenu');
+
+            if (dropdown && menu) {
+                dropdown.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    menu.classList.toggle('hidden');
+                });
+
+                // Close dropdown if clicked outside
+                document.addEventListener('click', function (e) {
+                    if (!dropdown.contains(e.target) && !menu.contains(e.target)) {
+                        menu.classList.add('hidden');
+                    }
+                });
+            }
+
+            // Mobile menu toggle
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', function () {
+                    mobileMenu.classList.toggle('hidden');
+                    // Toggle menu icon
+                    const icon = mobileMenuButton.querySelector('i');
+                    if (mobileMenu.classList.contains('hidden')) {
+                        icon.setAttribute('data-feather', 'menu');
+                    } else {
+                        icon.setAttribute('data-feather', 'x');
+                    }
+                    feather.replace();
+                });
+            }
+        });
+    </script>
     @RenderSection("scripts", required: false)
-    @section scripts {
-        <script>
-            $(function () {
-                $('[data-toggle="tooltip"]').tooltip()
-            });
-        </script>
-    }
 </body>
 </html>

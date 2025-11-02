@@ -1,14 +1,463 @@
-@model JobBoardPlatform.Models.Job
+@model JobBoardPlatform.Models.CreateJobViewModel
+
 @{
     ViewBag.Title = "Post a Job";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<h2>Post New Job</h2>
 
-@using (Html.BeginForm())
-{
-    <p>@Html.LabelFor(m => m.Title) @Html.TextBoxFor(m => m.Title)</p>
-    <p>@Html.LabelFor(m => m.Description) @Html.TextAreaFor(m => m.Description)</p>
-    <p>@Html.LabelFor(m => m.Category) @Html.TextBoxFor(m => m.Category)</p>
-    <p>@Html.LabelFor(m => m.Location) @Html.TextBoxFor(m => m.Location)</p>
-    <button type="submit">Post Job</button>
-}
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <style>
+        .gradient-bg {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+        }
+
+        .gradient-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.03' fill-rule='evenodd'/%3E%3C/svg%3E");
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .form-input {
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid #e2e8f0;
+        }
+
+        .form-input:focus {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .file-upload-area {
+            transition: all 0.3s ease;
+            border: 2px dashed #d1d5db;
+            background: rgba(248, 250, 252, 0.8);
+        }
+
+        .file-upload-area:hover {
+            border-color: #6366f1;
+            background: rgba(239, 246, 255, 0.8);
+        }
+
+        .file-upload-area.dragover {
+            border-color: #6366f1;
+            background: rgba(239, 246, 255, 0.9);
+            transform: scale(1.02);
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        .floating-icon {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @@keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .wide-form-container {
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .wide-form-card {
+            padding: 3rem;
+        }
+
+        .wide-input {
+            width: 100%;
+        }
+
+        .question-card {
+            background: rgba(249, 250, 251, 0.9);
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .question-card:hover {
+            border-color: #6366f1;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+        }
+
+        .add-question-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            transition: all 0.3s ease;
+        }
+
+        .add-question-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px -5px rgba(16, 185, 129, 0.4);
+        }
+
+        .remove-question-btn {
+            transition: all 0.3s ease;
+        }
+
+        .remove-question-btn:hover {
+            transform: scale(1.1);
+            background: #fee2e2;
+        }
+    </style>
+</head>
+<body class="min-h-screen gradient-bg">
+    <div class="wide-form-container py-8 px-4 sm:px-6 lg:px-8">
+        <!-- Header Section -->
+        <div class="text-center mb-8" data-aos="fade-down">
+            <div class="floating-icon inline-flex items-center justify-center w-20 h-20 bg-opacity-20 rounded-3xl mb-4" style="background: #6A5ACD;">
+                <i data-feather="briefcase" class="w-10 h-10 text-white"></i>
+            </div>
+            <h1 class="text-4xl font-bold mb-2" style="color: #6A5ACD;">Post a New Job</h1>
+            <p class="text-blue-100 text-lg" style="color: #6A5ACD;">Fill in the details below to create your job posting</p>
+        </div>
+
+        <!-- Wider Form Card -->
+        <div class="glass-card rounded-3xl wide-form-card" data-aos="fade-up" data-aos-delay="200">
+            @using (Html.BeginForm("CreateJob", "Employer", FormMethod.Post, new { enctype = "multipart/form-data", @class = "space-y-8" }))
+            {
+                <!-- Job Title -->
+                <div class="group" data-aos="fade-right">
+                    <label class="block text-sm font-semibold text-gray-700 mb-3 flex items-center">
+                        <div class="p-2 bg-indigo-100 rounded-lg mr-3">
+                            <i data-feather="type" class="w-4 h-4 text-indigo-600"></i>
+                        </div>
+                        Job Title
+                    </label>
+                    @Html.TextBoxFor(model => model.Title, new
+                    {
+                        @class = "form-input wide-input px-4 py-4 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300",
+                        placeholder = "e.g. Senior Frontend Developer"
+                    })
+                </div>
+
+                <!-- Description -->
+                <div class="group" data-aos="fade-right" data-aos-delay="100">
+                    <label class="block text-sm font-semibold text-gray-700 mb-3 flex items-center">
+                        <div class="p-2 bg-indigo-100 rounded-lg mr-3">
+                            <i data-feather="align-left" class="w-4 h-4 text-indigo-600"></i>
+                        </div>
+                        Job Description
+                    </label>
+                    @Html.TextAreaFor(model => model.Description, new
+                    {
+                        @class = "form-input wide-input px-4 py-4 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300",
+                        rows = 6,
+                        placeholder = "Describe the role, responsibilities, requirements, and what makes your company great..."
+                    })
+                </div>
+
+                <!-- Category & Location -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8" data-aos="fade-up" data-aos-delay="200">
+                    <div class="group">
+                        <label class="block text-sm font-semibold text-gray-700 mb-3 flex items-center">
+                            <div class="p-2 bg-indigo-100 rounded-lg mr-3">
+                                <i data-feather="tag" class="w-4 h-4 text-indigo-600"></i>
+                            </div>
+                            Category
+                        </label>
+                        @Html.TextBoxFor(model => model.Category, new
+                        {
+                            @class = "form-input wide-input px-4 py-4 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300",
+                            placeholder = "e.g. Technology, Marketing, Design"
+                        })
+                    </div>
+
+                    <div class="group">
+                        <label class="block text-sm font-semibold text-gray-700 mb-3 flex items-center">
+                            <div class="p-2 bg-indigo-100 rounded-lg mr-3">
+                                <i data-feather="map-pin" class="w-4 h-4 text-indigo-600"></i>
+                            </div>
+                            Location
+                        </label>
+                        @Html.TextBoxFor(model => model.Location, new
+                        {
+                            @class = "form-input wide-input px-4 py-4 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300",
+                            placeholder = "e.g. Remote, New York, London"
+                        })
+                    </div>
+                </div>
+
+                <!-- File Upload -->
+                <div class="group" data-aos="fade-up" data-aos-delay="300">
+                    <label class="block text-sm font-semibold text-gray-700 mb-3 flex items-center">
+                        <div class="p-2 bg-indigo-100 rounded-lg mr-3">
+                            <i data-feather="image" class="w-4 h-4 text-indigo-600"></i>
+                        </div>
+                        Company Image (Optional)
+                    </label>
+                    <div class="file-upload-area rounded-xl p-8 text-center cursor-pointer transition-all duration-300" id="uploadArea">
+                        <div class="space-y-4">
+                            <div class="mx-auto w-16 h-16 bg-indigo-100 rounded-2xl flex items-center justify-center">
+                                <i data-feather="upload-cloud" class="w-8 h-8 text-indigo-600"></i>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <label for="Image" class="cursor-pointer">
+                                    <span class="text-indigo-600 hover:text-indigo-500 font-semibold text-lg">Click to upload</span>
+                                </label>
+                                <p class="text-gray-500 mt-2">or drag and drop your image here</p>
+                            </div>
+                            <p class="text-sm text-gray-400">PNG, JPG up to 5MB</p>
+                            <input id="Image" name="Image" type="file" class="sr-only" accept="image/*">
+                        </div>
+                    </div>
+                    <div id="fileName" class="mt-3 text-sm text-green-600 font-medium text-center hidden"></div>
+                </div>
+
+                <!-- Quiz Section -->
+                <div class="group" data-aos="fade-up" data-aos-delay="400">
+                    <div class="flex items-center justify-between mb-4">
+                        <label class="block text-sm font-semibold text-gray-700 flex items-center">
+                            <div class="p-2 bg-green-100 rounded-lg mr-3">
+                                <i data-feather="help-circle" class="w-4 h-4 text-green-600"></i>
+                            </div>
+                            Quiz Questions (Optional)
+                        </label>
+                        <button type="button" id="add-question" class="add-question-btn text-white font-semibold px-5 py-2.5 rounded-lg flex items-center gap-2">
+                            <i data-feather="plus" class="w-4 h-4"></i>
+                            Add Question
+                        </button>
+                    </div>
+                    <p class="text-sm text-gray-500 mb-4">Add screening questions to help filter candidates</p>
+                    <div id="questions-container" class="space-y-4">
+                        <!-- Dynamic questions will be added here -->
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="pt-8" data-aos="fade-up" data-aos-delay="500">
+                    <button type="submit" class="submit-btn w-full text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-3">
+                        <i data-feather="send" class="w-5 h-5"></i>
+                        <span class="text-lg">Publish Job Posting</span>
+                    </button>
+                </div>
+            }
+        </div>
+
+        <!-- Additional Info -->
+        <div class="text-center mt-8" data-aos="fade-up" data-aos-delay="600">
+            <p class="text-blue-100 text-sm" style="color: #6A5ACD;">
+                <i data-feather="info" class="w-4 h-4 inline mr-1"></i>
+                Your job will be reviewed and approved within 24 hours
+            </p>
+        </div>
+    </div>
+
+    <script>
+        AOS.init({
+            duration: 800,
+            once: true
+        });
+
+        feather.replace();
+
+        // Enhanced file upload functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('Image');
+            const fileName = document.getElementById('fileName');
+
+            uploadArea.addEventListener('click', () => fileInput.click());
+
+            fileInput.addEventListener('change', function (e) {
+                if (this.files && this.files[0]) {
+                    const file = this.files[0];
+                    fileName.textContent = `Selected: ${file.name}`;
+                    fileName.classList.remove('hidden');
+                    uploadArea.classList.add('bg-green-50', 'border-green-200');
+
+                    uploadArea.innerHTML = `
+                            <div class="flex items-center justify-center space-x-4">
+                                <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                                    <i data-feather="check" class="w-6 h-6 text-green-600"></i>
+                                </div>
+                                <div class="text-left">
+                                    <p class="font-semibold text-gray-800">${file.name}</p>
+                                    <p class="text-sm text-gray-500">${(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                                </div>
+                            </div>
+                        `;
+                    feather.replace();
+                }
+            });
+
+            // Drag and drop functionality
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, highlight, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, unhighlight, false);
+            });
+
+            function highlight() {
+                uploadArea.classList.add('dragover');
+            }
+
+            function unhighlight() {
+                uploadArea.classList.remove('dragover');
+            }
+
+            uploadArea.addEventListener('drop', handleDrop, false);
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                fileInput.files = files;
+
+                if (files && files[0]) {
+                    fileInput.dispatchEvent(new Event('change'));
+                }
+            }
+        });
+
+        // Quiz Questions Functionality
+        let questionCount = 0;
+
+        document.getElementById('add-question').addEventListener('click', function () {
+            const container = document.getElementById('questions-container');
+            const questionNumber = questionCount + 1;
+
+            const html = `
+                    <div class="question-card rounded-xl p-6 relative" data-aos="fade-up">
+                        <button type="button" class="remove-question-btn absolute top-4 right-4 w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center text-red-600 hover:bg-red-100" onclick="removeQuestion(this)">
+                            <i data-feather="x" class="w-4 h-4"></i>
+                        </button>
+
+                        <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                            <span class="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center text-indigo-600 font-bold mr-3">${questionNumber}</span>
+                            Question ${questionNumber}
+                        </h4>
+
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Question Text</label>
+                                <input type="text" name="Questions[${questionCount}].QuestionText" class="form-input w-full px-4 py-3 rounded-lg" placeholder="Enter your question" />
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Option A</label>
+                                    <input type="text" name="Questions[${questionCount}].OptionA" class="form-input w-full px-4 py-3 rounded-lg" placeholder="Option A" />
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Option B</label>
+                                    <input type="text" name="Questions[${questionCount}].OptionB" class="form-input w-full px-4 py-3 rounded-lg" placeholder="Option B" />
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Option C</label>
+                                    <input type="text" name="Questions[${questionCount}].OptionC" class="form-input w-full px-4 py-3 rounded-lg" placeholder="Option C" />
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Option D</label>
+                                    <input type="text" name="Questions[${questionCount}].OptionD" class="form-input w-full px-4 py-3 rounded-lg" placeholder="Option D" />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Correct Option</label>
+                                <select name="Questions[${questionCount}].CorrectOption" class="form-input w-full px-4 py-3 rounded-lg">
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+            container.insertAdjacentHTML('beforeend', html);
+            questionCount++;
+            feather.replace();
+
+            // Re-initialize AOS for new elements
+            AOS.refresh();
+        });
+
+        function removeQuestion(button) {
+            const questionCard = button.closest('.question-card');
+            questionCard.style.opacity = '0';
+            questionCard.style.transform = 'scale(0.9)';
+            setTimeout(() => {
+                questionCard.remove();
+                renumberQuestions();
+            }, 300);
+        }
+
+        function renumberQuestions() {
+            const questions = document.querySelectorAll('.question-card');
+            questions.forEach((card, index) => {
+                const numberBadge = card.querySelector('h4 span');
+                const heading = card.querySelector('h4');
+                if (numberBadge && heading) {
+                    numberBadge.textContent = index + 1;
+                    heading.childNodes[1].textContent = ` Question ${index + 1}`;
+                }
+            });
+        }
+    </script>
+</body>
+</html>

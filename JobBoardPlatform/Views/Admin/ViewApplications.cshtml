@@ -1,47 +1,290 @@
-@model List<JobBoardPlatform.Models.Application>
+﻿@model List<JobBoardPlatform.Models.Application>
 
 @{
-    ViewBag.Title = "All Applications";
+    ViewBag.Title = "My Job Applications";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var jobId = ViewBag.JobId;
 }
 
-<h2>All Applications</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen">
+        <!-- Header Section -->
+        <div class="bg-white shadow-sm border-b border-gray-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center py-6">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex-shrink-0 bg-blue-50 rounded-xl p-3">
+                            <i data-feather="file-text" class="h-6 w-6 text-blue-600"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">@ViewBag.Title</h1>
+                            <p class="text-sm text-gray-500 mt-1">Manage and review job applications</p>
+                        </div>
+                    </div>
+                    <a href="@Url.Action("DownloadJobApplicationsExcel", "Employer")"
+                       class="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
+                        <svg fill="#fff" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" class="w-5 h-5">
+                            <path d="M28.8125 .03125L.8125 5.34375C.339844 5.433594 0 5.863281 0 6.34375L0 43.65625C0 44.136719 .339844 44.566406 .8125 44.65625L28.8125 49.96875C28.875 49.980469 28.9375 50 29 50C29.230469 50 29.445313 49.929688 29.625 49.78125C29.855469 49.589844 30 49.296875 30 49L30 1C30 .703125 29.855469 .410156 29.625 .21875C29.394531 .0273438 29.105469 -.0234375 28.8125 .03125ZM32 6L32 13L34 13L34 15L32 15L32 20L34 20L34 22L32 22L32 27L34 27L34 29L32 29L32 35L34 35L34 37L32 37L32 44L47 44C48.101563 44 49 43.101563 49 42L49 8C49 6.898438 48.101563 6 47 6ZM36 13L44 13L44 15L36 15ZM6.6875 15.6875L11.8125 15.6875L14.5 21.28125C14.710938 21.722656 14.898438 22.265625 15.0625 22.875L15.09375 22.875C15.199219 22.511719 15.402344 21.941406 15.6875 21.21875L18.65625 15.6875L23.34375 15.6875L17.75 24.9375L23.5 34.375L18.53125 34.375L15.28125 28.28125C15.160156 28.054688 15.035156 27.636719 14.90625 27.03125L14.875 27.03125C14.8125 27.316406 14.664063 27.761719 14.4375 28.34375L11.1875 34.375L6.1875 34.375L12.15625 25.03125ZM36 20L44 20L44 22L36 22ZM36 27L44 27L44 29L36 29ZM36 35L44 35L44 37L36 37Z"></path>
+                        </svg>
+                        Download Excel
+                    </a>
+                </div>
+            </div>
+        </div>
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Candidate</th>
-            <th>Job Title</th>
-            <th>Employer</th>
-            <th>Applied Date</th>
-            <th>Status</th>
-            <th>Resume</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var app in Model)
-        {
-            <tr>
-                <td>@app.CandidateName</td>
-                <td>@app.JobTitle</td>
-                <td>@app.EmployerName</td>
-                <td>@app.AppliedDate.ToShortDateString()</td>
-                <td>
-                    <span class="badge @(app.Status == "Approved" ? "bg-success" : app.Status == "Rejected" ? "bg-danger" : "bg-secondary")">
-                        @app.Status
-                    </span>
-                </td>
-                <td>
-                    @if (!string.IsNullOrEmpty(app.ResumePath))
-                    {
-                        <a href="@Url.Content(app.ResumePath)" class="btn btn-sm btn-primary" download>Download</a>
-                    }
-                    else
-                    {
-                        <span class="text-muted">No Resume</span>
-                    }
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+        <!-- Stats Overview -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8" data-aos="fade-up">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Total Applications</p>
+                            <p class="text-2xl font-bold text-gray-900 mt-1">@Model.Count</p>
+                        </div>
+                        <div class="bg-blue-50 rounded-lg p-3">
+                            <i data-feather="file-text" class="h-5 w-5 text-blue-600"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Applied</p>
+                            <p class="text-2xl font-bold text-gray-900 mt-1">@Model.Count(a => a.Status == "Applied")</p>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-3">
+                            <i data-feather="clock" class="h-5 w-5 text-gray-600"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Approved</p>
+                            <p class="text-2xl font-bold text-gray-900 mt-1">@Model.Count(a => a.Status == "Approved")</p>
+                        </div>
+                        <div class="bg-green-50 rounded-lg p-3">
+                            <i data-feather="check-circle" class="h-5 w-5 text-green-600"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Rejected</p>
+                            <p class="text-2xl font-bold text-gray-900 mt-1">@Model.Count(a => a.Status == "Rejected")</p>
+                        </div>
+                        <div class="bg-red-50 rounded-lg p-3">
+                            <i data-feather="x-circle" class="h-5 w-5 text-red-600"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search & Filter -->
+            <div class="bg-white rounded-xl shadow-sm p-6 mb-8" data-aos="fade-up" data-aos-delay="100">
+                <form method="get" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Search</label>
+                        <div class="relative">
+                            <i data-feather="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" name="searchTerm"
+                                   class="pl-10 w-full rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 py-2.5"
+                                   placeholder="Candidate or job title"
+                                   value="@Request["searchTerm"]">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                        <select name="statusFilter" class="w-full rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 py-2.5">
+                            <option value="">All Statuses</option>
+                            <option value="Applied" @(Request["statusFilter"] == "Applied" ? "selected" : "")>Applied</option>
+                            <option value="Approved" @(Request["statusFilter"] == "Approved" ? "selected" : "")>Approved</option>
+                            <option value="Rejected" @(Request["statusFilter"] == "Rejected" ? "selected" : "")>Rejected</option>
+                        </select>
+                    </div>
+                    <div class="flex items-end">
+                        <button type="submit"
+                                class="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-sm hover:shadow-md">
+                            <i data-feather="filter" class="w-4 h-4"></i>
+                            <span>Apply Filters</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Applications Table -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden" data-aos="fade-up" data-aos-delay="200">
+                <!-- Table Header -->
+                <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-semibold text-gray-800">Application Details</h3>
+                        <div class="text-sm text-gray-500">
+                            <span class="font-semibold text-gray-700">@Model.Count</span> applications total
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                    Candidate
+                                </th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                    Job Title
+                                </th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                    Applied Date
+                                </th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                    Status
+                                </th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                    Resume
+                                </th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                    Actions
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @if (Model != null && Model.Any())
+                            {
+                                foreach (var app in Model)
+                                {
+                                    <tr class="hover:bg-gray-50 transition-all duration-150 ease-in-out group">
+                                        <!-- Candidate -->
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="flex-shrink-0 h-12 w-12 rounded-xl bg-gradient-to-br from-blue-100 to-blue-50 flex items-center justify-center shadow-sm group-hover:shadow transition-shadow duration-200">
+                                                    <i data-feather="user" class="h-5 w-5 text-blue-600"></i>
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-semibold text-gray-900">@app.CandidateName</div>
+                                                    <div class="text-xs text-gray-500 mt-0.5">ID: @app.Id</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <!-- Job Title -->
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm font-medium text-gray-900">@app.JobTitle</div>
+                                            <div class="text-xs text-gray-500 mt-0.5 flex items-center">
+                                                <i data-feather="briefcase" class="h-3 w-3 mr-1"></i>
+                                                Position
+                                            </div>
+                                        </td>
+                                        <!-- Applied Date -->
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">@app.AppliedDate.ToShortDateString()</div>
+                                            <div class="text-xs text-gray-500 mt-0.5 flex items-center">
+                                                <i data-feather="calendar" class="h-3 w-3 mr-1"></i>
+                                                Applied
+                                            </div>
+                                        </td>
+                                        <!-- Status -->
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            @if (app.Status == "Approved")
+                                            {
+                                                <div class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-green-100 text-green-800 border border-green-200">
+                                                    <i data-feather="check-circle" class="h-3 w-3 mr-1.5"></i>
+                                                    Approved
+                                                </div>
+                                            }
+                                            else if (app.Status == "Rejected")
+                                            {
+                                                <div class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-red-100 text-red-800 border border-red-200">
+                                                    <i data-feather="x-circle" class="h-3 w-3 mr-1.5"></i>
+                                                    Rejected
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-800 border border-gray-200">
+                                                    <i data-feather="clock" class="h-3 w-3 mr-1.5"></i>
+                                                    Applied
+                                                </div>
+                                            }
+                                        </td>
+                                        <!-- Resume -->
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            @if (!string.IsNullOrEmpty(app.ResumePath))
+                                            {
+                                                <a href="@Url.Content(app.ResumePath)"
+                                                   class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 transition-all duration-200 hover:shadow-sm"
+                                                   download>
+                                                    <i data-feather="download" class="h-3 w-3 mr-1.5"></i>
+                                                    Download
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-xs text-gray-400">No Resume</span>
+                                            }
+                                        </td>
+                                        <!-- Actions -->
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            @if (app.Status == "Applied")
+                                            {
+                                                <div class="flex items-center space-x-2">
+                                                    <a href="@Url.Action("ApproveApplication", "Employer", new { id = app.Id, jobId = jobId })"
+                                                       class="inline-flex items-center px-3 py-2 rounded-lg text-xs font-semibold text-green-700 bg-green-50 hover:bg-green-100 border border-green-200 transition-all duration-200 hover:shadow-sm">
+                                                        <i data-feather="check" class="h-3 w-3 mr-1.5"></i>
+                                                        Approve
+                                                    </a>
+                                                    <a href="@Url.Action("RejectApplication", "Employer", new { id = app.Id, jobId = jobId })"
+                                                       class="inline-flex items-center px-3 py-2 rounded-lg text-xs font-semibold text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 transition-all duration-200 hover:shadow-sm">
+                                                        <i data-feather="x" class="h-3 w-3 mr-1.5"></i>
+                                                        Reject
+                                                    </a>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-xs text-gray-400">-</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                                        <div class="flex flex-col items-center justify-center py-12">
+                                            <i data-feather="inbox" class="w-16 h-16 text-gray-400 mb-4"></i>
+                                            <p class="text-lg text-gray-600">No applications found</p>
+                                            <p class="text-sm text-gray-500">Try adjusting your search or filter criteria</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        AOS.init({
+            duration: 600,
+            once: true
+        });
+        feather.replace();
+    </script>
+</body>
+</html>

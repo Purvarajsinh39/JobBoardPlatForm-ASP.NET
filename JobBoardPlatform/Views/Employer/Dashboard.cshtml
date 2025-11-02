@@ -1,29 +1,430 @@
+﻿
 @model List<JobBoardPlatform.Models.Job>
+
 @{
     ViewBag.Title = "Employer Dashboard";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<!-- Add this at the top of Dashboard.cshtml, inside the main container (e.g., <div class="container mx-auto px-4">) -->
+<!-- Add this at the top of Dashboard.cshtml, inside the main container (e.g., <div class="container mx-auto px-4">) -->
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success p-4 mb-4 bg-green-100 border border-green-400 text-green-700 rounded">
+        @TempData["SuccessMessage"]
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger p-4 mb-4 bg-red-100 border border-red-400 text-red-700 rounded">
+        @TempData["ErrorMessage"]
+    </div>
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --danger-gradient: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+        }
 
-<h2>My Posted Jobs</h2>
+        @@keyframes scale-up-center-normal {
+            0% {
+                transform: scale(0.95);
+                opacity: 0;
+            }
 
-<table class="table table-bordered">
-    <tr>
-        <th>Title</th>
-        <th>Location</th>
-        <th>Posted Date</th>
-        <th>Approval Status</th>
-        <th>Actions</th>
-    </tr>
-    @foreach (var job in Model)
-    {
-        <tr>
-            <td>@job.Title</td>
-            <td>@job.Location</td>
-            <td>@job.PostedDate.ToShortDateString()</td>
-            <td>@(job.IsApproved ? "Approved" : "Pending")</td>
-            <td>
-                <a href="/Employer/ViewApplications/@job.Id" class="btn btn-info btn-sm">View Applications</a>
-            </td>
-        </tr>
-    }
-</table>
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @@keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .card-animated {
+            animation: scale-up-center-normal 0.6s cubic-bezier(0.39, 0.575, 0.565, 1) both;
+        }
+
+        .hover-scale {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .hover-scale:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
+            }
+
+        .status-badge {
+            position: relative;
+            padding-left: 1.25rem;
+        }
+
+            .status-badge::before {
+                content: '';
+                position: absolute;
+                left: 0.5rem;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 0.5rem;
+                height: 0.5rem;
+                border-radius: 50%;
+            }
+
+        .status-approved::before {
+            background-color: #10B981;
+        }
+
+        .status-pending::before {
+            background-color: #F59E0B;
+        }
+
+        .action-btn {
+            transition: all 0.3s ease;
+        }
+
+            .action-btn:hover {
+                transform: scale(1.15);
+            }
+
+        .table-row-hover {
+            transition: all 0.3s ease;
+        }
+
+            .table-row-hover:hover {
+                background-color: #F8FAFC;
+                transform: translateX(5px);
+            }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .stat-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+            .stat-card::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
+                transform: rotate(30deg);
+            }
+
+        .search-box {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header Section -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-12">
+            <div class="mb-6 md:mb-0">
+                <h1 class="text-4xl font-bold text-gray-900 mb-2" style="color: #6A5ACD;">Employer Dashboard</h1>
+                <p class="text-gray-600 text-lg" style="color: #6A5ACD;">Manage your job postings and track applications</p>
+            </div>
+            <a href="@Url.Action("DownloadPostedJobsExcel", "Employer")"
+               class="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                <svg fill="#fff" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" class="w-5 h-5">
+                    <path d="M28.8125 .03125L.8125 5.34375C.339844 5.433594 0 5.863281 0 6.34375L0 43.65625C0 44.136719 .339844 44.566406 .8125 44.65625L28.8125 49.96875C28.875 49.980469 28.9375 50 29 50C29.230469 50 29.445313 49.929688 29.625 49.78125C29.855469 49.589844 30 49.296875 30 49L30 1C30 .703125 29.855469 .410156 29.625 .21875C29.394531 .0273438 29.105469 -.0234375 28.8125 .03125ZM32 6L32 13L34 13L34 15L32 15L32 20L34 20L34 22L32 22L32 27L34 27L34 29L32 29L32 35L34 35L34 37L32 37L32 44L47 44C48.101563 44 49 43.101563 49 42L49 8C49 6.898438 48.101563 6 47 6ZM36 13L44 13L44 15L36 15ZM6.6875 15.6875L11.8125 15.6875L14.5 21.28125C14.710938 21.722656 14.898438 22.265625 15.0625 22.875L15.09375 22.875C15.199219 22.511719 15.402344 21.941406 15.6875 21.21875L18.65625 15.6875L23.34375 15.6875L17.75 24.9375L23.5 34.375L18.53125 34.375L15.28125 28.28125C15.160156 28.054688 15.035156 27.636719 14.90625 27.03125L14.875 27.03125C14.8125 27.316406 14.664063 27.761719 14.4375 28.34375L11.1875 34.375L6.1875 34.375L12.15625 25.03125ZM36 20L44 20L44 22L36 22ZM36 27L44 27L44 29L36 29ZM36 35L44 35L44 37L36 37Z"></path>
+                </svg>
+                <span class="font-medium">Download Excel</span>
+            </a>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <!-- Total Jobs -->
+            <div class="card-animated hover-scale stat-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-xl p-6 text-white relative overflow-hidden">
+                    <div class="flex justify-between items-center relative z-10">
+                        <div>
+                            <p class="text-sm font-medium opacity-90">Total Jobs</p>
+                            <h3 class="text-4xl font-bold mt-2">@ViewBag.TotalJobs</h3>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-white bg-opacity-20 floating">
+                            <i data-feather="briefcase" class="w-8 h-8"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center text-blue-100">
+                        <i data-feather="trending-up" class="w-4 h-4 mr-1"></i>
+                        <span class="text-sm">All your job postings</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Approved Jobs -->
+            <div class="card-animated hover-scale stat-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-xl p-6 text-white relative overflow-hidden">
+                    <div class="flex justify-between items-center relative z-10">
+                        <div>
+                            <p class="text-sm font-medium opacity-90">Approved Jobs</p>
+                            <h3 class="text-4xl font-bold mt-2">@ViewBag.ApprovedJobs</h3>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-white bg-opacity-20 floating">
+                            <i data-feather="check-circle" class="w-8 h-8"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center text-emerald-100">
+                        <i data-feather="activity" class="w-4 h-4 mr-1"></i>
+                        <span class="text-sm">Active and approved</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Applications -->
+            <div class="card-animated hover-scale stat-card" data-aos="fade-up" data-aos-delay="300">
+                <div class="bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl shadow-xl p-6 text-white relative overflow-hidden">
+                    <div class="flex justify-between items-center relative z-10">
+                        <div>
+                            <p class="text-sm font-medium opacity-90">Total Applications</p>
+                            <h3 class="text-4xl font-bold mt-2">@ViewBag.TotalApplications</h3>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-white bg-opacity-20 floating">
+                            <i data-feather="users" class="w-8 h-8"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center text-purple-100">
+                        <i data-feather="user-plus" class="w-4 h-4 mr-1"></i>
+                        <span class="text-sm">Total candidates applied</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Second Row Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            <!-- Pending Applications -->
+            <div class="card-animated hover-scale stat-card" data-aos="fade-up" data-aos-delay="400">
+                <div class="bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl shadow-xl p-6 text-white relative overflow-hidden">
+                    <div class="flex justify-between items-center relative z-10">
+                        <div>
+                            <p class="text-sm font-medium opacity-90">Pending Applications</p>
+                            <h3 class="text-4xl font-bold mt-2">@ViewBag.PendingApplications</h3>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-white bg-opacity-20 floating">
+                            <i data-feather="clock" class="w-8 h-8"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center text-amber-100">
+                        <i data-feather="alert-circle" class="w-4 h-4 mr-1"></i>
+                        <span class="text-sm">Awaiting review</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Approved Applications -->
+            <div class="card-animated hover-scale stat-card" data-aos="fade-up" data-aos-delay="500">
+                <div class="bg-gradient-to-br from-cyan-500 to-blue-600 rounded-2xl shadow-xl p-6 text-white relative overflow-hidden">
+                    <div class="flex justify-between items-center relative z-10">
+                        <div>
+                            <p class="text-sm font-medium opacity-90">Approved Applications</p>
+                            <h3 class="text-4xl font-bold mt-2">@ViewBag.ApprovedApplications</h3>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-white bg-opacity-20 floating">
+                            <i data-feather="thumbs-up" class="w-8 h-8"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center text-cyan-100">
+                        <i data-feather="award" class="w-4 h-4 mr-1"></i>
+                        <span class="text-sm">Successful candidates</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rejected Applications -->
+            <div class="card-animated hover-scale stat-card" data-aos="fade-up" data-aos-delay="600">
+                <div class="bg-gradient-to-br from-rose-500 to-red-600 rounded-2xl shadow-xl p-6 text-white relative overflow-hidden">
+                    <div class="flex justify-between items-center relative z-10">
+                        <div>
+                            <p class="text-sm font-medium opacity-90">Rejected Applications</p>
+                            <h3 class="text-4xl font-bold mt-2">@ViewBag.RejectedApplications</h3>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-white bg-opacity-20 floating">
+                            <i data-feather="thumbs-down" class="w-8 h-8"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center text-rose-100">
+                        <i data-feather="x-circle" class="w-4 h-4 mr-1"></i>
+                        <span class="text-sm">Not selected</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search and Filter -->
+        <div class="glass-effect rounded-2xl p-6 mb-8 shadow-lg search-box" data-aos="fade-up" data-aos-delay="700">
+            <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                <i data-feather="search" class="w-5 h-5 mr-2 text-blue-600"></i>
+                Find Your Jobs
+            </h2>
+            <form method="get" class="flex flex-col md:flex-row gap-4">
+                <div class="flex-grow">
+                    <div class="relative">
+                        <input type="text" name="searchTerm" placeholder="Search by job title, category"
+                               class="w-full px-5 py-4 border-0 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm"
+                               value="@ViewBag.SearchTerm">
+                        <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                            <i data-feather="filter" class="w-5 h-5"></i>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit"
+                        class="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl transition-all duration-300 font-medium flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                    <i data-feather="search" class="w-5 h-5"></i>
+                    Search Jobs
+                </button>
+            </form>
+        </div>
+
+        <!-- Success Message -->
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 text-green-800 p-5 mb-8 rounded-xl flex items-start shadow-md" role="alert" data-aos="fade-up">
+                <i data-feather="check-circle" class="w-6 h-6 mr-3 mt-0.5 flex-shrink-0 text-green-500"></i>
+                <div>
+                    <p class="font-medium">Success!</p>
+                    <p class="mt-1">@TempData["SuccessMessage"]</p>
+                </div>
+            </div>
+        }
+
+        <!-- Jobs Table -->
+        <div class="glass-effect rounded-2xl overflow-hidden mb-8 shadow-lg" data-aos="fade-up" data-aos-delay="800">
+            <div class="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-blue-50">
+                <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                    <i data-feather="file-text" class="w-5 h-5 mr-2 text-blue-600"></i>
+                    Your Job Postings
+                    <span class="ml-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
+                        @Model.Count jobs
+                    </span>
+                </h2>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Job Title</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Category</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Location</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Posted Date</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Applications</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @foreach (var job in Model)
+                        {
+                            <tr class="table-row-hover">
+                                <td class="px-6 py-5 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                            <i data-feather="briefcase" class="w-5 h-5 text-blue-600"></i>
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-semibold text-gray-900">@job.Title</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-5 whitespace-nowrap">
+                                    <div class="text-sm text-gray-700 font-medium">@job.Category</div>
+                                </td>
+                                <td class="px-6 py-5 whitespace-nowrap">
+                                    <div class="text-sm text-gray-700 flex items-center">
+                                        <i data-feather="map-pin" class="w-4 h-4 mr-1 text-gray-400"></i>
+                                        @job.Location
+                                    </div>
+                                </td>
+                                <td class="px-6 py-5 whitespace-nowrap">
+                                    <div class="text-sm text-gray-700">@job.PostedDate.ToShortDateString()</div>
+                                </td>
+                                <td class="px-6 py-5 whitespace-nowrap">
+                                    <span class="status-badge px-3 py-2 inline-flex text-xs leading-4 font-semibold rounded-full
+                                        @(job.IsApproved ? "status-approved bg-green-50 text-green-800 border border-green-200" : "status-pending bg-yellow-50 text-yellow-800 border border-yellow-200")">
+                                        @(job.IsApproved ? "Approved" : "Pending Review")
+                                    </span>
+                                </td>
+                                <td class="px-6 py-5 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="text-sm font-bold text-gray-900">@job.ApplicationCount</div>
+                                        <div class="text-xs text-gray-500 ml-1">applicants</div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-5 whitespace-nowrap text-sm font-medium">
+                                    <div class="flex space-x-3">
+                                        <a href="@Url.Action("EditJob", "Employer", new { id = job.Id })"
+                                           class="text-yellow-600 hover:text-yellow-800 action-btn bg-yellow-50 p-2 rounded-lg"
+                                           title="Edit Job">
+                                            <i data-feather="edit-2" class="w-4 h-4"></i>
+                                        </a>
+                                        <a href="@Url.Action("JobDetails", "Employer", new { id = job.Id })"
+                                           class="text-blue-600 hover:text-blue-800 action-btn bg-blue-50 p-2 rounded-lg"
+                                           title="View Details">
+                                            <i data-feather="eye" class="w-4 h-4"></i>
+                                        </a>
+                                        <a href="@Url.Action("DeleteJob", "Employer", new { id = job.Id })"
+                                           class="text-red-600 hover:text-red-800 action-btn bg-red-50 p-2 rounded-lg"
+                                           title="Delete Job"
+                                           onclick="return confirm('Are you sure you want to delete this job?');">
+                                            <i data-feather="trash-2" class="w-4 h-4"></i>
+                                        </a>
+                                        <a href="@Url.Action("ViewApplications", "Employer", new { jobId = job.Id })"
+                                           class="text-purple-600 hover:text-purple-800 action-btn bg-purple-50 p-2 rounded-lg"
+                                           title="View Applications">
+                                            <i data-feather="users" class="w-4 h-4"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        AOS.init({
+            duration: 800,
+            once: true
+        });
+        feather.replace();
+    </script>
+</body>
+</html>

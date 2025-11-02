@@ -3,33 +3,375 @@
     ViewBag.Title = "My Applications";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<h2>My Applications</h2>
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Job Title</th>
-            <th>Employer</th>
-            <th>Applied Date</th>
-            <th>Status</th>
-            <th>Resume</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var app in Model)
-        {
-            <tr>
-                <td>@app.JobTitle</td>
-                <td>@app.EmployerName</td>
-                <td>@app.AppliedDate.ToShortDateString()</td>
-                <td>
-                    <span class="badge @(app.Status == "Approved" ? "bg-success" : app.Status == "Rejected" ? "bg-danger" : "bg-secondary")">
-                        @app.Status
-                    </span>
-                </td>
-                <td>
-                    <a href="@Url.Content(app.ResumePath)" download class="btn btn-sm btn-info">Download</a>
-                </td>
-            </tr>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+
+    <!-- Styles and Scripts -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
         }
-    </tbody>
-</table>
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .application-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            background: white;
+            border: 1px solid #e2e8f0;
+        }
+
+        .application-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border-color: #c7d2fe;
+        }
+
+        .status-badge {
+            transition: all 0.3s ease;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.75rem;
+        }
+
+        .download-btn {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .download-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .download-btn:hover::before {
+            left: 100%;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.3);
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 30px -5px rgba(102, 126, 234, 0.4);
+        }
+
+        .empty-state {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border: 2px dashed #cbd5e1;
+            transition: all 0.3s ease;
+        }
+
+        .empty-state:hover {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);
+        }
+
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+
+        @@keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @@keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .table-header {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .application-grid {
+            display: grid;
+            grid-template-columns: 2fr 1.5fr 1fr 1fr 1fr;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        @@media (max-width: 768px) {
+            .application-grid {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+            animation: pulse 2s infinite;
+        }
+
+        .approved-dot { background: #10b981; }
+        .rejected-dot { background: #ef4444; }
+        .pending-dot { background: #f59e0b; }
+
+        .job-title {
+            font-weight: 600;
+            color: #1f2937;
+            transition: color 0.3s ease;
+        }
+
+        .application-card:hover .job-title {
+            color: #667eea;
+        }
+    </style>
+</head>
+<body class="gradient-bg">
+    <div class="min-h-screen py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Header Section -->
+            <div class="text-center mb-12" data-aos="fade-up">
+                <h1 class="text-4xl font-bold gradient-text mb-4">My Applications</h1>
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto">Track all your job applications in one place</p>
+            </div>
+
+            <!-- Stats Overview -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8" data-aos="fade-up" data-aos-delay="100">
+                <div class="stat-card text-center">
+                    <div class="flex items-center justify-center space-x-3">
+                        <div class="p-3 bg-white bg-opacity-20 rounded-xl">
+                            <i data-feather="briefcase" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold">@Model.Count</div>
+                            <div class="text-blue-100 text-sm">Total Applications</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card text-center">
+                    <div class="flex items-center justify-center space-x-3">
+                        <div class="p-3 bg-white bg-opacity-20 rounded-xl">
+                            <i data-feather="check-circle" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold">@Model.Count(a => a.Status == "Approved")</div>
+                            <div class="text-blue-100 text-sm">Approved</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card text-center">
+                    <div class="flex items-center justify-center space-x-3">
+                        <div class="p-3 bg-white bg-opacity-20 rounded-xl">
+                            <i data-feather="clock" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold">@Model.Count(a => a.Status == "Applied")</div>
+                            <div class="text-blue-100 text-sm">Pending</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card text-center">
+                    <div class="flex items-center justify-center space-x-3">
+                        <div class="p-3 bg-white bg-opacity-20 rounded-xl">
+                            <i data-feather="trending-up" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold">@(Model.Count > 0 ? ((Model.Count(a => a.Status == "Approved") * 100) / Model.Count) : 0)%</div>
+                            <div class="text-blue-100 text-sm">Success Rate</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Applications List -->
+            <div class="glass-card rounded-2xl overflow-hidden" data-aos="fade-up" data-aos-delay="200">
+                <!-- Table Header -->
+                <div class="table-header p-6 hidden md:block">
+                    <div class="application-grid">
+                        <div class="font-semibold text-gray-700 text-sm uppercase tracking-wider">Job Position</div>
+                        <div class="font-semibold text-gray-700 text-sm uppercase tracking-wider">Company</div>
+                        <div class="font-semibold text-gray-700 text-sm uppercase tracking-wider">Applied Date</div>
+                        <div class="font-semibold text-gray-700 text-sm uppercase tracking-wider">Status</div>
+                        <div class="font-semibold text-gray-700 text-sm uppercase tracking-wider">Resume</div>
+                    </div>
+                </div>
+
+                <div class="divide-y divide-gray-100">
+                    @if (Model.Any())
+                    {
+                        foreach (var app in Model)
+                        {
+                            <div class="application-card p-6" data-aos="fade-up">
+                                <div class="application-grid">
+                                    <!-- Job Title -->
+                                    <div class="flex flex-col">
+                                        <span class="text-xs text-gray-500 md:hidden font-medium mb-1">Job Position</span>
+                                        <span class="job-title text-lg">@app.JobTitle</span>
+                                        <span class="text-sm text-gray-500 mt-1 md:hidden">@app.EmployerName</span>
+                                    </div>
+
+                                    <!-- Employer -->
+                                    <div class="flex flex-col hidden md:block">
+                                        <span class="text-gray-700 font-medium">@app.EmployerName</span>
+                                    </div>
+
+                                    <!-- Applied Date -->
+                                    <div class="flex flex-col">
+                                        <span class="text-xs text-gray-500 md:hidden font-medium mb-1">Applied Date</span>
+                                        <div class="flex items-center space-x-2">
+                                            <i data-feather="calendar" class="w-4 h-4 text-gray-400 hidden md:block"></i>
+                                            <span class="text-gray-600 font-medium">@app.AppliedDate.ToString("MMM dd, yyyy")</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Status -->
+                                    <div class="flex flex-col">
+                                        <span class="text-xs text-gray-500 md:hidden font-medium mb-1">Status</span>
+                                        <span class="status-badge inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold
+                                            @(app.Status == "Approved" ? "bg-green-100 text-green-800 border border-green-200" :
+                                              app.Status == "Rejected" ? "bg-red-100 text-red-800 border border-red-200" :
+                                              "bg-yellow-100 text-yellow-800 border border-yellow-200")">
+                                            <span class="status-dot @(app.Status == "Approved" ? "approved-dot" :
+                                                              app.Status == "Rejected" ? "rejected-dot" : "pending-dot")"></span>
+                                            @app.Status
+                                        </span>
+                                    </div>
+
+                                    <!-- Resume Download -->
+                                    <div class="flex flex-col">
+                                        <span class="text-xs text-gray-500 md:hidden font-medium mb-1">Resume</span>
+                                        <a href="@Url.Content(app.ResumePath)" download
+                                           class="download-btn inline-flex items-center justify-center px-4 py-2 bg-blue-50 text-blue-600 rounded-lg font-medium border border-blue-200 hover:border-blue-300">
+                                            <i data-feather="download" class="w-4 h-4 mr-2"></i>
+                                            <span class="hidden sm:inline">Download</span>
+                                            <span class="sm:hidden">Resume</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <!-- Empty State -->
+                        <div class="empty-state rounded-2xl p-12 text-center m-6" data-aos="fade-up">
+                            <div class="floating inline-flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg mb-6">
+                                <i data-feather="inbox" class="w-10 h-10 text-gray-400"></i>
+                            </div>
+                            <h3 class="text-2xl font-semibold text-gray-700 mb-3">No Applications Yet</h3>
+                            <p class="text-gray-500 mb-6 max-w-md mx-auto">
+                                You haven't applied to any jobs yet. Start your job search journey today!
+                            </p>
+                            <a href="@Url.Action("Dashboard", "JobSeeker")"
+                               class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg font-semibold hover:from-blue-600 hover:to-blue-700 transition-all duration-300">
+                                <i data-feather="search" class="w-4 h-4 mr-2"></i>
+                                Browse Jobs
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            @if (Model.Any())
+            {
+                <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center" data-aos="fade-up" data-aos-delay="300">
+                    <a href="@Url.Action("Dashboard", "JobSeeker")"
+                       class="inline-flex items-center justify-center px-6 py-3 bg-white text-gray-700 rounded-lg font-semibold border border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all duration-300">
+                        <i data-feather="plus" class="w-4 h-4 mr-2"></i>
+                        Apply to More Jobs
+                    </a>
+                    @*<button onclick="window.print()"
+                            class="inline-flex items-center justify-center px-6 py-3 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition-all duration-300">
+                        <i data-feather="printer" class="w-4 h-4 mr-2"></i>
+                        Print Applications
+                    </button>*@
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script>
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+        feather.replace();
+
+        // Add smooth animations to status badges
+        document.querySelectorAll('.status-badge').forEach(badge => {
+            badge.addEventListener('mouseenter', function () {
+                this.style.transform = 'scale(1.05)';
+            });
+            badge.addEventListener('mouseleave', function () {
+                this.style.transform = 'scale(1)';
+            });
+        });
+
+        // Add loading animation to download buttons
+        document.querySelectorAll('.download-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const icon = this.querySelector('i');
+                const originalIcon = icon.getAttribute('data-feather');
+                icon.setAttribute('data-feather', 'loader');
+                feather.replace();
+
+                setTimeout(() => {
+                    icon.setAttribute('data-feather', originalIcon);
+                    feather.replace();
+                }, 2000);
+            });
+        });
+    </script>
+</body>
+</html>
