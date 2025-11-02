@@ -164,7 +164,7 @@ JobBoardPlatform revolutionizes the hiring process by providing a robust, user-f
 
 ## Step 1: Clone the Repository
 ```bash
-git clone https://github.com/your-username/JobBoardPlatform.git
+git clone https://github.com/Purvarajsinh39/JobBoardPlatform.git
 cd JobBoardPlatform
 ```
 ## Step 2: Open in Visual Studio
