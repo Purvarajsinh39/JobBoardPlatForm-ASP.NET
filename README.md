@@ -175,7 +175,7 @@ cd JobBoardPlatform
 ## Step 3: Database Configuration
 1. Open **SQL Server Management Studio (SSMS)**
 2. Create a new database (e.g., `JobBoardDB`)
-3. Execute the SQL script located in the `/Database` folder
+3. Important  Data-tier Application (.bacpac) file which has name  `JobBoardDB Final.bacpac` in SSMS
 4. Update the connection string in `Web.config`:
 
 ```xml
